@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataParser.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="MPQFiles\ReplayResumableEvents.cs" />
     <Compile Include="Statistics.cs" />
     <Compile Include="Unit.cs" />
@@ -87,7 +88,7 @@
     <Compile Include="BitReader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MpqTool\MpqTool.csproj">
+    <ProjectReference Include="..\MpqTool\MpqTool.csproj">
       <Project>{fa50e172-836b-47bb-8745-60595e4fb12a}</Project>
       <Name>MpqTool</Name>
     </ProjectReference>
