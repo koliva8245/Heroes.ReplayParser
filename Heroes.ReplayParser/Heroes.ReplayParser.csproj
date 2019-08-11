@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
-    <CodeAnalysisRuleSet>..\..\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +12,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Heroes.MpqTool\Heroes.MpqTool.csproj" />
   </ItemGroup>
 
 </Project>

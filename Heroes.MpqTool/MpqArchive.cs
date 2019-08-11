@@ -12,7 +12,7 @@ namespace Heroes.MpqTool
         private MpqHash[]? _mpqHashes;
         private MpqEntry[]? _mpqEntries;
 
-        private long _headerOffset;
+        private int _headerOffset;
 
         static MpqArchive()
         {
@@ -40,7 +40,7 @@ namespace Heroes.MpqTool
         }
 
         public int BlockSize { get; private set; }
-        internal MpqBuffer MpqBuffer { get; private set; }
+        public MpqBuffer MpqBuffer { get; private set; }
 
         public MpqMemory OpenFile(string fileName)
         {
@@ -69,6 +69,7 @@ namespace Heroes.MpqTool
             if (!AddFileName("(listfile)")) return false;
 
             AddFilenames(OpenFile("(listfile)"));
+            MpqBuffer.Index = 0;
 
             return true;
         }
@@ -295,7 +296,7 @@ namespace Heroes.MpqTool
         private void AddFilenames(MpqBuffer mpqBuffer)
         {
             while (!mpqBuffer.IsEndOfBuffer)
-                AddFilename(mpqBuffer.ReadStringAsMemory());
+                AddFilename(mpqBuffer.ReadLineAsMemory());
         }
     }
 }
