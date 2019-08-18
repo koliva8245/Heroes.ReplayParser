@@ -1,8 +1,6 @@
 ﻿using Heroes.MpqTool;
 using Heroes.ReplayParser.MpqFile;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Heroes.ReplayParser.Replay;
 
 namespace Heroes.ReplayParser
 {
@@ -49,6 +47,9 @@ namespace Heroes.ReplayParser
 
             ReplayDetails replayDetails = new ReplayDetails();
             replayDetails.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayDetails.FileName));
+
+            ReplayInitData replayInitData = new ReplayInitData();
+            replayInitData.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayInitData.FileName));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Heroes.ReplayParser.Player;
+using Heroes.ReplayParser.Replay;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.IO;
@@ -41,18 +42,18 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(1, player0.ToonHandle.Realm);
             Assert.AreEqual(0, player0.Team);
             Assert.IsTrue(player0.IsWinner);
-            Assert.AreEqual("Qhira", player0.HeroName);
+            Assert.AreEqual("Qhira", player0.PlayerHero.HeroName);
 
-            StormPlayer player1 = players[9];
+            StormPlayer player9 = players[9];
 
-            Assert.AreEqual("Player 10", player1.Name);
-            Assert.AreEqual(0, player1.ToonHandle.Region);
-            Assert.AreEqual(0, player1.ToonHandle.Realm);
-            Assert.AreEqual(1, player1.Team);
-            Assert.IsFalse(player1.IsWinner);
-            Assert.AreEqual("Valeera", player1.HeroName);
+            Assert.AreEqual("Player 10", player9.Name);
+            Assert.AreEqual(0, player9.ToonHandle.Region);
+            Assert.AreEqual(0, player9.ToonHandle.Realm);
+            Assert.AreEqual(1, player9.Team);
+            Assert.IsFalse(player9.IsWinner);
+            Assert.AreEqual("Valeera", player9.PlayerHero.HeroName);
 
-            Assert.AreEqual("Dragon Shire", _stormReplay.MapName);
+            Assert.AreEqual("Dragon Shire", _stormReplay.MapInfo.MapName);
             Assert.AreEqual(637010888527768698, _stormReplay.Timestamp.Ticks);
         }
     }

@@ -10,7 +10,7 @@
         /// <summary>
         /// Gets or sets the program id. This id is the same for all player's in this replay.
         /// </summary>
-        public int ProgramId { get; set; }
+        public long ProgramId { get; set; }
 
         /// <summary>
         /// Gets or sets the realm value.
@@ -20,6 +20,11 @@
         /// <summary>
         /// Gets or sets the id unique to the player's account in this region.
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
+
+        public override string? ToString()
+        {
+            return $"{Region}-Hero-{Realm}-{Id}";
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Heroes.ReplayParser
+﻿namespace Heroes.ReplayParser.Replay
 {
     public class ReplayVersion
     {

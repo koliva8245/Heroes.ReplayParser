@@ -1,4 +1,5 @@
 ﻿using Heroes.ReplayParser.Player;
+using Heroes.ReplayParser.Replay;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.IO;
@@ -41,19 +42,43 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(1, player0.ToonHandle.Realm);
             Assert.AreEqual(0, player0.Team);
             Assert.IsFalse(player0.IsWinner);
-            Assert.AreEqual("Greymane", player0.HeroName);
+            Assert.AreEqual("Greymane", player0.PlayerHero.HeroName);
 
-            StormPlayer player1 = players[9];
+            StormPlayer player = players[10];
 
-            Assert.AreEqual("FiZiX", player1.Name);
-            Assert.AreEqual(1, player1.ToonHandle.Region);
-            Assert.AreEqual(1, player1.ToonHandle.Realm);
-            Assert.AreEqual(1, player1.Team);
-            Assert.IsTrue(player1.IsWinner);
-            Assert.AreEqual("Li-Ming", player1.HeroName);
+            Assert.AreEqual("FiZiX", player.Name);
+            Assert.AreEqual(1, player.ToonHandle.Region);
+            Assert.AreEqual(1, player.ToonHandle.Realm);
+            Assert.AreEqual(1, player.Team);
+            Assert.IsTrue(player.IsWinner);
+            Assert.AreEqual("Li-Ming", player.PlayerHero.HeroName);
 
-            Assert.AreEqual("Battlefield of Eternity", _stormReplay.MapName);
+            Assert.AreEqual("Battlefield of Eternity", _stormReplay.MapInfo.MapName);
             Assert.AreEqual(636619794857150779, _stormReplay.Timestamp.Ticks);
+        }
+
+        [TestMethod]
+        public void StormReplayInitDataTests()
+        {
+            Assert.AreEqual(36047320, _stormReplay.RandomValue);
+            Assert.AreEqual(GameMode.Unknown, _stormReplay.GameMode);
+
+            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+            StormPlayer player0 = players[0];
+
+            Assert.AreEqual("GreymaneDoctorVar3", player0.PlayerLoadout.SkinAndSkinTint);
+            Assert.AreEqual("MountCloudWhimsy", player0.PlayerLoadout.MountAndMountTint);
+            Assert.IsFalse(player0.IsSilenced);
+            Assert.IsFalse(player0.IsVoiceSilenced);
+            Assert.IsFalse(player0.IsBlizzardStaff);
+            Assert.IsFalse(player0.HasActiveBoost);
+            Assert.AreEqual("BannerDFEsportsWarChestRareDignitas", player0.PlayerLoadout.Banner);
+            Assert.AreEqual("SprayStaticHGC2017EUDignitas", player0.PlayerLoadout.Spray);
+            Assert.AreEqual("JainaA", player0.PlayerLoadout.AnnouncerPack);
+            Assert.AreEqual("GreymaneBase_VoiceLine01", player0.PlayerLoadout.VoiceLine);
+            Assert.AreEqual(15, player0.HeroMasteryTiers.Count);
+            Assert.AreEqual("Barb", player0.HeroMasteryTiers[2].HeroAttributeId);
+            Assert.AreEqual(1, player0.HeroMasteryTiers[2].TierLevel);
         }
     }
 }

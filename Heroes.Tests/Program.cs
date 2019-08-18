@@ -1,6 +1,5 @@
-﻿using Heroes.MpqTool;
-using Heroes.ReplayParser;
-using System;
+﻿using Heroes.ReplayParser;
+using Heroes.ReplayParser.Replay;
 
 namespace Heroes.Console
 {

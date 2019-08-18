@@ -3,35 +3,32 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Heroes.ReplayParser
+namespace Heroes.ReplayParser.Decoders
 {
-    internal class TrackerEventStructure
+    internal class VersionedDecoder
     {
         private readonly ReadOnlyMemory<byte> _dataType;
         private readonly ReadOnlyMemory<byte> _value;
 
-        public TrackerEventStructure()
+        public VersionedDecoder()
         {
         }
 
-        public TrackerEventStructure(MpqBuffer mpqBuffer)
+        public VersionedDecoder(MpqBuffer mpqBuffer)
         {
             _dataType = mpqBuffer.ReadByte();
 
             switch (_dataType.Span[0])
             {
                 case 0x00: // array
-                    ArrayData = new TrackerEventStructure[mpqBuffer.ReadVInt()];
+                    ArrayData = new VersionedDecoder[mpqBuffer.ReadVInt()];
                     for (var i = 0; i < ArrayData.Length; i++)
-                        ArrayData[i] = new TrackerEventStructure(mpqBuffer);
+                        ArrayData[i] = new VersionedDecoder(mpqBuffer);
                     break;
-                //case 0x01: // bitarray, weird alignment requirements - haven't seen it used yet so not spending time on it
-                //    /*  bits = self.read_vint()
-                //        data = self.read_bits(bits) */
-                //    throw new NotImplementedException();
+                case 0x01: // bitblob
+                    throw new NotImplementedException();
                 case 0x02: // blob
                     _value = mpqBuffer.ReadBytes((int)mpqBuffer.ReadVInt());
 
@@ -42,15 +39,15 @@ namespace Heroes.ReplayParser
                 //    break;
                 case 0x04: // optional
                     if (mpqBuffer.ReadByte().Span[0] != 0)
-                        OptionalData = new TrackerEventStructure(mpqBuffer);
+                        OptionalData = new VersionedDecoder(mpqBuffer);
                     break;
                 case 0x05: // struct
-                    StructureByIndex = new Dictionary<int, TrackerEventStructure>();
+                    StructureByIndex = new Dictionary<int, VersionedDecoder>();
                     int size = (int)mpqBuffer.ReadVInt();
 
                     for (int i = 0; i < size; i++)
                     {
-                        StructureByIndex[(int)mpqBuffer.ReadVInt()] = new TrackerEventStructure(mpqBuffer);
+                        StructureByIndex[(int)mpqBuffer.ReadVInt()] = new VersionedDecoder(mpqBuffer);
                     }
 
                     break;
@@ -71,16 +68,18 @@ namespace Heroes.ReplayParser
             }
         }
 
-        public Dictionary<int, TrackerEventStructure>? StructureByIndex { get; private set; } = null;
-        public TrackerEventStructure? OptionalData { get; private set; } = null;
-        public TrackerEventStructure? ChoiceData { get; private set; } = null;
-        public TrackerEventStructure[]? ArrayData { get; private set; } = null;
+        public Dictionary<int, VersionedDecoder>? StructureByIndex { get; private set; } = null;
+        public VersionedDecoder? OptionalData { get; private set; } = null;
+        public VersionedDecoder? ChoiceData { get; private set; } = null;
+        public VersionedDecoder[]? ArrayData { get; private set; } = null;
 
         /// <summary>
-        /// Gets the value in the current structure as a signed 32-bit integer.
+        /// Gets the value in the current structure as a signed 32-bit unsigned integer.
         /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ArithmeticException"></exception>
         /// <returns></returns>
-        public int GetValueAsInt32()
+        public uint GetValueAsUInt32()
         {
             return _dataType.Span[0] switch
             {
@@ -91,9 +90,9 @@ namespace Heroes.ReplayParser
                 0x04 => throw new InvalidOperationException("Invalid call, use OptinalData"),
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
                 0x06 => _value.Span[0],
-                0x07 => (int)BinaryPrimitives.ReadUInt32LittleEndian(_value.Span),
+                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value.Span),
                 0x08 => throw new ArithmeticException("Incorrect conversion. Use Int64 method instead."),
-                0x09 => Get32IntFromVInt(),
+                0x09 => Get32UIntFromVInt(),
 
                 _ => throw new NotImplementedException(),
             };
@@ -111,6 +110,8 @@ namespace Heroes.ReplayParser
         /// <summary>
         /// Gets the value in the current structure as a signed 64-bit integer.
         /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ArithmeticException"></exception>
         /// <returns></returns>
         public long GetValueAsInt64()
         {
@@ -154,9 +155,9 @@ namespace Heroes.ReplayParser
             };
         }
 
-        private int Get32IntFromVInt()
+        private uint Get32UIntFromVInt()
         {
-            int value = (int)MpqBuffer.ReadVInt(_value.Span, out int size);
+            uint value = (uint)MpqBuffer.ReadVInt(_value.Span, out int size);
             if (size > 4)
                 throw new ArithmeticException("Incorrect conversion. Use Int64 method instead.");
 
@@ -165,7 +166,7 @@ namespace Heroes.ReplayParser
 
         private long Get64IntFromVInt()
         {
-            long value = (long)MpqBuffer.ReadVInt(_value.Span, out int size);
+            long value = MpqBuffer.ReadVInt(_value.Span, out int size);
             if (size < 5)
                 throw new ArithmeticException("Incorrect conversion. Use Int32 method instead.");
 
