@@ -30,10 +30,10 @@ namespace Heroes.ReplayParser.Decoders
                     _value = ReadBytes((int)ReadVInt());
 
                     break;
-                //case 0x03: // choice
-                //    choiceFlag = (int)read_vint(reader);
-                //    choiceData = new TrackerEventStructure(reader);
-                //    break;
+                case 0x03: // choice
+                    _value = ReadBytesForVInt();
+                    ChoiceData = new VersionedDecoder(mpqBuffer);
+                    break;
                 case 0x04: // optional
                     if (ReadByte().Span[0] != 0)
                         OptionalData = new VersionedDecoder(mpqBuffer);
@@ -83,7 +83,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x00 => throw new InvalidOperationException("Invalid call, use ArrayData"),
                 0x01 => throw new NotImplementedException(),
                 0x02 => throw new InvalidOperationException("Invalid call, use GetValueAsString()"),
-                0x03 => throw new NotImplementedException(),
+                0x03 => Get32UIntFromVInt(),
                 0x04 => throw new InvalidOperationException("Invalid call, use OptinalData"),
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
                 0x06 => _value.Span[0],
@@ -117,7 +117,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x00 => throw new InvalidOperationException("Invalid call, use ArrayData"),
                 0x01 => throw new NotImplementedException(),
                 0x02 => throw new InvalidOperationException("Invalid call, use GetValueAsString()"),
-                0x03 => throw new NotImplementedException(),
+                0x03 => Get64IntFromVInt(),
                 0x04 => throw new InvalidOperationException("Invalid call, use OptinalData"),
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
                 0x06 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),
@@ -141,6 +141,7 @@ namespace Heroes.ReplayParser.Decoders
             {
                 0x00 => ArrayData != null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
                 0x02 => @$"""{Encoding.UTF8.GetString(_value.Span)}""",
+                0x03 => $"Choice: Flag: {ReadVInt(_value.Span).ToString()} , Data: {ChoiceData}",
                 0x04 => OptionalData?.ToString(),
                 0x05 => StructureByIndex != null ? $"{{{string.Join(", ", StructureByIndex.Values.Select(i => i?.ToString()))}}}" : null,
                 0x06 => _value.Span[0].ToString(),

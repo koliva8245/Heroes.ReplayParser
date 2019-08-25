@@ -11,6 +11,8 @@ namespace Heroes.Console
             //mpqArchive.AddListfileFilenames();
 
             StormReplay stormReplay = StormReplayParser.Parse("HanamuraTemple1.StormReplay");
+
+            System.Console.WriteLine("Done");
         }
     }
 }

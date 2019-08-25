@@ -53,6 +53,9 @@ namespace Heroes.ReplayParser
 
             ReplayAttributeEvents replayAttributeEvents = new ReplayAttributeEvents();
             replayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayAttributeEvents.FileName));
+
+            //ReplayTrackerEvents replayTrackerEvents = new ReplayTrackerEvents();
+            //replayTrackerEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayTrackerEvents.FileName));
         }
     }
 }

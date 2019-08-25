@@ -48,12 +48,16 @@ namespace Heroes.ReplayParser.Decoders
         /// </summary>
         /// <param name="numberOfBits">The number of bits to read.</param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public ReadOnlySpan<byte> ReadStringAsSpan(int numberOfBits)
+        public ReadOnlySpan<char> ReadStringAsSpan(int numberOfBits)
         {
             if (numberOfBits < 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
-            return ReadBlob(numberOfBits).Span;
+            ReadOnlySpan<byte> blobSpan = ReadBlob(numberOfBits).Span;
+            Span<char> charValues = new char[blobSpan.Length];
+
+            Encoding.UTF8.GetChars(blobSpan, charValues);
+            return charValues;
         }
 
         /// <summary>

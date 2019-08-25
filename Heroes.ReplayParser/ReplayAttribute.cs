@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Heroes.ReplayParser.MpqFile
+namespace Heroes.ReplayParser
 {
     internal class ReplayAttribute
     {

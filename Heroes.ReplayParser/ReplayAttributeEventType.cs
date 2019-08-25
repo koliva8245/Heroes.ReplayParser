@@ -1,4 +1,4 @@
-﻿namespace Heroes.ReplayParser.MpqFile
+﻿namespace Heroes.ReplayParser
 {
     internal enum ReplayAttributeEventType
     {
@@ -56,7 +56,7 @@
         ReadyRequirements = 4019,
         FirstReadyingTeam = 4020,
 
-        DraftBanMode = 4021, // custom game
+        DraftBanMode = 4021, // TODO: get custom game attributes
 
         DraftTeam1BanChooserSlot = 4022,
         DraftTeam1Ban1 = 4023,
