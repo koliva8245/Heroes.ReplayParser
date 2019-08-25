@@ -65,9 +65,19 @@ namespace Heroes.ReplayParser.Player
         public bool IsBlizzardStaff { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets whether the player is auto select or not.
+        /// </summary>
+        public bool IsAutoSelect { get; set; }
+
+        /// <summary>
         /// Gets or sets if the player has an active boost.
         /// </summary>
         public bool HasActiveBoost { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the computer player difficulty.
+        /// </summary>
+        public PlayerDifficulty PlayerDifficulty { get; set; } = PlayerDifficulty.Unknown;
 
         internal int WorkingSetSlotId { get; set; }
 

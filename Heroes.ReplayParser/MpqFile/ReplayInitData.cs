@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Heroes.ReplayParser.MpqFile
 {
-    internal class ReplayInitData : IMpqParsable
+    internal class ReplayInitData : IMpqFile
     {
         public ReplayInitData()
         {
@@ -21,11 +21,15 @@ namespace Heroes.ReplayParser.MpqFile
 
             /* m_userInitialData section */
 
+            // all slots (16)
             uint playerListLength = decoder.ReadBits(5);
 
             for (int i = 0; i < playerListLength; i++)
             {
                 string name = decoder.ReadString(8); // m_name
+
+                if (!string.IsNullOrEmpty(name))
+                    replay.ClientListByUserID[i] = new StormPlayer { Name = name };
 
                 if (decoder.ReadBoolean())
                     decoder.ReadString(8); // m_clanTag
@@ -67,19 +71,6 @@ namespace Heroes.ReplayParser.MpqFile
                 }
 
                 decoder.ReadString(7); // m_toonHandle - Currently Empty String
-
-                if (replay.StormPlayersByUserId.TryGetValue(i, out StormPlayer? stormPlayer))
-                {
-                    if (string.IsNullOrEmpty(stormPlayer.Name))
-                        stormPlayer.Name = name;
-                }
-                else
-                {
-                    replay.StormPlayersByUserId.Add(i, new StormPlayer()
-                    {
-                        Name = name,
-                    });
-                }
             }
 
             /* m_gameDescription section */
@@ -191,11 +182,11 @@ namespace Heroes.ReplayParser.MpqFile
             uint maxUsers = decoder.ReadBits(5); // m_maxUsers
             uint maxObservers = decoder.ReadBits(5); // m_maxObservers
 
-            if (maxUsers + maxObservers != replay.StormPlayersCount)
+            if (maxUsers + maxObservers != replay.PlayersWithObserversCount)
             {
                 throw new StormParseException($"Max users and max observers do not equal the total players count. Max Users: {maxUsers}. " +
                     $"Max Observers: {maxObservers}. " +
-                    $"Players Count: {replay.StormPlayersCount}");
+                    $"Players Count: {replay.PlayersWithObserversCount}");
             }
 
             // m_slots
@@ -244,19 +235,15 @@ namespace Heroes.ReplayParser.MpqFile
 
                 if (userId.HasValue && workingSetSlotID.HasValue)
                 {
-                    // stormPlayer = replay.StormPlayersByUserId[userId.Value];
-
-                    if (replay.StormPlayersByUserId.ContainsKey(userId.Value) && replay.StormPlayersByWorkingSetSlotId.ContainsKey(workingSetSlotID.Value))
-                        replay.StormPlayersByUserId[userId.Value] = replay.StormPlayersByWorkingSetSlotId[workingSetSlotID.Value];
-                    else
-                        replay.StormPlayersByWorkingSetSlotId.Add(workingSetSlotID.Value, replay.StormPlayersByUserId[userId.Value]);
+                    if (replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] != null)
+                        replay.ClientListByUserID[userId.Value] = replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value];
 
                     if (observerStatus == 2)
-                        replay.StormPlayersByUserId[userId.Value].PlayerType = PlayerType.Spectator;
+                        replay.ClientListByUserID[userId.Value].PlayerType = PlayerType.Spectator;
 
-                    replay.StormPlayersByUserId[userId.Value].PlayerHero.HeroId = heroId;
-                    replay.StormPlayersByUserId[userId.Value].PlayerLoadout.SkinAndSkinTint = skinAndSkinTint;
-                    replay.StormPlayersByUserId[userId.Value].PlayerLoadout.MountAndMountTint = mountAndMountTint;
+                    replay.ClientListByUserID[userId.Value].PlayerHero.HeroId = heroId;
+                    replay.ClientListByUserID[userId.Value].PlayerLoadout.SkinAndSkinTint = skinAndSkinTint;
+                    replay.ClientListByUserID[userId.Value].PlayerLoadout.MountAndMountTint = mountAndMountTint;
                 }
 
                 // m_rewards
@@ -285,34 +272,34 @@ namespace Heroes.ReplayParser.MpqFile
                 }
 
                 if (decoder.ReadBoolean() && userId.HasValue) // m_hasSilencePenalty
-                    replay.StormPlayersByUserId[userId.Value].IsSilenced = true;
+                    replay.ClientListByUserID[userId.Value].IsSilenced = true;
 
                 if (replay.ReplayBuild >= 61718 && decoder.ReadBoolean() && userId.HasValue) // m_hasVoiceSilencePenalty
-                    replay.StormPlayersByUserId[userId.Value].IsVoiceSilenced = true;
+                    replay.ClientListByUserID[userId.Value].IsVoiceSilenced = true;
 
                 if (replay.ReplayBuild >= 66977 && decoder.ReadBoolean() && userId.HasValue) // m_isBlizzardStaff
-                    replay.StormPlayersByUserId[userId.Value].IsBlizzardStaff = true;
+                    replay.ClientListByUserID[userId.Value].IsBlizzardStaff = true;
 
                 if (replay.ReplayBuild >= 69947 && decoder.ReadBoolean() && userId.HasValue) // m_hasActiveBoost
-                    replay.StormPlayersByUserId[userId.Value].HasActiveBoost = true;
+                    replay.ClientListByUserID[userId.Value].HasActiveBoost = true;
 
                 if (replay.ReplayVersion.Major >= 2)
                 {
                     string banner = decoder.ReadString(9); // m_banner
                     if (userId.HasValue)
-                        replay.StormPlayersByUserId[userId.Value].PlayerLoadout.Banner = banner;
+                        replay.ClientListByUserID[userId.Value].PlayerLoadout.Banner = banner;
 
                     string spray = decoder.ReadString(9); // m_spray
                     if (userId.HasValue)
-                        replay.StormPlayersByUserId[userId.Value].PlayerLoadout.Spray = spray;
+                        replay.ClientListByUserID[userId.Value].PlayerLoadout.Spray = spray;
 
                     string announcer = decoder.ReadString(9); // m_announcerPack
                     if (userId.HasValue)
-                        replay.StormPlayersByUserId[userId.Value].PlayerLoadout.AnnouncerPack = announcer;
+                        replay.ClientListByUserID[userId.Value].PlayerLoadout.AnnouncerPack = announcer;
 
                     string voiceLine = decoder.ReadString(9); // m_voiceLine
                     if (userId.HasValue)
-                        replay.StormPlayersByUserId[userId.Value].PlayerLoadout.VoiceLine = voiceLine;
+                        replay.ClientListByUserID[userId.Value].PlayerLoadout.VoiceLine = voiceLine;
 
                     // m_heroMasteryTiers
                     if (replay.ReplayBuild >= 52561)
@@ -328,7 +315,7 @@ namespace Heroes.ReplayParser.MpqFile
 
                             if (userId.HasValue)
                             {
-                                replay.StormPlayersByUserId[userId.Value].HeroMasteryTiers.Add(new HeroMasteryTier()
+                                replay.ClientListByUserID[userId.Value].HeroMasteryTiers.Add(new HeroMasteryTier()
                                 {
                                     HeroAttributeId = heroAttributeName,
                                     TierLevel = tier,

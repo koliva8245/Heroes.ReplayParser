@@ -3,7 +3,7 @@ using Heroes.ReplayParser.Replay;
 
 namespace Heroes.ReplayParser.MpqFile
 {
-    internal interface IMpqParsable
+    internal interface IMpqFile
     {
         public string FileName { get; }
 

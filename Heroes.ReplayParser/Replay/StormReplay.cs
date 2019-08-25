@@ -47,65 +47,63 @@ namespace Heroes.ReplayParser.Replay
         public GameMode GameMode { get; set; }
 
         /// <summary>
-        /// Gets a collection of playing players.
+        /// Gets or sets the team size of the selected game type.
         /// </summary>
-        public IEnumerable<StormPlayer> StormPlayers => StormPlayersByUserId.Values;
+        public string TeamSize { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the number of playering players.
+        /// Gets the speed the game was played at.
         /// </summary>
-        public int StormPlayersCount => StormPlayersByUserId.Count;
+        public GameSpeed GameSpeed { get; set; }
 
-        //internal void AddStormPlayer(IEnumerable<StormPlayer>? stormPlayers)
-        //{
-        //    if (stormPlayers is null)
-        //    {
-        //        throw new ArgumentNullException(nameof(stormPlayers));
-        //    }
+        /// <summary>
+        /// Gets a collection of playing players (no observers).
+        /// </summary>
+        public IEnumerable<StormPlayer> StormPlayers => Players;
 
-        //    _stormPlayers.AddRange(stormPlayers);
-        //}
+        /// <summary>
+        /// Gets the total number of playing players. Use <see cref="PlayersWithObserversCount"/> to include observers.
+        /// </summary>
+        public int PlayersCount => Players.Length;
 
-        internal Dictionary<int, StormPlayer> StormPlayersByUserId { get; set; } = new Dictionary<int, StormPlayer>();
-        internal Dictionary<int, StormPlayer> StormPlayersByWorkingSetSlotId { get; set; } = new Dictionary<int, StormPlayer>();
+        /// <summary>
+        /// Gets the total number of players, including observers, in the game.
+        /// </summary>
+        public int PlayersWithObserversCount => ClientListByUserID.Length;
 
-        //internal void AddStormPlayerByUserId(uint userId, StormPlayer stormPlayer)
-        //{
-        //    if (userId < 0)
-        //        throw new ArgumentOutOfRangeException(nameof(userId));
-        //    if (stormPlayer is null)
-        //        throw new ArgumentNullException(nameof(stormPlayer));
+        /// <summary>
+        /// Gets the list of all players (no observers).
+        /// </summary>
+        internal StormPlayer[] Players { get; set; } = new StormPlayer[10];
 
-        //    _stormPlayersByUserId.Add(userId, stormPlayer);
-        //}
+        /// <summary>
+        /// Gets the list of all players connected to the game, using 'm_userId' as index.
+        /// </summary>
+        internal StormPlayer[] ClientListByUserID { get; private set; } = new StormPlayer[16];
 
-        //internal void AddStormPlayerByWorkingSetSlotId(uint workSetSlotId, StormPlayer stormPlayer)
-        //{
-        //    if (workSetSlotId < 0)
-        //        throw new ArgumentOutOfRangeException(nameof(workSetSlotId));
-        //    if (stormPlayer is null)
-        //        throw new ArgumentNullException(nameof(stormPlayer));
+        /// <summary>
+        /// Gets the list of all players connected to the game, using 'm_workingSetSlotId' as index.
+        /// </summary>
+        internal StormPlayer[] ClientListByWorkingSetSlotID { get; private set; } = new StormPlayer[16];
 
-        //    _stormPlayersByWorkingSetSlotId.Add(workSetSlotId, stormPlayer);
-        //}
+        /// <summary>
+        /// In some places, this is used instead of the 'Player' array, in games with less than 10 players.
+        /// </summary>
+        internal StormPlayer[] PlayersWithOpenSlots { get; private set; } = new StormPlayer[10];
 
-        //internal bool PlayerByUserIdExists
-        //internal StormPlayer GetPlayerByUserId(uint userId)
-        //{
-        //    if (_stormPlayersByUserId.TryGetValue(userId, out StormPlayer? value))
-        //        return value;
-        //    else
-        //        throw new IndexOutOfRangeException(nameof(userId));
-        //}
+        internal Dictionary<int, List<string>> TeamHeroAttributeIdBans { get; set; } = new Dictionary<int, List<string>>();
 
-        //internal void AddClientStormByWorkingSetSlotIdPlayer(StormPlayer stormPlayer)
-        //{
-        //    if (stormPlayer is null)
-        //    {
-        //        throw new ArgumentNullException(nameof(stormPlayer));
-        //    }
-
-        //    _clientListByWorkingSetSlotIdStormPlayers.Add(stormPlayer);
-        //}
+        /// <summary>
+        /// Gets a collection of a team's bans.
+        /// </summary>
+        /// <param name="team">The team (0 or 1).</param>
+        /// <returns>The collection of bans.</returns>
+        public IEnumerable<string> GetTeamBans(int team)
+        {
+            if (TeamHeroAttributeIdBans.TryGetValue(team, out List<string>? values))
+                return values;
+            else
+                return new List<string>();
+        }
     }
 }

@@ -7,30 +7,27 @@ using System.Text;
 
 namespace Heroes.ReplayParser.Decoders
 {
-    internal class VersionedDecoder
+    internal class VersionedDecoder : BitPackedBuffer
     {
         private readonly ReadOnlyMemory<byte> _dataType;
         private readonly ReadOnlyMemory<byte> _value;
 
-        public VersionedDecoder()
-        {
-        }
-
         public VersionedDecoder(MpqBuffer mpqBuffer)
+            : base(mpqBuffer)
         {
-            _dataType = mpqBuffer.ReadByte();
+            _dataType = ReadByte();
 
             switch (_dataType.Span[0])
             {
                 case 0x00: // array
-                    ArrayData = new VersionedDecoder[mpqBuffer.ReadVInt()];
+                    ArrayData = new VersionedDecoder[ReadVInt()];
                     for (var i = 0; i < ArrayData.Length; i++)
                         ArrayData[i] = new VersionedDecoder(mpqBuffer);
                     break;
                 case 0x01: // bitblob
                     throw new NotImplementedException();
                 case 0x02: // blob
-                    _value = mpqBuffer.ReadBytes((int)mpqBuffer.ReadVInt());
+                    _value = ReadBytes((int)ReadVInt());
 
                     break;
                 //case 0x03: // choice
@@ -38,30 +35,30 @@ namespace Heroes.ReplayParser.Decoders
                 //    choiceData = new TrackerEventStructure(reader);
                 //    break;
                 case 0x04: // optional
-                    if (mpqBuffer.ReadByte().Span[0] != 0)
+                    if (ReadByte().Span[0] != 0)
                         OptionalData = new VersionedDecoder(mpqBuffer);
                     break;
                 case 0x05: // struct
                     StructureByIndex = new Dictionary<int, VersionedDecoder>();
-                    int size = (int)mpqBuffer.ReadVInt();
+                    int size = (int)ReadVInt();
 
                     for (int i = 0; i < size; i++)
                     {
-                        StructureByIndex[(int)mpqBuffer.ReadVInt()] = new VersionedDecoder(mpqBuffer);
+                        StructureByIndex[(int)ReadVInt()] = new VersionedDecoder(mpqBuffer);
                     }
 
                     break;
                 case 0x06: // u8
-                    _value = mpqBuffer.ReadByte();
+                    _value = ReadByte();
                     break;
                 case 0x07: // u32
-                    _value = mpqBuffer.ReadBytes(4);
+                    _value = ReadBytes(4);
                     break;
                 case 0x08: // u64
-                    _value = mpqBuffer.ReadBytes(8);
+                    _value = ReadBytes(8);
                     break;
                 case 0x09: // vint
-                    _value = mpqBuffer.ReadBytesForVInt();
+                    _value = ReadBytesForVInt();
                     break;
                 default:
                     throw new NotImplementedException();
@@ -149,7 +146,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x06 => _value.Span[0].ToString(),
                 0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value.Span).ToString(),
                 0x08 => BinaryPrimitives.ReadUInt64LittleEndian(_value.Span).ToString(),
-                0x09 => MpqBuffer.ReadVInt(_value.Span).ToString(),
+                0x09 => ReadVInt(_value.Span).ToString(),
 
                 _ => throw new NotImplementedException(),
             };
@@ -157,7 +154,7 @@ namespace Heroes.ReplayParser.Decoders
 
         private uint Get32UIntFromVInt()
         {
-            uint value = (uint)MpqBuffer.ReadVInt(_value.Span, out int size);
+            uint value = (uint)ReadVInt(_value.Span, out int size);
             if (size > 4)
                 throw new ArithmeticException("Incorrect conversion. Use Int64 method instead.");
 
@@ -166,7 +163,7 @@ namespace Heroes.ReplayParser.Decoders
 
         private long Get64IntFromVInt()
         {
-            long value = MpqBuffer.ReadVInt(_value.Span, out int size);
+            long value = ReadVInt(_value.Span, out int size);
             if (size < 5)
                 throw new ArithmeticException("Incorrect conversion. Use Int32 method instead.");
 

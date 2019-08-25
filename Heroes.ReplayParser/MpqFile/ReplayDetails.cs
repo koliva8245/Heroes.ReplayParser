@@ -6,7 +6,7 @@ using System;
 
 namespace Heroes.ReplayParser.MpqFile
 {
-    internal class ReplayDetails : IMpqParsable
+    internal class ReplayDetails : IMpqFile
     {
         public ReplayDetails()
         {
@@ -20,6 +20,11 @@ namespace Heroes.ReplayParser.MpqFile
 
             // this section does not include the observers
             VersionedDecoder[]? versionDecoders = versionedDecoder.StructureByIndex?[0].OptionalData?.ArrayData;
+
+            if (versionDecoders == null || versionDecoders.Length < 1)
+                throw new StormParseException("ReplayDetails: Less than 1 player");
+
+            replay.Players = new StormPlayer[versionDecoders.Length];
 
             for (int i = 0; i < versionDecoders?.Length; i++)
             {
@@ -49,7 +54,8 @@ namespace Heroes.ReplayParser.MpqFile
                 stormPlayer.WorkingSetSlotId = (int)(versionDecoders[i].StructureByIndex?[9].OptionalData?.GetValueAsUInt32() ?? 0); // m_workingSetSlotId
                 stormPlayer.PlayerHero.HeroName = versionDecoders[i].StructureByIndex?[10].GetValueAsString() ?? string.Empty; // m_hero (name)
 
-                replay.StormPlayersByWorkingSetSlotId.Add(stormPlayer.WorkingSetSlotId, stormPlayer);
+                replay.Players[i] = stormPlayer;
+                replay.ClientListByWorkingSetSlotID[stormPlayer.WorkingSetSlotId] = stormPlayer;
             }
 
             replay.MapInfo.MapName = versionedDecoder.StructureByIndex?[1].GetValueAsString() ?? string.Empty;

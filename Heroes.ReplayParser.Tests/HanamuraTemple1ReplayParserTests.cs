@@ -80,5 +80,31 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("Arts", player0.HeroMasteryTiers[2].HeroAttributeId);
             Assert.AreEqual(3, player0.HeroMasteryTiers[2].TierLevel);
         }
+
+        [TestMethod]
+        public void StormReplayAttributeEvents()
+        {
+            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+            StormPlayer player = players[9];
+
+            Assert.AreEqual("5v5", _stormReplay.TeamSize);
+            Assert.AreEqual(PlayerDifficulty.Elite, player.PlayerDifficulty);
+            Assert.AreEqual(GameSpeed.Faster, _stormReplay.GameSpeed);
+            Assert.AreEqual(GameMode.QuickMatch, _stormReplay.GameMode);
+            Assert.AreEqual("Hanz", player.PlayerHero.HeroAttributeId);
+            Assert.AreEqual("Han2", player.PlayerLoadout.SkinAndSkinTintAttributeId);
+            Assert.AreEqual("Arm2", player.PlayerLoadout.MountAndMountTintAttributeId);
+            Assert.AreEqual("BNaf", player.PlayerLoadout.BannerAttributeId);
+            Assert.AreEqual("SY96", player.PlayerLoadout.SprayAttributeId);
+            Assert.AreEqual("HA01", player.PlayerLoadout.VoiceLineAttributeId);
+            Assert.AreEqual("AHAN", player.PlayerLoadout.AnnouncerPackAttributeId);
+            Assert.AreEqual(20, player.PlayerHero.HeroLevel);
+
+            List<string> ban0List = _stormReplay.GetTeamBans(0).ToList();
+            List<string> ban1List = _stormReplay.GetTeamBans(1).ToList();
+
+            Assert.AreEqual(string.Empty, ban0List[1]);
+            Assert.AreEqual(string.Empty, ban1List[1]);
+        }
     }
 }
