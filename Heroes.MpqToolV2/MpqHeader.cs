@@ -50,16 +50,24 @@ namespace Heroes.MpqToolV2
         public uint BlockTableSize { get; private set; }
 
         // Version 1 fields
-        // The extended block table is an array of Int16 - higher bits of the offests in the block table.
+        // The extended block table is an array of Int16 - higher bits of the offsets in the block table.
         public long ExtendedBlockTableOffset { get; private set; }
         public short HashTableOffsetHigh { get; private set; }
         public short BlockTableOffsetHigh { get; private set; }
 
         public long HeaderOffset { get; private set; }
 
+        public MpqMemory HeaderData { get; private set; }
+
         private bool LocateHeader()
         {
-            for (long i = 0; i < _binaryReader.BaseStream.Length - Size; i += 0x200)
+            Memory<byte> data = new byte[0x100];
+
+            _binaryReader.BaseStream.Read(data.Span);
+
+            HeaderData = new MpqMemory(data);
+
+            for (long i = 0x200; i < _binaryReader.BaseStream.Length - Size; i += 0x200)
             {
                 _binaryReader.BaseStream.Seek(i, SeekOrigin.Begin);
 
@@ -74,6 +82,22 @@ namespace Heroes.MpqToolV2
             }
 
             return false;
+
+            //for (long i = 0; i < _binaryReader.BaseStream.Length - Size; i += 0x200)
+            //{
+            //    _binaryReader.BaseStream.Seek(i, SeekOrigin.Begin);
+
+            //    uint id = _binaryReader.ReadUInt32();
+
+            //    if (id == MpqId)
+            //    {
+            //        HeaderOffset = i;
+
+            //        return true;
+            //    }
+            //}
+
+            //return false;
         }
     }
 }

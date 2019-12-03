@@ -1,9 +1,9 @@
-﻿using Heroes.MpqTool;
+﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser.Replay;
 
-namespace Heroes.ReplayParser.MpqFile
+namespace Heroes.ReplayParser.MpqFiles
 {
-    internal interface IMpqFile
+    internal interface IMpqFiles
     {
         public string FileName { get; }
 

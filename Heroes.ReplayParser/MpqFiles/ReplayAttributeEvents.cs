@@ -1,4 +1,4 @@
-﻿using Heroes.MpqTool;
+﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser.Decoders;
 using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
@@ -9,9 +9,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Heroes.ReplayParser.MpqFile
+namespace Heroes.ReplayParser.MpqFiles
 {
-    internal class ReplayAttributeEvents : IMpqFile
+    internal class ReplayAttributeEvents : IMpqFiles
     {
         public string FileName { get; } = "replay.attributes.events";
 

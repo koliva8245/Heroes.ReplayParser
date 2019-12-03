@@ -15,6 +15,11 @@ namespace Heroes.MpqToolV2
         //private ReadOnlyMemory<byte> _currentData;
         private int _currentBlockIndex = -1;
 
+        internal MpqMemory(ReadOnlyMemory<byte> data)
+        {
+            Buffer = data;
+        }
+
         internal MpqMemory(MpqArchive archive, MpqArchiveEntry mpqArchiveEntry)
         {
             _position = 0;

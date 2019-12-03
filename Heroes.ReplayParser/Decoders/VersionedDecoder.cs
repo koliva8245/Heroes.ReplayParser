@@ -1,4 +1,4 @@
-﻿using Heroes.MpqTool;
+﻿using Heroes.MpqToolV2;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -84,7 +84,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x01 => throw new NotImplementedException(),
                 0x02 => throw new InvalidOperationException("Invalid call, use GetValueAsString()"),
                 0x03 => Get32UIntFromVInt(),
-                0x04 => throw new InvalidOperationException("Invalid call, use OptinalData"),
+                0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
                 0x06 => _value.Span[0],
                 0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value.Span),
@@ -118,7 +118,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x01 => throw new NotImplementedException(),
                 0x02 => throw new InvalidOperationException("Invalid call, use GetValueAsString()"),
                 0x03 => Get64IntFromVInt(),
-                0x04 => throw new InvalidOperationException("Invalid call, use OptinalData"),
+                0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
                 0x06 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),
                 0x07 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),

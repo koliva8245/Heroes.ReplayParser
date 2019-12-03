@@ -25,7 +25,7 @@ namespace Heroes.MpqToolV2
         /// </summary>
         /// <param name="stream">The stream containing the archive to be read.</param>
         /// <exception cref="ArgumentNullException" />
-        public MpqArchive(Stream stream)
+        internal MpqArchive(Stream stream)
         {
             ArchiveStream = stream ?? throw new ArgumentNullException(nameof(stream));
             _binaryReader = new BinaryReader(ArchiveStream);
@@ -75,14 +75,14 @@ namespace Heroes.MpqToolV2
 
         public Stream ArchiveStream { get; }
 
+        public MpqMemory HeaderData => _mpqHeader.HeaderData;
+
         public MpqMemory OpenFile(string filename)
         {
-            MpqArchiveEntry entry;
-
             if (!TryGetHashEntry(filename, out MpqHash hash))
                 throw new FileNotFoundException("File not found: " + filename);
 
-            entry = _mpqArchiveEntries[hash.BlockIndex];
+            MpqArchiveEntry entry = _mpqArchiveEntries[hash.BlockIndex];
             if (entry.FileName == null)
                 entry.FileName = filename;
 

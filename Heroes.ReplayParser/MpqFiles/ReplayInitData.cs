@@ -1,13 +1,13 @@
-﻿using Heroes.MpqTool;
+﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser.Decoders;
 using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
 using System;
 using System.Text;
 
-namespace Heroes.ReplayParser.MpqFile
+namespace Heroes.ReplayParser.MpqFiles
 {
-    internal class ReplayInitData : IMpqFile
+    internal class ReplayInitData : IMpqFiles
     {
         public ReplayInitData()
         {

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Heroes.MpqTool;
+﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser.Decoders;
 using Heroes.ReplayParser.Replay;
+using System.Collections.Generic;
 
-namespace Heroes.ReplayParser.MpqFile
+namespace Heroes.ReplayParser.MpqFiles
 {
-    internal class ReplayTrackerEvents : IMpqFile
+    internal class ReplayTrackerEvents : IMpqFiles
     {
         public string FileName { get; } = "replay.tracker.events";
 

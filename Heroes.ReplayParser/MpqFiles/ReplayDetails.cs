@@ -1,12 +1,12 @@
-﻿using Heroes.MpqTool;
+﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser.Decoders;
 using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
 using System;
 
-namespace Heroes.ReplayParser.MpqFile
+namespace Heroes.ReplayParser.MpqFiles
 {
-    internal class ReplayDetails : IMpqFile
+    internal class ReplayDetails : IMpqFiles
     {
         public ReplayDetails()
         {
@@ -30,29 +30,29 @@ namespace Heroes.ReplayParser.MpqFile
             {
                 StormPlayer stormPlayer = new StormPlayer
                 {
-                    Name = versionDecoders[i].StructureByIndex?[0].GetValueAsString() ?? string.Empty, // m_name
+                    Name = versionDecoders[i].StructureByIndex![0].GetValueAsString(), // m_name
                 };
 
-                stormPlayer.ToonHandle.Region = (int)(versionDecoders[i].StructureByIndex?[1].StructureByIndex?[0].GetValueAsUInt32() ?? 0); // m_region
-                stormPlayer.ToonHandle.ProgramId = versionDecoders[i].StructureByIndex?[1].StructureByIndex?[1].GetValueAsUInt32() ?? 0; // m_programId
-                stormPlayer.ToonHandle.Realm = (int)(versionDecoders[i].StructureByIndex?[1].StructureByIndex?[2].GetValueAsUInt32() ?? 0); // m_realm
+                stormPlayer.ToonHandle.Region = (int)versionDecoders[i].StructureByIndex![1].StructureByIndex![0].GetValueAsUInt32(); // m_region
+                stormPlayer.ToonHandle.ProgramId = versionDecoders[i].StructureByIndex![1].StructureByIndex![1].GetValueAsUInt32(); // m_programId
+                stormPlayer.ToonHandle.Realm = (int)versionDecoders[i].StructureByIndex![1].StructureByIndex![2].GetValueAsUInt32(); // m_realm
 
                 // [1] // m_name
 
-                stormPlayer.ToonHandle.Id = versionDecoders[i].StructureByIndex?[1].StructureByIndex?[4].GetValueAsUInt32() ?? 0; // m_id
+                stormPlayer.ToonHandle.Id = versionDecoders[i].StructureByIndex?[1].StructureByIndex![4].GetValueAsUInt32(); // m_id
 
                 // [2] // m_race (SC2 Remnant, Always Empty String in Heroes of the Storm)
                 // [3]...array // m_color
                 // [4] // m_control
 
-                stormPlayer.Team = (int)(versionDecoders[i].StructureByIndex?[5].GetValueAsUInt32() ?? 0); // m_teamId
+                stormPlayer.Team = (int)versionDecoders[i].StructureByIndex![5].GetValueAsUInt32(); // m_teamId
 
                 // x.StructureByIndex[6] // m_handicap
                 // x.StructureByIndex[7] // m_observe
 
                 stormPlayer.IsWinner = versionDecoders[i].StructureByIndex?[8].GetValueAsUInt32() == 1; // m_result
-                stormPlayer.WorkingSetSlotId = (int)(versionDecoders[i].StructureByIndex?[9].OptionalData?.GetValueAsUInt32() ?? 0); // m_workingSetSlotId
-                stormPlayer.PlayerHero.HeroName = versionDecoders[i].StructureByIndex?[10].GetValueAsString() ?? string.Empty; // m_hero (name)
+                stormPlayer.WorkingSetSlotId = (int)(versionDecoders[i].StructureByIndex?[9].OptionalData?.GetValueAsUInt32()!); // m_workingSetSlotId
+                stormPlayer.PlayerHero.HeroName = versionDecoders[i].StructureByIndex![10].GetValueAsString(); // m_hero (name)
 
                 replay.Players[i] = stormPlayer;
                 replay.ClientListByWorkingSetSlotID[stormPlayer.WorkingSetSlotId] = stormPlayer;

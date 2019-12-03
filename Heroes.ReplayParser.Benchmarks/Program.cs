@@ -25,29 +25,31 @@ namespace Heroes.ReplayParser.Benchmarks
         [Benchmark]
         public void MpqToolV2()
         {
-            using MpqArchive mpqArchive = new MpqArchive(File.Open(@"F:\Battlefield of Eternity1.StormReplay", FileMode.Open, FileAccess.Read));
-            mpqArchive.AddListfileFileNames();
-            MpqMemory mpqMemory = mpqArchive.OpenFile("replay.details");
+            var a = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay");
 
-            mpqMemory.Index = 0;
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
-            mpqMemory.ReadInt32();
+            //using MpqArchive mpqArchive = new MpqArchive(File.Open(@"F:\Battlefield of Eternity1.StormReplay", FileMode.Open, FileAccess.Read));
+            //mpqArchive.AddListfileFileNames();
+            //MpqMemory mpqMemory = mpqArchive.OpenFile("replay.details");
+
+            //mpqMemory.Index = 0;
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
+            //mpqMemory.ReadInt32();
 
             //using MpqArchive mpqArchive = new MpqArchive(File.Open(@"F:\Battlefield of Eternity1.StormReplay", FileMode.Open, FileAccess.Read));
             //mpqArchive.AddListfileFileNames();

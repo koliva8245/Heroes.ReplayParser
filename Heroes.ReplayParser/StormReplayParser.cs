@@ -1,6 +1,7 @@
-﻿using Heroes.MpqTool;
-using Heroes.ReplayParser.MpqFile;
+﻿using Heroes.MpqToolV2;
+using Heroes.ReplayParser.MpqFiles;
 using Heroes.ReplayParser.Replay;
+using System.IO;
 
 namespace Heroes.ReplayParser
 {
@@ -19,7 +20,7 @@ namespace Heroes.ReplayParser
             _allowPTRRegion = allowPTRRegion;
             _parseBattleLobby = parseBattleLobby;
 
-            _stormMpqArchive = new MpqArchive(_fileName);
+            _stormMpqArchive = MpqFile.Open(_fileName);
         }
 
         /// <summary>
@@ -38,9 +39,9 @@ namespace Heroes.ReplayParser
 
         private void Parse()
         {
-            _stormMpqArchive.AddListfileFilenames();
+            _stormMpqArchive.AddListfileFileNames();
 
-            StormReplayHeader.Parse(_stormReplay, _stormMpqArchive.MpqBuffer);
+            StormReplayHeader.Parse(_stormReplay, _stormMpqArchive.HeaderData);
 
             //if (!ignoreErrors && replay.ReplayBuild < 32455)
             //    return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, new Replay { ReplayBuild = replay.ReplayBuild });
@@ -51,8 +52,8 @@ namespace Heroes.ReplayParser
             ReplayInitData replayInitData = new ReplayInitData();
             replayInitData.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayInitData.FileName));
 
-            ReplayAttributeEvents replayAttributeEvents = new ReplayAttributeEvents();
-            replayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayAttributeEvents.FileName));
+            //ReplayAttributeEvents replayAttributeEvents = new ReplayAttributeEvents();
+            //replayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayAttributeEvents.FileName));
 
             //ReplayTrackerEvents replayTrackerEvents = new ReplayTrackerEvents();
             //replayTrackerEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayTrackerEvents.FileName));

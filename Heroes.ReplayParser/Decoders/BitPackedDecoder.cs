@@ -1,4 +1,4 @@
-﻿using Heroes.MpqTool;
+﻿using Heroes.MpqToolV2;
 using System;
 using System.Text;
 

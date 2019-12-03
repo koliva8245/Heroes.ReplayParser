@@ -11,7 +11,7 @@ namespace Heroes.MpqToolV2
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException("message", nameof(fileName));
+                throw new ArgumentException("Argument cannot be null or empty", nameof(fileName));
             }
 
             FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 0x1000, false);
