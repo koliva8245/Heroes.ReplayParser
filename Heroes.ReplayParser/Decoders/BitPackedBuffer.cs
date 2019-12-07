@@ -9,7 +9,7 @@ namespace Heroes.ReplayParser.Decoders
         private readonly EndianType _endianType;
 
         private int _bitIndex; // current bit position in the current byte
-        private ReadOnlyMemory<byte> _currentByte;
+        private byte _currentByte;
 
         public BitPackedBuffer(MpqBuffer mpqBuffer, EndianType type = EndianType.BigEndian)
         {
@@ -67,15 +67,15 @@ namespace Heroes.ReplayParser.Decoders
         /// <returns></returns>
         public long ReadVInt()
         {
-            ReadOnlySpan<byte> dataByte = ReadByte().Span;
-            int negative = dataByte[0] & 1;
-            long result = (dataByte[0] >> 1) & 0x3f;
+            byte dataByte = ReadByte();
+            int negative = dataByte & 1;
+            long result = (dataByte >> 1) & 0x3f;
             int bits = 6;
 
-            while ((dataByte[0] & 0x80) != 0)
+            while ((dataByte & 0x80) != 0)
             {
-                dataByte = ReadByte().Span;
-                result |= ((long)dataByte[0] & 0x7f) << bits;
+                dataByte = ReadByte();
+                result |= ((long)dataByte & 0x7f) << bits;
                 bits += 7;
             }
 
@@ -90,15 +90,15 @@ namespace Heroes.ReplayParser.Decoders
         {
             int count = 1;
 
-            ReadOnlySpan<byte> dataByte = ReadByte().Span;
-            long result = (dataByte[0] >> 1) & 0x3f;
+            byte dataByte = ReadByte();
+            long result = (dataByte >> 1) & 0x3f;
             int bits = 6;
 
-            while ((dataByte[0] & 0x80) != 0)
+            while ((dataByte & 0x80) != 0)
             {
                 count++;
-                dataByte = ReadByte().Span;
-                result |= ((long)dataByte[0] & 0x7f) << bits;
+                dataByte = ReadByte();
+                result |= ((long)dataByte & 0x7f) << bits;
                 bits += 7;
             }
 
@@ -141,7 +141,7 @@ namespace Heroes.ReplayParser.Decoders
         /// Reads one aligned byte from the buffer.
         /// </summary>
         /// <returns></returns>
-        public ReadOnlyMemory<byte> ReadByte()
+        public byte ReadByte()
         {
             ByteAlign();
 
@@ -204,7 +204,7 @@ namespace Heroes.ReplayParser.Decoders
 
                 int bitsToRead = (bitsLeftInByte > numberOfBits) ? numberOfBits : bitsLeftInByte;
 
-                value = (value << bitsToRead) | (((uint)_currentByte.Span[0] >> bytePosition) & ((1u << bitsToRead) - 1u));
+                value = (value << bitsToRead) | (((uint)_currentByte >> bytePosition) & ((1u << bitsToRead) - 1u));
                 _bitIndex += bitsToRead;
                 numberOfBits -= bitsToRead;
             }
@@ -228,7 +228,7 @@ namespace Heroes.ReplayParser.Decoders
 
                 int bitsToRead = (bitsLeftInByte > numberOfBits) ? numberOfBits : bitsLeftInByte;
 
-                value = (value << bitsToRead) | (((uint)_currentByte.Span[0] >> bytePosition) & ((1u << bitsToRead) - 1u));
+                value = (value << bitsToRead) | (((uint)_currentByte >> bytePosition) & ((1u << bitsToRead) - 1u));
                 _bitIndex += bitsToRead;
                 numberOfBits -= bitsToRead;
             }

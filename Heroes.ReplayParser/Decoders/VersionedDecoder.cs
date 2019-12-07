@@ -9,7 +9,7 @@ namespace Heroes.ReplayParser.Decoders
 {
     internal class VersionedDecoder : BitPackedBuffer
     {
-        private readonly ReadOnlyMemory<byte> _dataType;
+        private readonly byte _dataType;
         private readonly ReadOnlyMemory<byte> _value;
 
         public VersionedDecoder(MpqBuffer mpqBuffer)
@@ -17,7 +17,7 @@ namespace Heroes.ReplayParser.Decoders
         {
             _dataType = ReadByte();
 
-            switch (_dataType.Span[0])
+            switch (_dataType)
             {
                 case 0x00: // array
                     ArrayData = new VersionedDecoder[ReadVInt()];
@@ -35,7 +35,7 @@ namespace Heroes.ReplayParser.Decoders
                     ChoiceData = new VersionedDecoder(mpqBuffer);
                     break;
                 case 0x04: // optional
-                    if (ReadByte().Span[0] != 0)
+                    if (ReadByte() != 0)
                         OptionalData = new VersionedDecoder(mpqBuffer);
                     break;
                 case 0x05: // struct
@@ -49,7 +49,7 @@ namespace Heroes.ReplayParser.Decoders
 
                     break;
                 case 0x06: // u8
-                    _value = ReadByte();
+                    _value = new byte[] { ReadByte() };
                     break;
                 case 0x07: // u32
                     _value = ReadBytes(4);
@@ -78,7 +78,7 @@ namespace Heroes.ReplayParser.Decoders
         /// <returns></returns>
         public uint GetValueAsUInt32()
         {
-            return _dataType.Span[0] switch
+            return _dataType switch
             {
                 0x00 => throw new InvalidOperationException("Invalid call, use ArrayData"),
                 0x01 => throw new NotImplementedException(),
@@ -112,7 +112,7 @@ namespace Heroes.ReplayParser.Decoders
         /// <returns></returns>
         public long GetValueAsInt64()
         {
-            return _dataType.Span[0] switch
+            return _dataType switch
             {
                 0x00 => throw new InvalidOperationException("Invalid call, use ArrayData"),
                 0x01 => throw new NotImplementedException(),
@@ -137,7 +137,7 @@ namespace Heroes.ReplayParser.Decoders
 
         public override string? ToString()
         {
-            return _dataType.Span[0] switch
+            return _dataType switch
             {
                 0x00 => ArrayData != null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
                 0x02 => @$"""{Encoding.UTF8.GetString(_value.Span)}""",

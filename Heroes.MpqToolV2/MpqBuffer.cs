@@ -38,9 +38,9 @@ namespace Heroes.MpqToolV2
         /// Reads one byte from the buffer.
         /// </summary>
         /// <returns></returns>
-        public ReadOnlyMemory<byte> ReadByte()
+        public byte ReadByte()
         {
-            ReadOnlyMemory<byte> value = Buffer.Slice(Index, 1);
+            byte value = Buffer.Span[Index];
             Index++;
 
             return value;
@@ -138,24 +138,26 @@ namespace Heroes.MpqToolV2
         public string ReadLine()
         {
             int startIndex = Index;
+            ReadOnlySpan<byte> dataSpan = Buffer.Span;
+
             do
             {
-                ReadOnlySpan<byte> charByte = Buffer.Span.Slice(Index, 1);
+                byte charByte = dataSpan[Index];
 
                 // \n - UNIX   \r\n - DOS   \r - Mac
-                if (charByte[0] == 10 || charByte[0] == 13)
+                if (charByte == 10 || charByte == 13)
                 {
                     Span<char> data = stackalloc char[Index - startIndex];
 
-                    Encoding.UTF8.GetChars(Buffer.Span.Slice(startIndex, Index - startIndex), data);
+                    Encoding.UTF8.GetChars(dataSpan.Slice(startIndex, Index - startIndex), data);
 
                     // if it's a \r, check one ahead for a \n
-                    if (charByte[0] == 13 && Index < Length)
+                    if (charByte == 13 && Index < Length)
                     {
-                        ReadOnlySpan<byte> nByte = Buffer.Span.Slice(Index + 1, 1);
-                        if (nByte[0] == 10)
+                        byte nByte = dataSpan[Index + 1];
+                        if (nByte == 10)
                         {
-                           Index++;
+                            Index++;
                         }
                     }
 
