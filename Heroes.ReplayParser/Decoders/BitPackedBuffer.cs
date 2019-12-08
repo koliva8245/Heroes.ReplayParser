@@ -1,14 +1,16 @@
 ﻿using Heroes.MpqToolV2;
 using System;
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Heroes.ReplayParser.Benchmarks")]
 namespace Heroes.ReplayParser.Decoders
 {
     internal class BitPackedBuffer
     {
         private readonly EndianType _endianType;
 
-        private int _bitIndex; // current bit position in the current byte
+        private int _bitIndex;
         private byte _currentByte;
 
         public BitPackedBuffer(MpqBuffer mpqBuffer, EndianType type = EndianType.BigEndian)
@@ -161,6 +163,26 @@ namespace Heroes.ReplayParser.Decoders
         }
 
         /// <summary>
+        /// Reads one bit from the buffer and returns the value of the bit.
+        /// </summary>
+        /// <returns></returns>
+        public bool ReadBoolean()
+        {
+            int bytePosition = _bitIndex & 7;
+
+            if (bytePosition == 0)
+            {
+                _currentByte = ReadByte();
+            }
+
+            bool bit = ((_currentByte >> bytePosition) & 1) == 1;
+
+            _bitIndex++;
+
+            return bit;
+        }
+
+        /// <summary>
         /// Reads a blob given the number of bits.
         /// </summary>
         /// <param name="numberOfBits">The number of bits to read.</param>
@@ -205,6 +227,7 @@ namespace Heroes.ReplayParser.Decoders
                 int bitsToRead = (bitsLeftInByte > numberOfBits) ? numberOfBits : bitsLeftInByte;
 
                 value = (value << bitsToRead) | (((uint)_currentByte >> bytePosition) & ((1u << bitsToRead) - 1u));
+
                 _bitIndex += bitsToRead;
                 numberOfBits -= bitsToRead;
             }
