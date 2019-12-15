@@ -1,12 +1,17 @@
-﻿using System;
+﻿using Ionic.BZip2;
+using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.IO;
+using System.Text;
 
 namespace Heroes.MpqToolV2
 {
     public class MpqArchive : IDisposable
     {
         private static readonly uint[] _stormBuffer;
+
+        private readonly Stream _archiveStream;
         private readonly MpqHeader _mpqHeader;
         private readonly BinaryReader _binaryReader;
 
@@ -27,9 +32,13 @@ namespace Heroes.MpqToolV2
         /// <exception cref="ArgumentNullException" />
         internal MpqArchive(Stream stream)
         {
-            ArchiveStream = stream ?? throw new ArgumentNullException(nameof(stream));
-            _binaryReader = new BinaryReader(ArchiveStream);
-            _mpqHeader = new MpqHeader(_binaryReader);
+            _archiveStream = stream ?? throw new ArgumentNullException(nameof(stream));
+
+            Span<byte> headerBuffer = stackalloc byte[2048]; // guess how much the header will be
+            stream.Read(headerBuffer);
+
+            BitReader.ResetIndex();
+            _mpqHeader = new MpqHeader(headerBuffer);
 
             if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)
                 throw new MpqToolException("MPQ format version 1 features are not supported");
@@ -37,47 +46,47 @@ namespace Heroes.MpqToolV2
             BlockSize = 0x200 << _mpqHeader.BlockSize;
 
             // LoadHashTable
-            ArchiveStream.Seek(_mpqHeader.HashTablePos, SeekOrigin.Begin);
-            byte[] hashData = _binaryReader.ReadBytes((int)(_mpqHeader.HashTableSize * MpqHash.Size));
-            DecryptTable(hashData, "(hash table)");
+            Span<byte> hashBuffer = stackalloc byte[(int)(_mpqHeader.HashTableSize * MpqHash.Size)]; // get the hash table buffer
+            stream.Position = (int)_mpqHeader.HashTablePos;
+            stream.Read(hashBuffer);
+
+            DecryptTable(hashBuffer, "(hash table)");
 
             _mpqHashes = new MpqHash[_mpqHeader.HashTableSize];
 
-            using (BinaryReader binaryReader = new BinaryReader(new MemoryStream(hashData)))
-            {
-                for (int i = 0; i < _mpqHeader.HashTableSize; i++)
-                    _mpqHashes[i] = new MpqHash(binaryReader);
-            }
+            BitReader.ResetIndex();
+            for (int i = 0; i < _mpqHeader.HashTableSize; i++)
+                _mpqHashes[i] = new MpqHash(hashBuffer);
 
             // LoadEntryTable;
-            ArchiveStream.Seek(_mpqHeader.BlockTablePos, SeekOrigin.Begin);
-            byte[] entrydata = _binaryReader.ReadBytes((int)(_mpqHeader.BlockTableSize * MpqArchiveEntry.Size));
-            DecryptTable(entrydata, "(block table)");
+            Span<byte> entryBuffer = stackalloc byte[(int)(_mpqHeader.BlockTableSize * MpqArchiveEntry.Size)]; // get the entry table buffer
+            stream.Position = (int)_mpqHeader.BlockTablePos;
+            stream.Read(entryBuffer);
+
+            DecryptTable(entryBuffer, "(block table)");
 
             _mpqArchiveEntries = new MpqArchiveEntry[_mpqHeader.BlockTableSize];
 
-            using (BinaryReader binaryReader = new BinaryReader(new MemoryStream(entrydata)))
-            {
-                for (int i = 0; i < _mpqHeader.BlockTableSize; i++)
-                    _mpqArchiveEntries[i] = new MpqArchiveEntry(binaryReader, (uint)_mpqHeader.HeaderOffset);
-            }
-        }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="MpqArchive"/> class.
-        /// </summary>
-        ~MpqArchive()
-        {
-            Dispose(false);
+            BitReader.ResetIndex();
+            for (int i = 0; i < _mpqHeader.BlockTableSize; i++)
+                _mpqArchiveEntries[i] = new MpqArchiveEntry(entryBuffer, (uint)_mpqHeader.HeaderOffset);
         }
 
         public int BlockSize { get; private set; }
 
-        public Stream ArchiveStream { get; }
 
         public MpqMemory HeaderData => _mpqHeader.HeaderData;
 
-        public MpqMemory OpenFile(string filename)
+        public ReadOnlySpan<byte> GetHeaderBytes(int size = 0x100)
+        {
+            Span<byte> data = new byte[size];
+            _archiveStream.Position = 0;
+            _archiveStream.Read(data);
+
+            return data;
+        }
+
+        public ReadOnlySpan<byte> OpenFile(string filename)
         {
             if (!TryGetHashEntry(filename, out MpqHash hash))
                 throw new FileNotFoundException("File not found: " + filename);
@@ -86,42 +95,75 @@ namespace Heroes.MpqToolV2
             if (entry.FileName == null)
                 entry.FileName = filename;
 
-            return new MpqMemory(this, entry);
+            return DecompressEntry(entry);
         }
 
-        public MpqMemory OpenFile(MpqArchiveEntry mpqArchiveEntry)
-        {
-            return new MpqMemory(this, mpqArchiveEntry);
-        }
+        //public MpqMemory OpenFile(string filename)
+        //{
+        //    if (!TryGetHashEntry(filename, out MpqHash hash))
+        //        throw new FileNotFoundException("File not found: " + filename);
 
-        public bool FileExists(string filename)
-        {
-            return TryGetHashEntry(filename, out MpqHash hash);
-        }
+        //    MpqArchiveEntry entry = _mpqArchiveEntries[hash.BlockIndex];
+        //    if (entry.FileName == null)
+        //        entry.FileName = filename;
+
+        //    return new MpqMemory(this, entry);
+        //}
+
+        //public MpqMemory OpenFile(MpqArchiveEntry mpqArchiveEntry)
+        //{
+        //    return new MpqMemory(this, mpqArchiveEntry);
+        //}
+
+        //public bool FileExists(string filename)
+        //{
+        //    return TryGetHashEntry(filename, out MpqHash hash);
+        //}
 
         public bool AddListfileFileNames()
         {
-            if (!AddFileName("(listfile)")) return false;
+            if (!AddFileName("(listfile)"))
+                return false;
 
-            MpqMemory mpqMemory = OpenFile("(listfile)");
-
-            AddFilenames(mpqMemory);
-
-            //using (Stream s = OpenFile("(listfile)"))
-            //    AddFilenames(s);
+            AddFilenames(OpenFile("(listfile)"));
 
             return true;
         }
 
-        public void AddFilenames(MpqMemory mpqMemory)
+        public void AddFilenames(ReadOnlySpan<byte> source)
         {
-            while (!mpqMemory.IsEndOfBuffer)
-                AddFileName(mpqMemory.ReadLine());
-            //using (StreamReader sr = new StreamReader(stream))
-            //{
-            //    while (!sr.EndOfStream)
-            //        AddFileName(sr.ReadLine());
-            //}
+            int startIndex = 0;
+            int index = 0;
+
+            do
+            {
+                byte charByte = source[index];
+
+                // \n - UNIX   \r\n - DOS   \r - Mac
+                if (charByte == 10 || charByte == 13)
+                {
+                    Span<char> data = stackalloc char[index - startIndex];
+
+                    Encoding.UTF8.GetChars(source.Slice(startIndex, index - startIndex), data);
+
+                    // if it's a \r, check one ahead for a \n
+                    if (charByte == 13 && index < source.Length)
+                    {
+                        byte nByte = source[index + 1];
+                        if (nByte == 10)
+                        {
+                            index++;
+                        }
+                    }
+
+                    index++;
+
+                    AddFileName(data.ToString());
+                    startIndex = index;
+                }
+
+                index++;
+            } while (index < source.Length);
         }
 
         public bool AddFileName(string fileName)
@@ -228,31 +270,6 @@ namespace Heroes.MpqToolV2
             return 0;
         }
 
-        private bool TryGetHashEntry(ReadOnlySpan<char> filename, out MpqHash hash)
-        {
-            uint index = HashString(filename, 0);
-            index &= _mpqHeader.HashTableSize - 1;
-            uint name1 = HashString(filename, 0x100);
-            uint name2 = HashString(filename, 0x200);
-
-            for (uint i = index; i < _mpqHashes.Length; ++i)
-            {
-                hash = _mpqHashes[i];
-                if (hash.Name1 == name1 && hash.Name2 == name2)
-                    return true;
-            }
-
-            for (uint i = 0; i < index; i++)
-            {
-                hash = _mpqHashes[i];
-                if (hash.Name1 == name1 && hash.Name2 == name2)
-                    return true;
-            }
-
-            hash = new MpqHash();
-            return false;
-        }
-
         /// <summary>
         /// Release the unmanaged and managed resources.
         /// </summary>
@@ -263,10 +280,9 @@ namespace Heroes.MpqToolV2
             {
                 if (disposing)
                 {
+                    _archiveStream?.Dispose();
+                    _binaryReader?.Dispose();
                 }
-
-                ArchiveStream?.Dispose();
-                _binaryReader?.Dispose();
 
                 _isDisposed = true;
             }
@@ -297,6 +313,131 @@ namespace Heroes.MpqToolV2
         private static void DecryptTable(Span<byte> data, string key)
         {
             DecryptBlock(data, HashString(key, 0x300));
+        }
+
+        private static void DecompressByteData(Span<byte> buffer, int compressedSize)
+        {
+            byte compressionType = buffer[0];
+
+            // WC3 onward mosly use Zlib
+            // Starcraft 1 mostly uses PKLib, plus types 41 and 81 for audio files
+            switch (compressionType)
+            {
+                case 0x10:
+                    BZip2Decompress(buffer, compressedSize);
+                    break;
+                default:
+                    throw new MpqToolException("Compression is not yet supported: 0x" + compressionType.ToString("X"));
+            }
+
+
+            //return compressionType switch
+            //{
+            //    //case 1: // Huffman
+            //    //    return MpqHuffman.Decompress(sinput).ToArray();
+            //    //case 2: // ZLib/Deflate
+            //    //    return ZlibDecompress(sinput, outputLength);
+            //    //case 8: // PKLib/Impode
+            //    //    return PKDecompress(sinput, outputLength);
+            //    0x10 => BZip2Decompress(source),
+            //    //case 0x80: // IMA ADPCM Stereo
+            //    //    return MpqWavCompression.Decompress(sinput, 2);
+            //    //case 0x40: // IMA ADPCM Mono
+            //    //    return MpqWavCompression.Decompress(sinput, 1);
+
+            //    //case 0x12:
+            //    //    // TODO: LZMA
+            //    //    throw new MpqParserException("LZMA compression is not yet supported");
+
+            //    //// Combos
+            //    //case 0x22:
+            //    //    // TODO: sparse then zlib
+            //    //    throw new MpqParserException("Sparse compression + Deflate compression is not yet supported");
+            //    //case 0x30:
+            //    //    // TODO: sparse then bzip2
+            //    //    throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported");
+            //    //case 0x41:
+            //    //    sinput = MpqHuffman.Decompress(sinput);
+            //    //    return MpqWavCompression.Decompress(sinput, 1);
+            //    //case 0x48:
+            //    //    {
+            //    //        byte[] result = PKDecompress(sinput, outputLength);
+            //    //        return MpqWavCompression.Decompress(new MemoryStream(result), 1);
+            //    //    }
+            //    //case 0x81:
+            //    //    sinput = MpqHuffman.Decompress(sinput);
+            //    //    return MpqWavCompression.Decompress(sinput, 2);
+            //    //case 0x88:
+            //    //    {
+            //    //        byte[] result = PKDecompress(sinput, outputLength);
+            //    //        return MpqWavCompression.Decompress(new MemoryStream(result), 2);
+            //    //    }
+            //    _ => throw new MpqToolException("Compression is not yet supported: 0x" + compressionType.ToString("X")),
+            //};
+        }
+
+        private static void BZip2Decompress(Span<byte> buffer, int compressedSize)
+        {
+            using MemoryStream memoryStream = new MemoryStream(buffer.Slice(1, compressedSize).ToArray());
+            using BZip2InputStream stream = new BZip2InputStream(memoryStream);
+
+            stream.Read(buffer);
+        }
+
+        private ReadOnlySpan<byte> DecompressEntry(MpqArchiveEntry mpqArchiveEntry)
+        {
+            //if (mpqArchiveEntry.IsCompressed && !mpqArchiveEntry.IsSingleUnit)
+            //    LoadBlockPositions();
+
+            //if (mpqArchiveEntry.IsSingleUnit)
+            //{
+            //Span<byte> fileData = new byte[(int)mpqArchiveEntry.CompressedSize];
+
+            byte[] fileData = new byte[(int)mpqArchiveEntry.FileSize];
+
+            _archiveStream.Position = mpqArchiveEntry.FilePosition;
+
+            int read = _archiveStream.Read(fileData, 0, (int)mpqArchiveEntry.CompressedSize);
+
+            if (read != mpqArchiveEntry.CompressedSize)
+                throw new MpqToolException("Insufficient data or invalid data length");
+
+            if (mpqArchiveEntry.CompressedSize == mpqArchiveEntry.FileSize)
+            {
+                //_currentData = fileData;
+            }
+            else
+            {
+                DecompressByteData(fileData, (int)mpqArchiveEntry.CompressedSize);
+            }
+
+            return fileData;
+            //}
+        }
+
+        private bool TryGetHashEntry(ReadOnlySpan<char> filename, out MpqHash hash)
+        {
+            uint index = HashString(filename, 0);
+            index &= _mpqHeader.HashTableSize - 1;
+            uint name1 = HashString(filename, 0x100);
+            uint name2 = HashString(filename, 0x200);
+
+            for (uint i = index; i < _mpqHashes.Length; ++i)
+            {
+                hash = _mpqHashes[i];
+                if (hash.Name1 == name1 && hash.Name2 == name2)
+                    return true;
+            }
+
+            for (uint i = 0; i < index; i++)
+            {
+                hash = _mpqHashes[i];
+                if (hash.Name1 == name1 && hash.Name2 == name2)
+                    return true;
+            }
+
+            hash = new MpqHash();
+            return false;
         }
     }
 }

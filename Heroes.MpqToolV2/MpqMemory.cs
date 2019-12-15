@@ -15,26 +15,26 @@ namespace Heroes.MpqToolV2
         //private ReadOnlyMemory<byte> _currentData;
         private int _currentBlockIndex = -1;
 
-        internal MpqMemory(ReadOnlyMemory<byte> data)
-        {
-            Buffer = data;
-        }
+       // internal MpqMemory(ReadOnlyMemory<byte> data)
+       // {
+       //     Buffer = data;
+       // }
 
-        internal MpqMemory(MpqArchive archive, MpqArchiveEntry mpqArchiveEntry)
-        {
-            _position = 0;
-            _mpqArchiveEntry = mpqArchiveEntry;
+        //internal MpqMemory(MpqArchive archive, MpqArchiveEntry mpqArchiveEntry)
+        //{
+        //    _position = 0;
+        //    _mpqArchiveEntry = mpqArchiveEntry;
 
-            _blockSize = archive.BlockSize;
+        //    _blockSize = archive.BlockSize;
 
-            if (_mpqArchiveEntry.IsCompressed && !_mpqArchiveEntry.IsSingleUnit)
-                LoadBlockPositions();
+        //    if (_mpqArchiveEntry.IsCompressed && !_mpqArchiveEntry.IsSingleUnit)
+        //        LoadBlockPositions();
 
-            if (_mpqArchiveEntry.IsSingleUnit && Buffer.IsEmpty)
-                LoadSingleUnit(archive.ArchiveStream);
+        //    if (_mpqArchiveEntry.IsSingleUnit && Buffer.IsEmpty)
+        //        LoadSingleUnit(archive.ArchiveStream);
 
-            Index = 0;
-        }
+        //    Index = 0;
+        //}
 
         public override int Length => (int)_mpqArchiveEntry.FileSize;
 
@@ -52,15 +52,15 @@ namespace Heroes.MpqToolV2
         //   // return base.ReadStringAsMemory();
         //}
 
-        private static ReadOnlyMemory<byte> DecompressMulti(ReadOnlySpan<byte> input, int outputLength)
+        private static ReadOnlySpan<byte> DecompressMulti(ReadOnlySpan<byte> input, int outputLength)
         {
-            ReadOnlySpan<byte> compressionType = input.Slice(0, 1);
+            byte compressionType = input[0];
 
             using Stream streamInput = new MemoryStream(input.Slice(1).ToArray());
 
             // WC3 onward mosly use Zlib
             // Starcraft 1 mostly uses PKLib, plus types 41 and 81 for audio files
-            return compressionType[0] switch
+            return compressionType switch
             {
                 //case 1: // Huffman
                 //    return MpqHuffman.Decompress(sinput).ToArray();
@@ -101,17 +101,17 @@ namespace Heroes.MpqToolV2
                 //        byte[] result = PKDecompress(sinput, outputLength);
                 //        return MpqWavCompression.Decompress(new MemoryStream(result), 2);
                 //    }
-                _ => throw new MpqToolException("Compression is not yet supported: 0x" + compressionType[0].ToString("X")),
+                _ => throw new MpqToolException("Compression is not yet supported: 0x" + compressionType.ToString("X")),
             };
         }
 
-        private static ReadOnlyMemory<byte> BZip2Decompress(Stream data, int expectedLength)
+        private static ReadOnlySpan<byte> BZip2Decompress(Stream data, int expectedLength)
         {
-            Memory<byte> output = new byte[expectedLength];
+            Span<byte> output = new byte[expectedLength];
 
             using (BZip2InputStream stream = new BZip2InputStream(data))
             {
-                stream.Read(output.Span);
+                stream.Read(output);
             }
 
             return output;
@@ -177,28 +177,25 @@ namespace Heroes.MpqToolV2
 
         private void LoadSingleUnit(Stream stream)
         {
-            Index = (int)_mpqArchiveEntry.FilePosition;
+            //Index = (int)_mpqArchiveEntry.FilePosition;
 
-            // Read the entire file into memory
-            Span<byte> fileData = stackalloc byte[(int)_mpqArchiveEntry.CompressedSize];
+            //// Read the entire (possibly compressed) file into memory
+            //Span<byte> fileData = stackalloc byte[(int)_mpqArchiveEntry.CompressedSize];
 
-            // byte[] filedata = new byte[_mpqArchiveEntry.CompressedSize];
-            lock (stream)
-            {
-                stream.Seek(_mpqArchiveEntry.FilePosition, SeekOrigin.Begin);
-                int read = stream.Read(fileData);
-                if (read != fileData.Length)
-                    throw new MpqToolException("Insufficient data or invalid data length");
-            }
+            //// byte[] filedata = new byte[_mpqArchiveEntry.CompressedSize];
+            //stream.Seek(_mpqArchiveEntry.FilePosition, SeekOrigin.Begin);
+            //int read = stream.Read(fileData);
+            //if (read != fileData.Length)
+            //    throw new MpqToolException("Insufficient data or invalid data length");
 
-            if (_mpqArchiveEntry.CompressedSize == _mpqArchiveEntry.FileSize)
-            {
-                //_currentData = fileData;
-            }
-            else
-            {
-                Buffer = DecompressMulti(fileData, (int)_mpqArchiveEntry.FileSize);
-            }
+            //if (_mpqArchiveEntry.CompressedSize == _mpqArchiveEntry.FileSize)
+            //{
+            //    //_currentData = fileData;
+            //}
+            //else
+            //{
+            //    Buffer = DecompressMulti(fileData, (int)_mpqArchiveEntry.FileSize);
+            //}
 
             //Index = (int)_mpqArchiveEntry.FilePosition;
 

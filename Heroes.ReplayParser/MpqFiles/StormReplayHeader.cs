@@ -1,20 +1,23 @@
 ﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser.Decoders;
 using Heroes.ReplayParser.Replay;
+using System;
 
 namespace Heroes.ReplayParser.MpqFiles
 {
     internal static class StormReplayHeader
     {
-        public static void Parse(StormReplay replay, MpqBuffer mpqBuffer)
+        public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
-            mpqBuffer.ReadBytes(3);
-            mpqBuffer.ReadByte();
-            mpqBuffer.ReadBytes(4); // Data Max Size
-            mpqBuffer.ReadBytes(4); // Header Offset
-            mpqBuffer.ReadBytes(4); // User Data Header Size
+            BitReader.ResetIndex();
 
-            VersionedDecoder versionedDecoder = new VersionedDecoder(mpqBuffer);
+            source.ReadBytes(3);
+            source.ReadByte();
+            source.ReadBytes(4); // Data Max Size
+            source.ReadBytes(4); // Header Offset
+            source.ReadBytes(4); // User Data Header Size
+
+            VersionedDecoder versionedDecoder = new VersionedDecoder(source);
 
             // headerStructure.StructureByIndex[0].GetValueAsString(); // m_signature => "Heroes of the Storm replay 11
 

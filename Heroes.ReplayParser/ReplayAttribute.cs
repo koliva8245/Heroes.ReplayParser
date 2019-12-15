@@ -1,18 +1,14 @@
-﻿using System;
-using System.Text;
-
-namespace Heroes.ReplayParser
+﻿namespace Heroes.ReplayParser
 {
-    internal class ReplayAttribute
+    internal struct ReplayAttribute
     {
-        public int Namespace { get; set; }
         public ReplayAttributeEventType AttributeType { get; set; }
         public int PlayerId { get; set; }
-        public ReadOnlyMemory<byte> Value { get; set; }
+        public string Value { get; set; }
 
         public override string? ToString()
         {
-            return $"{nameof(PlayerId)}: {PlayerId}, {nameof(AttributeType)}: {AttributeType}, {nameof(Value)}: {Encoding.UTF8.GetString(Value.Span)}";
+            return $"{nameof(PlayerId)}: {PlayerId}, {nameof(AttributeType)}: {AttributeType}, {nameof(Value)}: {Value}";
         }
     }
 }

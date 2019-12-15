@@ -7,20 +7,17 @@ namespace Heroes.MpqToolV2
     {
         public static readonly uint Size = 16;
 
-        private readonly BinaryReader _binaryReader;
         private readonly uint _fileOffset; // Relative to the header offset
 
         private string? _fileName;
 
-        internal MpqArchiveEntry(BinaryReader binaryReader, uint headerOffset)
+        internal MpqArchiveEntry(ReadOnlySpan<byte> source, uint headerOffset)
         {
-            _binaryReader = binaryReader ?? throw new ArgumentNullException(nameof(binaryReader));
-
-            _fileOffset = _binaryReader.ReadUInt32();
+            _fileOffset = source.ReadUInt32Aligned();
             FilePosition = headerOffset + _fileOffset;
-            CompressedSize = _binaryReader.ReadUInt32();
-            FileSize = _binaryReader.ReadUInt32();
-            Flags = (MpqFileFlags)_binaryReader.ReadUInt32();
+            CompressedSize = source.ReadUInt32Aligned();
+            FileSize = source.ReadUInt32Aligned();
+            Flags = (MpqFileFlags)source.ReadUInt32Aligned();
             EncryptionSeed = 0;
         }
 

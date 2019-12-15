@@ -1,5 +1,6 @@
 ﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser;
+using Heroes.ReplayParser.MpqFiles;
 using Heroes.ReplayParser.Replay;
 using System.IO;
 using System.IO.Compression;
@@ -14,9 +15,14 @@ namespace Heroes.Console
             //mpqArchive.AddListfileFilenames();
 
             StormReplay stormReplay = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay");
+            BitReader.ResetIndex();
 
-            int a = stormReplay.ReplayVersion.Major;
-            //System.Console.WriteLine("Done");
+            //BitReader.EndianType = EndianType.LittleEndian;
+            
+            //StormReplay stormReplay2 = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay");
+
+            //int a = stormReplay.ReplayVersion.Major;
+            System.Console.WriteLine("Done");
 
 
 

@@ -41,7 +41,7 @@ namespace Heroes.ReplayParser
         {
             _stormMpqArchive.AddListfileFileNames();
 
-            StormReplayHeader.Parse(_stormReplay, _stormMpqArchive.HeaderData);
+            StormReplayHeader.Parse(_stormReplay, _stormMpqArchive.GetHeaderBytes());
 
             //if (!ignoreErrors && replay.ReplayBuild < 32455)
             //    return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, new Replay { ReplayBuild = replay.ReplayBuild });
@@ -52,8 +52,8 @@ namespace Heroes.ReplayParser
             ReplayInitData replayInitData = new ReplayInitData();
             replayInitData.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayInitData.FileName));
 
-            //ReplayAttributeEvents replayAttributeEvents = new ReplayAttributeEvents();
-            //replayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayAttributeEvents.FileName));
+            ReplayAttributeEvents replayAttributeEvents = new ReplayAttributeEvents();
+            replayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayAttributeEvents.FileName));
 
             //ReplayTrackerEvents replayTrackerEvents = new ReplayTrackerEvents();
             //replayTrackerEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayTrackerEvents.FileName));

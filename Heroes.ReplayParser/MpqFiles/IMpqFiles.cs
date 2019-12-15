@@ -1,5 +1,6 @@
 ﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser.Replay;
+using System;
 
 namespace Heroes.ReplayParser.MpqFiles
 {
@@ -7,6 +8,6 @@ namespace Heroes.ReplayParser.MpqFiles
     {
         public string FileName { get; }
 
-        public void Parse(StormReplay stormReplay, MpqBuffer mpqBuffer);
+        public void Parse(StormReplay stormReplay, ReadOnlySpan<byte> source);
     }
 }

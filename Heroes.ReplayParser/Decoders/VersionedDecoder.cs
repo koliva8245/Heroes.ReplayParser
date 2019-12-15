@@ -7,58 +7,57 @@ using System.Text;
 
 namespace Heroes.ReplayParser.Decoders
 {
-    internal class VersionedDecoder : BitPackedBuffer
+    internal class VersionedDecoder
     {
         private readonly byte _dataType;
-        private readonly ReadOnlyMemory<byte> _value;
+        private readonly byte[] _value;
 
-        public VersionedDecoder(MpqBuffer mpqBuffer)
-            : base(mpqBuffer)
+        public VersionedDecoder(ReadOnlySpan<byte> source)
         {
-            _dataType = ReadByte();
+            _dataType = source.ReadByte();
 
             switch (_dataType)
             {
                 case 0x00: // array
-                    ArrayData = new VersionedDecoder[ReadVInt()];
+                    ArrayData = new VersionedDecoder[source.ReadVInt()];
                     for (var i = 0; i < ArrayData.Length; i++)
-                        ArrayData[i] = new VersionedDecoder(mpqBuffer);
+                        ArrayData[i] = new VersionedDecoder(source);
                     break;
                 case 0x01: // bitblob
                     throw new NotImplementedException();
                 case 0x02: // blob
-                    _value = ReadBytes((int)ReadVInt());
+                    _value = source.ReadBytes((int)source.ReadVInt()).ToArray();
 
                     break;
                 case 0x03: // choice
-                    _value = ReadBytesForVInt();
-                    ChoiceData = new VersionedDecoder(mpqBuffer);
+                    _value = source.ReadBytesForVInt().ToArray();
+                    ChoiceData = new VersionedDecoder(source);
                     break;
                 case 0x04: // optional
-                    if (ReadByte() != 0)
-                        OptionalData = new VersionedDecoder(mpqBuffer);
+                    if (source.ReadByte() != 0)
+                        OptionalData = new VersionedDecoder(source);
                     break;
                 case 0x05: // struct
                     StructureByIndex = new Dictionary<int, VersionedDecoder>();
-                    int size = (int)ReadVInt();
+                    int size = (int)source.ReadVInt();
 
                     for (int i = 0; i < size; i++)
                     {
-                        StructureByIndex[(int)ReadVInt()] = new VersionedDecoder(mpqBuffer);
+                        StructureByIndex[(int)source.ReadVInt()] = new VersionedDecoder(source);
                     }
 
                     break;
                 case 0x06: // u8
-                    _value = new byte[] { ReadByte() };
+                    _value = new byte[] { source.ReadByte() };
                     break;
                 case 0x07: // u32
-                    _value = ReadBytes(4);
+                    _value = source.ReadBytes(4).ToArray();
                     break;
                 case 0x08: // u64
-                    _value = ReadBytes(8);
+                    _value = source.ReadBytes(8).ToArray();
                     break;
                 case 0x09: // vint
-                    _value = ReadBytesForVInt();
+                    _value = source.ReadBytesForVInt().ToArray();
                     break;
                 default:
                     throw new NotImplementedException();
@@ -86,8 +85,8 @@ namespace Heroes.ReplayParser.Decoders
                 0x03 => Get32UIntFromVInt(),
                 0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
-                0x06 => _value.Span[0],
-                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value.Span),
+                0x06 => _value[0],
+                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value),
                 0x08 => throw new ArithmeticException("Incorrect conversion. Use Int64 method instead."),
                 0x09 => Get32UIntFromVInt(),
 
@@ -122,7 +121,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
                 0x06 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),
                 0x07 => throw new ArithmeticException("Incorrect conversion. Use Int32 method instead."),
-                0x08 => (long)BinaryPrimitives.ReadUInt64LittleEndian(_value.Span),
+                0x08 => (long)BinaryPrimitives.ReadUInt64LittleEndian(_value),
                 0x09 => Get64IntFromVInt(),
 
                 _ => throw new NotImplementedException(),
@@ -133,21 +132,21 @@ namespace Heroes.ReplayParser.Decoders
         /// Gets the value in the current structure as a string.
         /// </summary>
         /// <returns></returns>
-        public string GetValueAsString() => !_value.IsEmpty ? Encoding.UTF8.GetString(_value.Span) : string.Empty;
+        public string GetValueAsString() => Encoding.UTF8.GetString(_value);
 
         public override string? ToString()
         {
             return _dataType switch
             {
                 0x00 => ArrayData != null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
-                0x02 => @$"""{Encoding.UTF8.GetString(_value.Span)}""",
-                0x03 => $"Choice: Flag: {ReadVInt(_value.Span).ToString()} , Data: {ChoiceData}",
+                0x02 => @$"""{Encoding.UTF8.GetString(_value)}""",
+                0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString()} , Data: {ChoiceData}",
                 0x04 => OptionalData?.ToString(),
                 0x05 => StructureByIndex != null ? $"{{{string.Join(", ", StructureByIndex.Values.Select(i => i?.ToString()))}}}" : null,
-                0x06 => _value.Span[0].ToString(),
-                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value.Span).ToString(),
-                0x08 => BinaryPrimitives.ReadUInt64LittleEndian(_value.Span).ToString(),
-                0x09 => ReadVInt(_value.Span).ToString(),
+                0x06 => _value[0].ToString(),
+                0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value).ToString(),
+                0x08 => BinaryPrimitives.ReadUInt64LittleEndian(_value).ToString(),
+                0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString(),
 
                 _ => throw new NotImplementedException(),
             };
@@ -155,7 +154,7 @@ namespace Heroes.ReplayParser.Decoders
 
         private uint Get32UIntFromVInt()
         {
-            uint value = (uint)ReadVInt(_value.Span, out int size);
+            uint value = (uint)BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value, out int size);
             if (size > 4)
                 throw new ArithmeticException("Incorrect conversion. Use Int64 method instead.");
 
@@ -164,7 +163,7 @@ namespace Heroes.ReplayParser.Decoders
 
         private long Get64IntFromVInt()
         {
-            long value = ReadVInt(_value.Span, out int size);
+            long value = BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value, out int size);
             if (size < 5)
                 throw new ArithmeticException("Incorrect conversion. Use Int32 method instead.");
 

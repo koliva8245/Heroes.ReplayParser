@@ -8,29 +8,29 @@ namespace Heroes.MpqToolV2
         public static readonly uint MpqId = 0x1a51504d; // 441536589
         public static readonly uint Size = 32;
 
-        private readonly BinaryReader _binaryReader;
+        //private readonly BinaryReader _binaryReader;
 
-        public MpqHeader(BinaryReader binaryReader)
+        public MpqHeader(ReadOnlySpan<byte> source)
         {
-            _binaryReader = binaryReader ?? throw new ArgumentNullException(nameof(binaryReader));
+            // _binaryReader = binaryReader ?? throw new ArgumentNullException(nameof(binaryReader));\
 
-            if (!LocateHeader())
+            if (!LocateHeader(source))
                 throw new MpqToolException("Could not locate the header");
 
-            DataOffset = binaryReader.ReadUInt32();
-            ArchiveSize = binaryReader.ReadUInt32();
-            MpqVersion = binaryReader.ReadUInt16();
-            BlockSize = binaryReader.ReadUInt16();
-            HashTablePos = binaryReader.ReadUInt32();
-            BlockTablePos = binaryReader.ReadUInt32();
-            HashTableSize = binaryReader.ReadUInt32();
-            BlockTableSize = binaryReader.ReadUInt32();
+            DataOffset = source.ReadUInt32Aligned();
+            ArchiveSize = source.ReadUInt32Aligned();
+            MpqVersion = source.ReadUInt16Aligned();
+            BlockSize = source.ReadUInt16Aligned();
+            HashTablePos = source.ReadUInt32Aligned();
+            BlockTablePos = source.ReadUInt32Aligned();
+            HashTableSize = source.ReadUInt32Aligned();
+            BlockTableSize = source.ReadUInt32Aligned();
 
             if (MpqVersion == 1)
             {
-                ExtendedBlockTableOffset = binaryReader.ReadInt64();
-                HashTableOffsetHigh = binaryReader.ReadInt16();
-                BlockTableOffsetHigh = binaryReader.ReadInt16();
+                ExtendedBlockTableOffset = source.ReadInt64Aligned();
+                HashTableOffsetHigh = source.ReadInt16Aligned();
+                BlockTableOffsetHigh = source.ReadInt16Aligned();
             }
 
             HashTablePos += (uint)HeaderOffset;
@@ -59,19 +59,18 @@ namespace Heroes.MpqToolV2
 
         public MpqMemory HeaderData { get; private set; }
 
-        private bool LocateHeader()
+        private bool LocateHeader(ReadOnlySpan<byte> source)
         {
-            Memory<byte> data = new byte[0x100];
+            //Memory<byte> data = new byte[0x100];
 
-            _binaryReader.BaseStream.Read(data.Span);
+            //_binaryReader.BaseStream.Read(data.Span);
 
-            HeaderData = new MpqMemory(data);
+            //HeaderData = new MpqMemory(data);
 
-            for (long i = 0x200; i < _binaryReader.BaseStream.Length - Size; i += 0x200)
+            for (int i = 0x200; i < source.Length - Size; i += 0x200)
             {
-                _binaryReader.BaseStream.Seek(i, SeekOrigin.Begin);
-
-                uint id = _binaryReader.ReadUInt32();
+                BitReader.Index = i;
+                uint id = source.ReadUInt32Aligned();
 
                 if (id == MpqId)
                 {

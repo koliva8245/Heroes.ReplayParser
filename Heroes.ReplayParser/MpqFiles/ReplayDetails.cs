@@ -14,9 +14,11 @@ namespace Heroes.ReplayParser.MpqFiles
 
         public string FileName { get; } = "replay.details";
 
-        public void Parse(StormReplay replay, MpqBuffer mpqBuffer)
+        public void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
-            VersionedDecoder versionedDecoder = new VersionedDecoder(mpqBuffer);
+            BitReader.ResetIndex();
+
+            VersionedDecoder versionedDecoder = new VersionedDecoder(source);
 
             // this section does not include the observers
             VersionedDecoder[]? versionDecoders = versionedDecoder.StructureByIndex?[0].OptionalData?.ArrayData;
