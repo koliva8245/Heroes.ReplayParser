@@ -1,6 +1,5 @@
 ﻿using Ionic.BZip2;
 using System;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.IO;
 using System.Text;
@@ -13,7 +12,6 @@ namespace Heroes.MpqToolV2
 
         private readonly Stream _archiveStream;
         private readonly MpqHeader _mpqHeader;
-        private readonly BinaryReader _binaryReader;
 
         private readonly MpqHash[] _mpqHashes;
         private readonly MpqArchiveEntry[] _mpqArchiveEntries;
@@ -43,8 +41,6 @@ namespace Heroes.MpqToolV2
             if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)
                 throw new MpqToolException("MPQ format version 1 features are not supported");
 
-            BlockSize = 0x200 << _mpqHeader.BlockSize;
-
             // LoadHashTable
             Span<byte> hashBuffer = stackalloc byte[(int)(_mpqHeader.HashTableSize * MpqHash.Size)]; // get the hash table buffer
             stream.Position = (int)_mpqHeader.HashTablePos;
@@ -72,11 +68,6 @@ namespace Heroes.MpqToolV2
                 _mpqArchiveEntries[i] = new MpqArchiveEntry(entryBuffer, (uint)_mpqHeader.HeaderOffset);
         }
 
-        public int BlockSize { get; private set; }
-
-
-        public MpqMemory HeaderData => _mpqHeader.HeaderData;
-
         public ReadOnlySpan<byte> GetHeaderBytes(int size = 0x100)
         {
             Span<byte> data = new byte[size];
@@ -97,28 +88,6 @@ namespace Heroes.MpqToolV2
 
             return DecompressEntry(entry);
         }
-
-        //public MpqMemory OpenFile(string filename)
-        //{
-        //    if (!TryGetHashEntry(filename, out MpqHash hash))
-        //        throw new FileNotFoundException("File not found: " + filename);
-
-        //    MpqArchiveEntry entry = _mpqArchiveEntries[hash.BlockIndex];
-        //    if (entry.FileName == null)
-        //        entry.FileName = filename;
-
-        //    return new MpqMemory(this, entry);
-        //}
-
-        //public MpqMemory OpenFile(MpqArchiveEntry mpqArchiveEntry)
-        //{
-        //    return new MpqMemory(this, mpqArchiveEntry);
-        //}
-
-        //public bool FileExists(string filename)
-        //{
-        //    return TryGetHashEntry(filename, out MpqHash hash);
-        //}
 
         public bool AddListfileFileNames()
         {
@@ -174,7 +143,6 @@ namespace Heroes.MpqToolV2
             return true;
         }
 
-        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
@@ -197,30 +165,6 @@ namespace Heroes.MpqToolV2
             }
 
             return seed1;
-        }
-
-        internal static void DecryptBlock(Span<byte> data, uint seed1)
-        {
-            uint seed2 = 0xeeeeeeee;
-
-            // NB: If the block is not an even multiple of 4,
-            // the remainder is not encrypted
-            for (int i = 0; i < data.Length - 3; i += 4)
-            {
-                seed2 += _stormBuffer[0x400 + (seed1 & 0xff)];
-
-                uint result = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(i, 4));
-
-                result ^= seed1 + seed2;
-
-                seed1 = ((~seed1 << 21) + 0x11111111) | (seed1 >> 11);
-                seed2 = result + seed2 + (seed2 << 5) + 3;
-
-                data[i + 0] = (byte)(result & 0xff);
-                data[i + 1] = (byte)((result >> 8) & 0xff);
-                data[i + 2] = (byte)((result >> 16) & 0xff);
-                data[i + 3] = (byte)((result >> 24) & 0xff);
-            }
         }
 
         internal static void DecryptBlock(uint[] data, uint seed1)
@@ -281,7 +225,6 @@ namespace Heroes.MpqToolV2
                 if (disposing)
                 {
                     _archiveStream?.Dispose();
-                    _binaryReader?.Dispose();
                 }
 
                 _isDisposed = true;
@@ -310,6 +253,30 @@ namespace Heroes.MpqToolV2
             return result;
         }
 
+        private static void DecryptBlock(Span<byte> data, uint seed1)
+        {
+            uint seed2 = 0xeeeeeeee;
+
+            // NB: If the block is not an even multiple of 4,
+            // the remainder is not encrypted
+            for (int i = 0; i < data.Length - 3; i += 4)
+            {
+                seed2 += _stormBuffer[0x400 + (seed1 & 0xff)];
+
+                uint result = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(i, 4));
+
+                result ^= seed1 + seed2;
+
+                seed1 = ((~seed1 << 21) + 0x11111111) | (seed1 >> 11);
+                seed2 = result + seed2 + (seed2 << 5) + 3;
+
+                data[i + 0] = (byte)(result & 0xff);
+                data[i + 1] = (byte)((result >> 8) & 0xff);
+                data[i + 2] = (byte)((result >> 16) & 0xff);
+                data[i + 3] = (byte)((result >> 24) & 0xff);
+            }
+        }
+
         private static void DecryptTable(Span<byte> data, string key)
         {
             DecryptBlock(data, HashString(key, 0x300));
@@ -319,61 +286,42 @@ namespace Heroes.MpqToolV2
         {
             byte compressionType = buffer[0];
 
-            // WC3 onward mosly use Zlib
-            // Starcraft 1 mostly uses PKLib, plus types 41 and 81 for audio files
             switch (compressionType)
             {
+                case 1: // Huffman
+                    throw new MpqToolException("Huffman not yet supported");
+                case 2: // ZLib/Deflate
+                    throw new MpqToolException("ZLib/Deflate not yet supported");
+                case 8: // PKLib/Impode
+                    throw new MpqToolException("PKLib/Impode not yet supported");
                 case 0x10:
                     BZip2Decompress(buffer, compressedSize);
                     break;
+                case 0x80: // IMA ADPCM Stereo
+                    throw new MpqToolException("IMA ADPCM Stereo not yet supported");
+                case 0x40: // IMA ADPCM Mono
+                    throw new MpqToolException("IMA ADPCM Mono not yet supported");
+                case 0x12:
+                    throw new MpqToolException("LZMA not yet supported");
+
+                // Combos
+                case 0x22:
+                    // TODO: sparse then zlib
+                    throw new MpqToolException("Not yet supported");
+                case 0x30:
+                    // TODO: sparse then bzip2
+                    throw new MpqToolException("Not yet supported");
+                case 0x41:
+                    throw new MpqToolException("Not yet supported");
+                case 0x48:
+                    throw new MpqToolException("Not yet supported");
+                case 0x81:
+                    throw new MpqToolException("Not yet supported");
+                case 0x88:
+                    throw new MpqToolException("Not yet supported");
                 default:
                     throw new MpqToolException("Compression is not yet supported: 0x" + compressionType.ToString("X"));
             }
-
-
-            //return compressionType switch
-            //{
-            //    //case 1: // Huffman
-            //    //    return MpqHuffman.Decompress(sinput).ToArray();
-            //    //case 2: // ZLib/Deflate
-            //    //    return ZlibDecompress(sinput, outputLength);
-            //    //case 8: // PKLib/Impode
-            //    //    return PKDecompress(sinput, outputLength);
-            //    0x10 => BZip2Decompress(source),
-            //    //case 0x80: // IMA ADPCM Stereo
-            //    //    return MpqWavCompression.Decompress(sinput, 2);
-            //    //case 0x40: // IMA ADPCM Mono
-            //    //    return MpqWavCompression.Decompress(sinput, 1);
-
-            //    //case 0x12:
-            //    //    // TODO: LZMA
-            //    //    throw new MpqParserException("LZMA compression is not yet supported");
-
-            //    //// Combos
-            //    //case 0x22:
-            //    //    // TODO: sparse then zlib
-            //    //    throw new MpqParserException("Sparse compression + Deflate compression is not yet supported");
-            //    //case 0x30:
-            //    //    // TODO: sparse then bzip2
-            //    //    throw new MpqParserException("Sparse compression + BZip2 compression is not yet supported");
-            //    //case 0x41:
-            //    //    sinput = MpqHuffman.Decompress(sinput);
-            //    //    return MpqWavCompression.Decompress(sinput, 1);
-            //    //case 0x48:
-            //    //    {
-            //    //        byte[] result = PKDecompress(sinput, outputLength);
-            //    //        return MpqWavCompression.Decompress(new MemoryStream(result), 1);
-            //    //    }
-            //    //case 0x81:
-            //    //    sinput = MpqHuffman.Decompress(sinput);
-            //    //    return MpqWavCompression.Decompress(sinput, 2);
-            //    //case 0x88:
-            //    //    {
-            //    //        byte[] result = PKDecompress(sinput, outputLength);
-            //    //        return MpqWavCompression.Decompress(new MemoryStream(result), 2);
-            //    //    }
-            //    _ => throw new MpqToolException("Compression is not yet supported: 0x" + compressionType.ToString("X")),
-            //};
         }
 
         private static void BZip2Decompress(Span<byte> buffer, int compressedSize)
@@ -386,13 +334,6 @@ namespace Heroes.MpqToolV2
 
         private ReadOnlySpan<byte> DecompressEntry(MpqArchiveEntry mpqArchiveEntry)
         {
-            //if (mpqArchiveEntry.IsCompressed && !mpqArchiveEntry.IsSingleUnit)
-            //    LoadBlockPositions();
-
-            //if (mpqArchiveEntry.IsSingleUnit)
-            //{
-            //Span<byte> fileData = new byte[(int)mpqArchiveEntry.CompressedSize];
-
             byte[] fileData = new byte[(int)mpqArchiveEntry.FileSize];
 
             _archiveStream.Position = mpqArchiveEntry.FilePosition;
@@ -404,7 +345,7 @@ namespace Heroes.MpqToolV2
 
             if (mpqArchiveEntry.CompressedSize == mpqArchiveEntry.FileSize)
             {
-                //_currentData = fileData;
+                return fileData;
             }
             else
             {
@@ -412,7 +353,6 @@ namespace Heroes.MpqToolV2
             }
 
             return fileData;
-            //}
         }
 
         private bool TryGetHashEntry(ReadOnlySpan<char> filename, out MpqHash hash)

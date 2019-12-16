@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace Heroes.ReplayParser.MpqFiles
 {
-    internal class ReplayAttributeEvents : IMpqFiles
+    internal static class ReplayAttributeEvents
     {
-        public string FileName { get; } = "replay.attributes.events";
+        public static string FileName { get; } = "replay.attributes.events";
 
-        public void Parse(StormReplay replay, ReadOnlySpan<byte> source)
+        public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
             BitReader.ResetIndex();
             BitReader.EndianType = EndianType.BigEndian;

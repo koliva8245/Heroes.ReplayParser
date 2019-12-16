@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace Heroes.MpqToolV2
 {
@@ -8,12 +7,8 @@ namespace Heroes.MpqToolV2
         public static readonly uint MpqId = 0x1a51504d; // 441536589
         public static readonly uint Size = 32;
 
-        //private readonly BinaryReader _binaryReader;
-
         public MpqHeader(ReadOnlySpan<byte> source)
         {
-            // _binaryReader = binaryReader ?? throw new ArgumentNullException(nameof(binaryReader));\
-
             if (!LocateHeader(source))
                 throw new MpqToolException("Could not locate the header");
 
@@ -57,16 +52,8 @@ namespace Heroes.MpqToolV2
 
         public long HeaderOffset { get; private set; }
 
-        public MpqMemory HeaderData { get; private set; }
-
         private bool LocateHeader(ReadOnlySpan<byte> source)
         {
-            //Memory<byte> data = new byte[0x100];
-
-            //_binaryReader.BaseStream.Read(data.Span);
-
-            //HeaderData = new MpqMemory(data);
-
             for (int i = 0x200; i < source.Length - Size; i += 0x200)
             {
                 BitReader.Index = i;
@@ -81,22 +68,6 @@ namespace Heroes.MpqToolV2
             }
 
             return false;
-
-            //for (long i = 0; i < _binaryReader.BaseStream.Length - Size; i += 0x200)
-            //{
-            //    _binaryReader.BaseStream.Seek(i, SeekOrigin.Begin);
-
-            //    uint id = _binaryReader.ReadUInt32();
-
-            //    if (id == MpqId)
-            //    {
-            //        HeaderOffset = i;
-
-            //        return true;
-            //    }
-            //}
-
-            //return false;
         }
     }
 }

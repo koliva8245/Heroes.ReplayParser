@@ -1,7 +1,6 @@
 ﻿using Heroes.MpqToolV2;
 using Heroes.ReplayParser.MpqFiles;
 using Heroes.ReplayParser.Replay;
-using System.IO;
 
 namespace Heroes.ReplayParser
 {
@@ -46,14 +45,9 @@ namespace Heroes.ReplayParser
             //if (!ignoreErrors && replay.ReplayBuild < 32455)
             //    return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, new Replay { ReplayBuild = replay.ReplayBuild });
 
-            ReplayDetails replayDetails = new ReplayDetails();
-            replayDetails.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayDetails.FileName));
-
-            ReplayInitData replayInitData = new ReplayInitData();
-            replayInitData.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayInitData.FileName));
-
-            ReplayAttributeEvents replayAttributeEvents = new ReplayAttributeEvents();
-            replayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayAttributeEvents.FileName));
+            ReplayDetails.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayDetails.FileName));
+            ReplayInitData.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayInitData.FileName));
+            ReplayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayAttributeEvents.FileName));
 
             //ReplayTrackerEvents replayTrackerEvents = new ReplayTrackerEvents();
             //replayTrackerEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayTrackerEvents.FileName));

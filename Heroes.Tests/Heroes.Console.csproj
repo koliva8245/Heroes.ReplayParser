@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Heroes.MpqToolV2\Heroes.MpqToolV2.csproj" />
-    <ProjectReference Include="..\Heroes.MpqTool\Heroes.MpqTool.csproj" />
     <ProjectReference Include="..\Heroes.ReplayParser\Heroes.ReplayParser.csproj" />
   </ItemGroup>
 

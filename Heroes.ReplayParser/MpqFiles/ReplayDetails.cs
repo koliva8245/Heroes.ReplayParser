@@ -6,15 +6,11 @@ using System;
 
 namespace Heroes.ReplayParser.MpqFiles
 {
-    internal class ReplayDetails : IMpqFiles
+    internal static class ReplayDetails
     {
-        public ReplayDetails()
-        {
-        }
+        public static string FileName { get; } = "replay.details";
 
-        public string FileName { get; } = "replay.details";
-
-        public void Parse(StormReplay replay, ReadOnlySpan<byte> source)
+        public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
             BitReader.ResetIndex();
 

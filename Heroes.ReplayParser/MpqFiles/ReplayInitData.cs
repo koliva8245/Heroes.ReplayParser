@@ -5,15 +5,12 @@ using System;
 
 namespace Heroes.ReplayParser.MpqFiles
 {
-    internal class ReplayInitData : IMpqFiles
+    internal static class ReplayInitData
     {
-        public ReplayInitData()
-        {
-        }
 
-        public string FileName { get; } = "replay.initData";
+        public static string FileName { get; } = "replay.initData";
 
-        public void Parse(StormReplay replay, ReadOnlySpan<byte> source)
+        public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
             /* m_userInitialData section */
 

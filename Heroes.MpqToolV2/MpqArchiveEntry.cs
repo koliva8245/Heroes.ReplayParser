@@ -48,7 +48,6 @@ namespace Heroes.MpqToolV2
 
         public bool IsSingleUnit => (Flags & MpqFileFlags.SingleUnit) != 0;
 
-        // For debugging
         public int FlagsAsInt => (int)Flags;
 
         public override string ToString()
