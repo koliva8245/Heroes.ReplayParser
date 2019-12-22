@@ -21,7 +21,7 @@ namespace Heroes.ReplayParser.Player
         /// <summary>
         /// Gets or sets the player's control type.
         /// </summary>
-        public PlayerType PlayerType { get; set; }
+        public PlayerType PlayerType { get; set; } = PlayerType.Observer;
 
         /// <summary>
         /// Gets or sets the player's hero information.
@@ -51,7 +51,7 @@ namespace Heroes.ReplayParser.Player
         /// <summary>
         /// Gets or sets a value indicating whether the player won the game.
         /// </summary>
-        public bool IsWinner { get; set; }
+        public bool IsWinner { get; set; } = false;
 
         /// <summary>
         /// Gets or sets if the player has been given the silenced penalty.
@@ -71,7 +71,7 @@ namespace Heroes.ReplayParser.Player
         /// <summary>
         /// Gets or sets whether the player is auto select or not.
         /// </summary>
-        public bool IsAutoSelect { get; set; }
+        public bool IsAutoSelect { get; set; } = false;
 
         /// <summary>
         /// Gets or sets if the player has an active boost.

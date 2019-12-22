@@ -1,5 +1,8 @@
 ﻿namespace Heroes.ReplayParser.Player
 {
+    /// <summary>
+    /// Contains the properties for a player's toon handle.
+    /// </summary>
     public class ToonHandle
     {
         /// <summary>
@@ -22,6 +25,7 @@
         /// </summary>
         public long Id { get; set; }
 
+        /// <inheritdoc/>
         public override string? ToString()
         {
             return $"{Region}-Hero-{Realm}-{Id}";

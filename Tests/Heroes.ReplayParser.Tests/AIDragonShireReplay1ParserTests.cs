@@ -12,10 +12,17 @@ namespace Heroes.ReplayParser.Tests
     {
         private readonly string _replaysFolder = "Replays";
         private readonly StormReplay _stormReplay;
+        private readonly StormReplayParseResult _result;
 
         public AIDragonShireReplay1ParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "AIDragonShire1_75589.StormR"));
+            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "AIDragonShire1_75589.StormR"), out _result);
+        }
+
+        [TestMethod]
+        public void ParseResult()
+        {
+            Assert.AreEqual(StormReplayParseResult.Success, _result);
         }
 
         [TestMethod]
@@ -55,6 +62,9 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual("Dragon Shire", _stormReplay.MapInfo.MapName);
             Assert.AreEqual(637010888527768698, _stormReplay.Timestamp.Ticks);
+
+            Assert.IsFalse(_stormReplay.HasObservers);
+            Assert.IsTrue(_stormReplay.HasAI);
         }
 
         [TestMethod]

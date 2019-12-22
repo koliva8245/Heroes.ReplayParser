@@ -15,7 +15,7 @@ namespace Heroes.ReplayParser.Tests
 
         public HanamuraTemple1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "HanamuraTemple1_75132.StormR"));
+            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "HanamuraTemple1_75132.StormR"), out StormReplayParseResult _);
         }
 
         [TestMethod]

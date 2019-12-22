@@ -41,7 +41,7 @@ namespace Heroes.ReplayParser.Benchmarks
         {
             //Reader.Index = 0;
             //Reader.BitIndex = 0;
-            var a = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay");
+            var a = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
           //  BitReader.ResetIndex();
            // BitReader.EndianType = EndianType.LittleEndian;
             //using MpqArchive mpqArchive = new MpqArchive(File.Open(@"F:\Battlefield of Eternity1.StormReplay", FileMode.Open, FileAccess.Read));

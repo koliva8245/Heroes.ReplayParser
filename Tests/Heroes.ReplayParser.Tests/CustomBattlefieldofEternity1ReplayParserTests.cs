@@ -15,7 +15,7 @@ namespace Heroes.ReplayParser.Tests
 
         public CustomBattlefieldofEternity1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "CustomBattlefieldofEternity1_65006.StormR"));
+            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "CustomBattlefieldofEternity1_65006.StormR"), out StormReplayParseResult _);
         }
 
         [TestMethod]
@@ -60,6 +60,11 @@ namespace Heroes.ReplayParser.Tests
             StormPlayer player8 = playersWithObs[8];
 
             Assert.AreEqual(StormTeam.Observer, player8.Team);
+
+            Assert.IsTrue(_stormReplay.HasObservers);
+            Assert.IsFalse(_stormReplay.HasAI);
+            Assert.AreEqual(1, _stormReplay.PlayersObserversCount);
+            Assert.AreEqual(string.Empty, _stormReplay.StormObservers.ToList()[0].PlayerHero.HeroName);
         }
 
         [TestMethod]

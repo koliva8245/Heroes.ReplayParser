@@ -16,6 +16,16 @@ namespace Heroes.ReplayParser.Replay
         public static int LatestUpdatedBuild => 73016;
 
         /// <summary>
+        /// Gets the value indicating if there is at least one observer.
+        /// </summary>
+        public bool HasObservers => ClientListByUserID.Any(x => x?.PlayerType == PlayerType.Observer);
+
+        /// <summary>
+        /// Gets the value indicating if there is at least one AI.
+        /// </summary>
+        public bool HasAI => Players.Any(x => x?.PlayerType == PlayerType.Computer);
+
+        /// <summary>
         /// Gets or sets the version of the replay.
         /// </summary>
         public ReplayVersion ReplayVersion { get; set; } = new ReplayVersion();
@@ -28,7 +38,12 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the total number of elapsed game loops / frames.
         /// </summary>
-        public long ElapsedGamesLoops { get; set; }
+        public int ElapsedGamesLoops { get; set; }
+
+        /// <summary>
+        /// Gets the length of the replay.
+        /// </summary>
+        public TimeSpan ReplayLength => new TimeSpan(0, 0, ElapsedGamesLoops / 16);
 
         /// <summary>
         /// Gets or sets the map info.
@@ -48,7 +63,7 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the game mode.
         /// </summary>
-        public GameMode GameMode { get; set; }
+        public GameMode GameMode { get; set; } = GameMode.TryMe;
 
         /// <summary>
         /// Gets or sets the team size of the selected game type.
@@ -58,27 +73,37 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets the speed the game was played at.
         /// </summary>
-        public GameSpeed GameSpeed { get; set; }
+        public GameSpeed GameSpeed { get; set; } = GameSpeed.Unknown;
 
         /// <summary>
-        /// Gets a collection of playing players (no observers).
+        /// Gets a collection of playing players (no observers, has AI).
         /// </summary>
         public IEnumerable<StormPlayer> StormPlayers => Players;
 
         /// <summary>
-        /// Gets a collection of players (contains observers).
+        /// Gets a collection of players (contains observers, no AI).
         /// </summary>
         public IEnumerable<StormPlayer> StormPlayersWithObservers => ClientListByUserID;
 
         /// <summary>
-        /// Gets the total number of playing players. Use <see cref="PlayersWithObserversCount"/> instead to include observers.
+        /// Gets a collection of observer players.
+        /// </summary>
+        public IEnumerable<StormPlayer> StormObservers => ClientListByUserID.Where(x => x?.PlayerType == PlayerType.Observer);
+
+        /// <summary>
+        /// Gets the total number of playing players (includes AI). Use <see cref="PlayersWithObserversCount"/> instead to include observers.
         /// </summary>
         public int PlayersCount => Players.Length;
 
         /// <summary>
-        /// Gets the total number of players, including observers, in the game.
+        /// Gets the total number of players, including observers, in the game. Does not include AI.
         /// </summary>
         public int PlayersWithObserversCount => ClientListByUserID.Length;
+
+        /// <summary>
+        /// Gets the total number of observers in the game.
+        /// </summary>
+        public int PlayersObserversCount => StormObservers.Count();
 
         /// <summary>
         /// Gets or sets the list of all players (no observers).

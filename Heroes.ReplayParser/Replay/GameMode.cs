@@ -64,5 +64,25 @@
         /// Indicates a storm league game mode.
         /// </summary>
         StormLeague = 1 << 10,
+
+        /// <summary>
+        /// Indicates all of the games modes available.
+        /// </summary>
+        AllGameModes = Custom | QuickMatch | HeroLeague | TeamLeague | UnrankedDraft | Brawl | StormLeague | Cooperative,
+
+        /// <summary>
+        /// Indicates game modes that are not brawl, AI, or custom.
+        /// </summary>
+        NormalGameModes = QuickMatch | HeroLeague | TeamLeague | UnrankedDraft | StormLeague,
+
+        /// <summary>
+        /// Indicates game modes that involve drafting (includes custom).
+        /// </summary>
+        DraftModes = HeroLeague | TeamLeague | UnrankedDraft | Custom | StormLeague,
+
+        /// <summary>
+        /// Indicates game modes that are ranked.
+        /// </summary>
+        RankedModes = HeroLeague | TeamLeague | StormLeague,
     }
 }

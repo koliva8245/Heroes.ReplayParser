@@ -132,9 +132,6 @@ namespace Heroes.ReplayParser.MpqFiles
                 Y = (int)source.ReadBits(8), // m_mapSizeY
             };
 
-            if (replay.ReplayBuild < 39595)
-                return;
-
             source.ReadBits(32); // m_mapFileSyncChecksum
             source.ReadBlobAsString(11); // m_mapFileName
             source.ReadBlobAsString(8); // m_mapAuthorName

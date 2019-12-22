@@ -34,7 +34,7 @@ namespace Heroes.ReplayParser.MpqFiles
 
             /* headerStructure.StructureByIndex[2].GetValueAsUInt32(); m_type */
 
-            replay.ElapsedGamesLoops = versionedDecoder.StructureByIndex![3].GetValueAsUInt32(); // m_elapsedGameLoops
+            replay.ElapsedGamesLoops = (int)versionedDecoder.StructureByIndex![3].GetValueAsUInt32(); // m_elapsedGameLoops
 
             /* headerStructure.StructureByIndex?[4].GetValueAsInt32(); // m_useScaledTime */
             /* headerStructure.StructureByIndex?[5].GetValueAsInt32(); // m_ngdpRootKey */

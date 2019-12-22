@@ -14,7 +14,7 @@ namespace Heroes.Console
             //MpqArchive mpqArchive = new MpqArchive("HanamuraTemple1.StormReplay");
             //mpqArchive.AddListfileFilenames();
 
-            StormReplay stormReplay = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay");
+            StormReplay stormReplay = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
 
             //BitReader.EndianType = EndianType.LittleEndian;
             

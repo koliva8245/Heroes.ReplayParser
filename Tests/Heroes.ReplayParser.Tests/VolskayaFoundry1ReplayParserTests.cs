@@ -1,6 +1,7 @@
 using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,10 +13,17 @@ namespace Heroes.ReplayParser.Tests
     {
         private readonly string _replaysFolder = "Replays";
         private readonly StormReplay _stormReplay;
+        private readonly StormReplayParseResult _result;
 
         public VolskayaFoundry1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "VolskayaFoundry1_77548.StormR"));
+            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "VolskayaFoundry1_77548.StormR"), out _result);
+        }
+
+        [TestMethod]
+        public void ParseResult()
+        {
+            Assert.AreEqual(StormReplayParseResult.Success, _result);
         }
 
         [TestMethod]
@@ -29,6 +37,7 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(77548, _stormReplay.ReplayBuild);
             Assert.AreEqual(17919, _stormReplay.ElapsedGamesLoops);
+            Assert.AreEqual(new TimeSpan(0, 0, 18, 39, 0), _stormReplay.ReplayLength);
         }
 
         [TestMethod]
@@ -55,6 +64,12 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual("Volskaya Foundry", _stormReplay.MapInfo.MapName);
             Assert.AreEqual(637120547862521860, _stormReplay.Timestamp.Ticks);
+
+            Assert.IsFalse(_stormReplay.HasAI);
+            Assert.IsFalse(_stormReplay.HasObservers);
+
+            Assert.AreEqual(0, _stormReplay.StormObservers.ToList().Count);
+            Assert.AreEqual(0, _stormReplay.PlayersObserversCount);
         }
 
         [TestMethod]
