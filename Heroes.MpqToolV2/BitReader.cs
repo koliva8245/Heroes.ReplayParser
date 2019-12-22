@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Text;
 
+[assembly: InternalsVisibleTo("Heroes.ReplayParser")]
 namespace Heroes.MpqToolV2
 {
     /// <summary>
     /// Contains the extension methods for Span and ReadOnlySpan.
     /// </summary>
-    public static class BitReader
+    internal static class BitReader
     {
         private static int _bitIndex;
         private static byte _currentByte;
@@ -358,6 +360,10 @@ namespace Heroes.MpqToolV2
                 throw new ArgumentOutOfRangeException(nameof(numberOfBytes), "Number of bytes must be greater than 0");
 
             ReadOnlySpan<byte> bytes = source.ReadBytes(numberOfBytes);
+            bytes = bytes.Trim((byte)0);
+
+            if (bytes.Length == 0)
+                return string.Empty;
 
             if (EndianType == EndianType.BigEndian)
             {
@@ -365,40 +371,11 @@ namespace Heroes.MpqToolV2
             }
             else
             {
-                return string.Create(numberOfBytes, bytes.ToArray(), (buffer, value) =>
-                {
-                    Encoding.UTF8.GetChars(value, buffer);
+                Span<byte> buffer = stackalloc byte[bytes.Length];
+                bytes.CopyTo(buffer);
+                buffer.Reverse();
 
-                    buffer.Reverse();
-                });
-            }
-        }
-
-        /// <summary>
-        /// Reads 4 bytes from the read-only span as a UTF-8 string.
-        /// </summary>
-        /// <param name="source">The read-only span of bytes to read.</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <returns></returns>
-        public static string ReadStringFromFourBytes(this ReadOnlySpan<byte> source)
-        {
-            int valueInt = source.ReadInt32Aligned();
-
-            if (EndianType == EndianType.BigEndian)
-            {
-                return string.Create(4, valueInt, (buffer, value) =>
-                {
-                    Encoding.UTF8.GetChars(BitConverter.GetBytes(value), buffer);
-                });
-
-            }
-            else
-            {
-
-                return string.Create(4, valueInt, (buffer, value) =>
-                {
-                    Encoding.UTF8.GetChars(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(value)), buffer);
-                });
+                return Encoding.UTF8.GetString(buffer);
             }
         }
 

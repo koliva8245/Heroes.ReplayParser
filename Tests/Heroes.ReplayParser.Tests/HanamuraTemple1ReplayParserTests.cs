@@ -15,7 +15,7 @@ namespace Heroes.ReplayParser.Tests
 
         public HanamuraTemple1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "HanamuraTemple1_75132.StormReplay"));
+            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "HanamuraTemple1_75132.StormR"));
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("crazealot", player0.Name);
             Assert.AreEqual(1, player0.ToonHandle.Region);
             Assert.AreEqual(1, player0.ToonHandle.Realm);
-            Assert.AreEqual(0, player0.Team);
+            Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsTrue(player0.IsWinner);
             Assert.AreEqual("Brightwing", player0.PlayerHero.HeroName);
 
@@ -49,7 +49,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("DumbleBore", player1.Name);
             Assert.AreEqual(1, player1.ToonHandle.Region);
             Assert.AreEqual(1, player1.ToonHandle.Realm);
-            Assert.AreEqual(1, player1.Team);
+            Assert.AreEqual(StormTeam.Red, player1.Team);
             Assert.IsFalse(player1.IsWinner);
             Assert.AreEqual("Hanzo", player1.PlayerHero.HeroName);
 
@@ -100,8 +100,8 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("AHAN", player.PlayerLoadout.AnnouncerPackAttributeId);
             Assert.AreEqual(20, player.PlayerHero.HeroLevel);
 
-            List<string> ban0List = _stormReplay.GetTeamBans(0).ToList();
-            List<string> ban1List = _stormReplay.GetTeamBans(1).ToList();
+            List<string?> ban0List = _stormReplay.GetTeamBans(StormTeam.Blue).ToList();
+            List<string?> ban1List = _stormReplay.GetTeamBans(StormTeam.Red).ToList();
 
             Assert.AreEqual(string.Empty, ban0List[1]);
             Assert.AreEqual(string.Empty, ban1List[1]);

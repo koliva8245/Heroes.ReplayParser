@@ -43,7 +43,11 @@ namespace Heroes.ReplayParser.MpqFiles
                 // [3]...array // m_color
                 // [4] // m_control
 
-                stormPlayer.Team = (int)versionDecoders[i].StructureByIndex![5].GetValueAsUInt32(); // m_teamId
+                int team = (int)versionDecoders[i].StructureByIndex![5].GetValueAsUInt32(); // m_teamId;
+                if (team == 0)
+                    stormPlayer.Team = StormTeam.Blue;
+                else if (team == 1)
+                    stormPlayer.Team = StormTeam.Red;
 
                 // x.StructureByIndex[6] // m_handicap
                 // x.StructureByIndex[7] // m_observe

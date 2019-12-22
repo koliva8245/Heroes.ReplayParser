@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Heroes.ReplayParser.Replay;
+using System.Collections.Generic;
 
 namespace Heroes.ReplayParser.Player
 {
+    /// <summary>
+    /// Contains the properties for a player.
+    /// </summary>
     public class StormPlayer
     {
         /// <summary>
@@ -37,7 +41,7 @@ namespace Heroes.ReplayParser.Player
         /// <summary>
         /// Gets or sets the player's team id.
         /// </summary>
-        public int Team { get; set; }
+        public StormTeam Team { get; set; } = StormTeam.Observer;
 
         /// <summary>
         /// Gets or sets the player's handicap.
@@ -81,6 +85,7 @@ namespace Heroes.ReplayParser.Player
 
         internal int WorkingSetSlotId { get; set; }
 
+        /// <inheritdoc/>
         public override string? ToString()
         {
             return $"{Name}-{PlayerType.ToString()}-{ToonHandle}";

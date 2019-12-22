@@ -1,5 +1,10 @@
-﻿namespace Heroes.ReplayParser.Replay
+﻿using System;
+
+namespace Heroes.ReplayParser.Replay
 {
+    /// <summary>
+    /// Contains the properties for the replay version.
+    /// </summary>
     public class ReplayVersion
     {
         /// <summary>
@@ -27,9 +32,25 @@
         /// </summary>
         public int BaseBuild { get; set; }
 
+        /// <inheritdoc/>
         public override string? ToString()
         {
             return $"{Major}.{Minor}.{Revision}.{Build}";
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
+        {
+            if (!(obj is ReplayVersion item))
+                return false;
+
+            return item.BaseBuild == BaseBuild && item.Build == Build && item.Revision == Revision && item.Minor == Minor && item.Major == Major;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Major, Minor, Revision, Build, BaseBuild);
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿namespace Heroes.ReplayParser.Replay
 {
+    /// <summary>
+    /// Contains the properties for map information.
+    /// </summary>
     public class MapInfo
     {
         /// <summary>

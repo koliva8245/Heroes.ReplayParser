@@ -4,6 +4,9 @@ using Heroes.ReplayParser.Replay;
 
 namespace Heroes.ReplayParser
 {
+    /// <summary>
+    /// Contains the information to parse a Heroes of the Storm replay.
+    /// </summary>
     public class StormReplayParser
     {
         private readonly string _fileName;
@@ -31,6 +34,10 @@ namespace Heroes.ReplayParser
         public static StormReplay Parse(string fileName, bool allowPTRRegion = false, bool parseBattleLobby = false)
         {
             StormReplayParser stormReplayParser = new StormReplayParser(fileName, allowPTRRegion, parseBattleLobby);
+
+            BitReader.ResetIndex();
+            BitReader.EndianType = EndianType.LittleEndian;
+
             stormReplayParser.Parse();
 
             return stormReplayParser._stormReplay;

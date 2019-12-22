@@ -12,7 +12,7 @@ namespace Heroes.ReplayParser.Tests
 
         public TowersofDoom1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "TowersofDoom1_39445.StormReplay"));
+            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "TowersofDoom1_39445.StormR"));
         }
 
         [TestMethod]

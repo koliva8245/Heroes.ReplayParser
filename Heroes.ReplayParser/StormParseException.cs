@@ -2,6 +2,9 @@
 
 namespace Heroes.ReplayParser
 {
+    /// <summary>
+    /// Contains the methods for a storm parse exception.
+    /// </summary>
     [Serializable]
     public class StormParseException : Exception
     {

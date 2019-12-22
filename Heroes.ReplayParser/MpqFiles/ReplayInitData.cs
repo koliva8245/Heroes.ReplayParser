@@ -233,8 +233,8 @@ namespace Heroes.ReplayParser.MpqFiles
                     if (replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value] != null)
                         replay.ClientListByUserID[userId.Value] = replay.ClientListByWorkingSetSlotID[workingSetSlotID.Value];
 
-                    if (observerStatus == 2)
-                        replay.ClientListByUserID[userId.Value].PlayerType = PlayerType.Spectator;
+                    if (observerStatus == 1)
+                        replay.ClientListByUserID[userId.Value].PlayerType = PlayerType.Observer;
 
                     replay.ClientListByUserID[userId.Value].PlayerHero.HeroId = heroId;
                     replay.ClientListByUserID[userId.Value].PlayerLoadout.SkinAndSkinTint = skinAndSkinTint;

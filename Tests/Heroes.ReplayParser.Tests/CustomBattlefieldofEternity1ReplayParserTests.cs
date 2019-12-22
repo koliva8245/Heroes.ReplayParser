@@ -15,7 +15,7 @@ namespace Heroes.ReplayParser.Tests
 
         public CustomBattlefieldofEternity1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "CustomBattlefieldofEternity1_65006.StormReplay"));
+            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "CustomBattlefieldofEternity1_65006.StormR"));
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("AZTDoubt", player0.Name);
             Assert.AreEqual(1, player0.ToonHandle.Region);
             Assert.AreEqual(1, player0.ToonHandle.Realm);
-            Assert.AreEqual(0, player0.Team);
+            Assert.AreEqual(StormTeam.Blue, player0.Team);
             Assert.IsFalse(player0.IsWinner);
             Assert.AreEqual("Greymane", player0.PlayerHero.HeroName);
 
@@ -49,12 +49,17 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("FiZiX", player.Name);
             Assert.AreEqual(1, player.ToonHandle.Region);
             Assert.AreEqual(1, player.ToonHandle.Realm);
-            Assert.AreEqual(1, player.Team);
+            Assert.AreEqual(StormTeam.Red, player.Team);
             Assert.IsTrue(player.IsWinner);
             Assert.AreEqual("Li-Ming", player.PlayerHero.HeroName);
 
             Assert.AreEqual("Battlefield of Eternity", _stormReplay.MapInfo.MapName);
             Assert.AreEqual(636619794857150779, _stormReplay.Timestamp.Ticks);
+
+            List<StormPlayer> playersWithObs = _stormReplay.StormPlayersWithObservers.ToList();
+            StormPlayer player8 = playersWithObs[8];
+
+            Assert.AreEqual(StormTeam.Observer, player8.Team);
         }
 
         [TestMethod]
@@ -79,6 +84,13 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(15, player0.HeroMasteryTiers.Count);
             Assert.AreEqual("Barb", player0.HeroMasteryTiers[2].HeroAttributeId);
             Assert.AreEqual(1, player0.HeroMasteryTiers[2].TierLevel);
+            Assert.AreEqual(PlayerType.Human, player0.PlayerType);
+
+            List<StormPlayer> playersWithObs = _stormReplay.StormPlayersWithObservers.ToList();
+            StormPlayer player8 = playersWithObs[8];
+
+            Assert.AreEqual(PlayerType.Observer, player8.PlayerType);
+            Assert.AreEqual(PlayerDifficulty.Unknown, player8.PlayerDifficulty);
         }
 
         [TestMethod]
@@ -100,8 +112,8 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("AFIR", player.PlayerLoadout.AnnouncerPackAttributeId);
             Assert.AreEqual(20, player.PlayerHero.HeroLevel);
 
-            List<string> ban0List = _stormReplay.GetTeamBans(0).ToList();
-            List<string> ban1List = _stormReplay.GetTeamBans(1).ToList();
+            List<string?> ban0List = _stormReplay.GetTeamBans(StormTeam.Blue).ToList();
+            List<string?> ban1List = _stormReplay.GetTeamBans(StormTeam.Red).ToList();
 
             Assert.AreEqual("Diab", ban0List[1]);
             Assert.AreEqual("Tra0", ban1List[1]);

@@ -2,7 +2,6 @@
 using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Heroes.ReplayParser.MpqFiles
@@ -18,9 +17,9 @@ namespace Heroes.ReplayParser.MpqFiles
 
             source.ReadByte();
             source.ReadUInt32Aligned();
-            uint count = source.ReadUInt32Aligned();
+            int count = source.ReadInt32Aligned();
 
-            Span<ReplayAttribute> attributes = new ReplayAttribute[(int)count];
+            Span<ReplayAttribute> attributes = new ReplayAttribute[count];
 
             for (int i = 0; i < count; i++)
             {
@@ -31,16 +30,7 @@ namespace Heroes.ReplayParser.MpqFiles
                 BitReader.EndianType = EndianType.LittleEndian;
 
                 attributes[i].PlayerId = source.ReadByte();
-
-                if (source[BitReader.Index + 3] == '\0')
-                {
-                    attributes[i].Value = source.ReadStringFromBytes(3);
-                    BitReader.Index++;
-                }
-                else
-                {
-                    attributes[i].Value = source.ReadStringFromBytes(4);
-                }
+                attributes[i].Value = source.ReadStringFromBytes(4);
 
                 BitReader.EndianType = EndianType.BigEndian;
             }
@@ -267,26 +257,32 @@ namespace Heroes.ReplayParser.MpqFiles
                     case ReplayAttributeEventType.DraftTeam1Ban1:
                     case ReplayAttributeEventType.DraftTeam1Ban2:
                     case ReplayAttributeEventType.DraftTeam1Ban3:
-                        {
-                            if (replay.TeamHeroAttributeIdBans.TryGetValue(0, out List<string>? values))
-                                values.Add(attribute.Value);
-                            else
-                                replay.TeamHeroAttributeIdBans.Add(0, new List<string>() { attribute.Value });
-
-                            break;
-                        }
-
                     case ReplayAttributeEventType.DraftTeam2Ban1:
                     case ReplayAttributeEventType.DraftTeam2Ban2:
                     case ReplayAttributeEventType.DraftTeam2Ban3:
-                        {
-                            if (replay.TeamHeroAttributeIdBans.TryGetValue(1, out List<string>? values))
-                                values.Add(attribute.Value);
-                            else
-                                replay.TeamHeroAttributeIdBans.Add(1, new List<string>() { attribute.Value });
+                            switch (attribute.AttributeType)
+                            {
+                                case ReplayAttributeEventType.DraftTeam1Ban1:
+                                    replay.TeamHeroAttributeIdBans[0][0] = attribute.Value;
+                                    break;
+                                case ReplayAttributeEventType.DraftTeam1Ban2:
+                                    replay.TeamHeroAttributeIdBans[0][1] = attribute.Value;
+                                    break;
+                                case ReplayAttributeEventType.DraftTeam1Ban3:
+                                    replay.TeamHeroAttributeIdBans[0][2] = attribute.Value;
+                                    break;
+                                case ReplayAttributeEventType.DraftTeam2Ban1:
+                                    replay.TeamHeroAttributeIdBans[1][0] = attribute.Value;
+                                    break;
+                                case ReplayAttributeEventType.DraftTeam2Ban2:
+                                    replay.TeamHeroAttributeIdBans[1][1] = attribute.Value;
+                                    break;
+                                case ReplayAttributeEventType.DraftTeam2Ban3:
+                                    replay.TeamHeroAttributeIdBans[1][2] = attribute.Value;
+                                    break;
+                            }
 
                             break;
-                        }
                 }
             }
         }

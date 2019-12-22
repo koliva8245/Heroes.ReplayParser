@@ -15,7 +15,6 @@ namespace Heroes.Console
             //mpqArchive.AddListfileFilenames();
 
             StormReplay stormReplay = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay");
-            BitReader.ResetIndex();
 
             //BitReader.EndianType = EndianType.LittleEndian;
             
