@@ -131,6 +131,8 @@ namespace Heroes.ReplayParser.Replay
 
         internal string?[][] TeamHeroAttributeIdBans { get; set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
+        internal List<TrackerEvent> TrackerEvents { get; set; } = new List<TrackerEvent>();
+
         /// <summary>
         /// Gets a collection of a team's bans.
         /// </summary>

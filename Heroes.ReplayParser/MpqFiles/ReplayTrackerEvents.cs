@@ -2,30 +2,32 @@
 using Heroes.ReplayParser.Decoders;
 using Heroes.ReplayParser.Replay;
 using System;
-using System.Collections.Generic;
 
 namespace Heroes.ReplayParser.MpqFiles
 {
-    internal class ReplayTrackerEvents : IMpqFiles
+    internal static class ReplayTrackerEvents
     {
-        public string FileName { get; } = "replay.tracker.events";
+        public static string FileName { get; } = "replay.tracker.events";
 
-        public void Parse(StormReplay stormReplay, ReadOnlySpan<byte> source)
+        public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
-            List<TrackerEvent> trackerEvents = new List<TrackerEvent>();
+            BitReader.ResetIndex();
+            BitReader.EndianType = EndianType.LittleEndian;
 
-            int gameLoop = 0;
+            uint gameLoop = 0;
 
-            while (!source.IsEmpty)
+            while (BitReader.Index < source.Length)
             {
-                TrackerEvent trackerEvent = new TrackerEvent();
+                gameLoop += new VersionedDecoder(source).ChoiceData!.GetValueAsUInt32();
 
-                VersionedDecoder versionDecoder = new VersionedDecoder(source);
+                TrackerEvent trackerEvent = new TrackerEvent
+                {
+                    TimeSpan = TimeSpan.FromSeconds(gameLoop / 16),
+                    TrackerEventType = (TrackerEventType)new VersionedDecoder(source).GetValueAsUInt32(),
+                    VersionedDecoder = new VersionedDecoder(source),
+                };
 
-                trackerEvent.TrackerEventType = (TrackerEventType)new VersionedDecoder(source).GetValueAsUInt32();
-                trackerEvent.VersionedDecoder = new VersionedDecoder(source);
-
-                trackerEvents.Add(trackerEvent);
+                replay.TrackerEvents.Add(trackerEvent);
             }
         }
     }

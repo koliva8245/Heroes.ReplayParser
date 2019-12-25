@@ -69,11 +69,26 @@ namespace Heroes.ReplayParser
             }
 
             ReplayDetails.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayDetails.FileName));
+
+            if (_stormReplay.Players.Length != 10 || _stormReplay.Players.Count(i => i.IsWinner) != 5)
+            {
+                // Filter out 'Try Me' games, any games without 10 players, and incomplete games
+                return;
+            }
+            else if (_stormReplay.Timestamp == DateTime.MinValue)
+            {
+                // Uncommon issue when parsing replay.details
+                return;
+            }
+            else if (_stormReplay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
+            {
+                // Technical Alpha replays
+                return;
+            }
+
             ReplayInitData.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayInitData.FileName));
             ReplayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayAttributeEvents.FileName));
-
-            //ReplayTrackerEvents replayTrackerEvents = new ReplayTrackerEvents();
-            //replayTrackerEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(replayTrackerEvents.FileName));
+            ReplayTrackerEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayTrackerEvents.FileName));
 
             ValidateResult();
         }

@@ -7,7 +7,6 @@ namespace Heroes.ReplayParser.MpqFiles
 {
     internal static class ReplayInitData
     {
-
         public static string FileName { get; } = "replay.initData";
 
         public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
