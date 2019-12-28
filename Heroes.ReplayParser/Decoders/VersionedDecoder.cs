@@ -10,7 +10,7 @@ namespace Heroes.ReplayParser.Decoders
     internal class VersionedDecoder
     {
         private readonly byte _dataType;
-        private readonly byte[] _value;
+        private readonly byte[]? _value = null;
 
         public VersionedDecoder(ReadOnlySpan<byte> source)
         {
@@ -85,7 +85,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x03 => Get32UIntFromVInt(),
                 0x04 => throw new InvalidOperationException("Invalid call, use OptionalData"),
                 0x05 => throw new InvalidOperationException("Invalid call, use StructureByIndex"),
-                0x06 => _value[0],
+                0x06 => _value != null ? _value[0] : throw new InvalidOperationException("No value available"),
                 0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value),
                 0x08 => throw new ArithmeticException("Incorrect conversion. Use Int64 method instead."),
                 0x09 => Get32UIntFromVInt(),
@@ -132,18 +132,18 @@ namespace Heroes.ReplayParser.Decoders
         /// Gets the value in the current structure as a string.
         /// </summary>
         /// <returns></returns>
-        public string GetValueAsString() => Encoding.UTF8.GetString(_value);
+        public string GetValueAsString() => _value != null ? Encoding.UTF8.GetString(_value) : string.Empty;
 
         public override string? ToString()
         {
             return _dataType switch
             {
                 0x00 => ArrayData != null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
-                0x02 => @$"""{Encoding.UTF8.GetString(_value)}""",
+                0x02 => _value != null ? @$"""{Encoding.UTF8.GetString(_value)}""" : null,
                 0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString()} , Data: {ChoiceData}",
                 0x04 => OptionalData?.ToString(),
                 0x05 => StructureByIndex != null ? $"{{{string.Join(", ", StructureByIndex.Values.Select(i => i?.ToString()))}}}" : null,
-                0x06 => _value[0].ToString(),
+                0x06 => _value != null ? _value[0].ToString() : null,
                 0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value).ToString(),
                 0x08 => BinaryPrimitives.ReadUInt64LittleEndian(_value).ToString(),
                 0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString(),

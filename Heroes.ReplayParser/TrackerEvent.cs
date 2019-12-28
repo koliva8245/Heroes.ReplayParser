@@ -6,7 +6,7 @@ namespace Heroes.ReplayParser
     /// <summary>
     /// Contains the properties for a tracker event.
     /// </summary>
-    public class TrackerEvent
+    public struct TrackerEvent
     {
         /// <summary>
         /// Gets or sets the type of the tracker event.
