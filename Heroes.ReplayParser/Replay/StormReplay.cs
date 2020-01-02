@@ -8,7 +8,7 @@ namespace Heroes.ReplayParser.Replay
     /// <summary>
     /// Contains the properties and methods for the parsed replay.
     /// </summary>
-    public class StormReplay
+    public partial class StormReplay
     {
         /// <summary>
         /// Gets the latest build that the parser was updated for.
@@ -106,6 +106,11 @@ namespace Heroes.ReplayParser.Replay
         public int PlayersObserversCount => StormObservers.Count();
 
         /// <summary>
+        /// Gets a collection of tracker events.
+        /// </summary>
+        public IEnumerable<TrackerEvent> TrackerEvents => TrackerEvents;
+
+        /// <summary>
         /// Gets or sets the list of all players (no observers).
         /// </summary>
         /// <remarks>Contains AI.</remarks>
@@ -131,19 +136,6 @@ namespace Heroes.ReplayParser.Replay
 
         internal string?[][] TeamHeroAttributeIdBans { get; set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
-        internal List<TrackerEvent> TrackerEvents { get; set; } = new List<TrackerEvent>();
-
-        /// <summary>
-        /// Gets a collection of a team's bans.
-        /// </summary>
-        /// <param name="stormTeam">The team.</param>
-        /// <returns>The collection of bans.</returns>
-        public IEnumerable<string?> GetTeamBans(StormTeam stormTeam)
-        {
-            if (!(stormTeam == StormTeam.Blue || stormTeam == StormTeam.Red))
-                return Enumerable.Empty<string>();
-
-            return TeamHeroAttributeIdBans[(int)stormTeam];
-        }
+        internal List<TrackerEvent> TrackerEventsInternal { get; set; } = new List<TrackerEvent>();
     }
 }

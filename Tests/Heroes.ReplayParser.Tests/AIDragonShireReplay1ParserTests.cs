@@ -26,7 +26,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void StormReplayHeaderTests()
+        public void StormReplayHeaderTest()
         {
             Assert.AreEqual(2, _stormReplay.ReplayVersion.Major);
             Assert.AreEqual(47, _stormReplay.ReplayVersion.Minor);
@@ -39,7 +39,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void StormReplayDetailsTests()
+        public void StormReplayDetailsTest()
         {
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
             StormPlayer player0 = players[0];
@@ -68,7 +68,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void StormReplayAttributeEvents()
+        public void StormReplayAttributeEventsTest()
         {
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
             StormPlayer player = players[9];
@@ -91,6 +91,14 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(string.Empty, ban0List[1]);
             Assert.AreEqual(string.Empty, ban1List[1]);
+        }
+
+        [TestMethod]
+        public void GetDraftOrderTest()
+        {
+            var draft = _stormReplay.GetDraftOrder().ToList();
+
+            Assert.AreEqual(0, draft.Count);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void StormReplayHeaderTests()
+        public void StormReplayHeaderTest()
         {
             Assert.AreEqual(2, _stormReplay.ReplayVersion.Major);
             Assert.AreEqual(49, _stormReplay.ReplayVersion.Minor);
@@ -41,7 +41,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void StormReplayDetailsTests()
+        public void StormReplayDetailsTest()
         {
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
             StormPlayer player0 = players[0];
@@ -73,7 +73,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void StormReplayInitDataTests()
+        public void StormReplayInitDataTest()
         {
             Assert.AreEqual(1102687070, _stormReplay.RandomValue);
             Assert.AreEqual(GameMode.StormLeague, _stormReplay.GameMode);
@@ -97,7 +97,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void StormReplayAttributeEvents()
+        public void StormReplayAttributeEventsTest()
         {
             List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
             StormPlayer player = players[9];
@@ -120,6 +120,22 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual("Garr", ban0List[1]);
             Assert.AreEqual("DEAT", ban1List[1]);
+        }
+
+        [TestMethod]
+        public void GetDraftOrderTest()
+        {
+            var draft = _stormReplay.GetDraftOrder().ToList();
+
+            Assert.AreEqual(16, draft.Count);
+
+            Assert.AreEqual("Crusader", draft[0].HeroSelected);
+            Assert.AreEqual(DraftPickType.Banned, draft[0].PickType);
+            Assert.AreEqual(2, draft[0].SelectedPlayerSlotId);
+
+            Assert.AreEqual("Auriel", draft[15].HeroSelected);
+            Assert.AreEqual(DraftPickType.Picked, draft[15].PickType);
+            Assert.AreEqual(2, draft[15].SelectedPlayerSlotId);
         }
     }
 }

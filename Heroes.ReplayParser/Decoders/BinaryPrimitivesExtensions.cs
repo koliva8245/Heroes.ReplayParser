@@ -2,6 +2,9 @@
 
 namespace Heroes.ReplayParser.Decoders
 {
+    /// <summary>
+    /// Contains additional binary primitive methods.
+    /// </summary>
     public static class BinaryPrimitivesExtensions
     {
         /// <summary>

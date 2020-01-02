@@ -27,7 +27,7 @@ namespace Heroes.ReplayParser.MpqFiles
                     VersionedDecoder = new VersionedDecoder(source),
                 };
 
-                replay.TrackerEvents.Add(trackerEvent);
+                replay.TrackerEventsInternal.Add(trackerEvent);
             }
         }
     }

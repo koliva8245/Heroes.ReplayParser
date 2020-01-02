@@ -20,13 +20,13 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void ParseResult()
+        public void ParseResultTest()
         {
-               Assert.AreEqual(StormReplayParseResult.Success, _result);
+            Assert.AreEqual(StormReplayParseResult.Success, _result);
         }
 
         [TestMethod]
-        public void StormReplayHeaderTests()
+        public void StormReplayHeaderTest()
         {
             Assert.AreEqual(0, _stormReplay.ReplayVersion.Major);
             Assert.AreEqual(15, _stormReplay.ReplayVersion.Minor);
@@ -39,7 +39,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void StormReplayInitDataTests()
+        public void StormReplayInitDataTest()
         {
             Assert.AreEqual(4013533878, _stormReplay.RandomValue);
             Assert.AreEqual(GameMode.QuickMatch, _stormReplay.GameMode);
@@ -61,6 +61,14 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.IsFalse(_stormReplay.HasObservers);
             Assert.IsFalse(_stormReplay.HasAI);
+        }
+
+        [TestMethod]
+        public void GetDraftOrderTest()
+        {
+            var draft = _stormReplay.GetDraftOrder().ToList();
+
+            Assert.AreEqual(0, draft.Count);
         }
     }
 }
