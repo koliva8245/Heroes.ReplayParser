@@ -108,7 +108,7 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets a collection of tracker events.
         /// </summary>
-        public IEnumerable<TrackerEvent> TrackerEvents => TrackerEvents;
+        public IEnumerable<TrackerEvent> TrackerEvents => TrackerEventsInternal;
 
         /// <summary>
         /// Gets or sets the list of all players (no observers).

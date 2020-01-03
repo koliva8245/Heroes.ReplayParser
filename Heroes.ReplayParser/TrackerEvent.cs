@@ -11,14 +11,14 @@ namespace Heroes.ReplayParser
         /// <summary>
         /// Gets or sets the type of the tracker event.
         /// </summary>
-        public TrackerEventType TrackerEventType { get; set; }
+        public TrackerEventType TrackerEventType;
 
         /// <summary>
         /// Gets or sets the time that the event took place.
         /// </summary>
-        public TimeSpan TimeSpan { get; set; }
+        public TimeSpan TimeSpan;
 
-        internal VersionedDecoder? VersionedDecoder { get; set; }
+        internal VersionedDecoder? VersionedDecoder;
 
         /// <inheritdoc/>
         public override string? ToString()

@@ -1,6 +1,7 @@
 ﻿using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -127,7 +128,7 @@ namespace Heroes.ReplayParser.Tests
         [TestMethod]
         public void GetDraftOrderTest()
         {
-            var draft = _stormReplay.GetDraftOrder().ToList();
+            List<DraftPick> draft = _stormReplay.GetDraftOrder().ToList();
 
             Assert.AreEqual(14, draft.Count);
 
@@ -138,6 +139,34 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("Kaelthas", draft[13].HeroSelected);
             Assert.AreEqual(DraftPickType.Picked, draft[13].PickType);
             Assert.AreEqual(4, draft[13].SelectedPlayerSlotId);
+        }
+
+        [TestMethod]
+        public void GetTeamLevelsTest()
+        {
+            List<TeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
+            List<TeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
+
+            Assert.AreEqual(18, levelsBlue.Count);
+            Assert.AreEqual(20, levelsRed.Count);
+
+            Assert.AreEqual(1, levelsBlue[0].Level);
+            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsBlue[0].Time);
+
+            Assert.AreEqual(8, levelsBlue[7].Level);
+            Assert.AreEqual(new TimeSpan(0, 6, 10), levelsBlue[7].Time);
+
+            Assert.AreEqual(18, levelsBlue[17].Level);
+            Assert.AreEqual(new TimeSpan(0, 18, 54), levelsBlue[17].Time);
+
+            Assert.AreEqual(1, levelsRed[0].Level);
+            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsRed[0].Time);
+
+            Assert.AreEqual(10, levelsRed[9].Level);
+            Assert.AreEqual(new TimeSpan(0, 8, 32), levelsRed[9].Time);
+
+            Assert.AreEqual(20, levelsRed[19].Level);
+            Assert.AreEqual(new TimeSpan(0, 19, 45), levelsRed[19].Time);
         }
     }
 }

@@ -137,5 +137,33 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(DraftPickType.Picked, draft[15].PickType);
             Assert.AreEqual(2, draft[15].SelectedPlayerSlotId);
         }
+
+        [TestMethod]
+        public void GetTeamLevelsTest()
+        {
+            List<TeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
+            List<TeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
+
+            Assert.AreEqual(19, levelsBlue.Count);
+            Assert.AreEqual(21, levelsRed.Count);
+
+            Assert.AreEqual(1, levelsBlue[0].Level);
+            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsBlue[0].Time);
+
+            Assert.AreEqual(8, levelsBlue[7].Level);
+            Assert.AreEqual(new TimeSpan(0, 5, 28), levelsBlue[7].Time);
+
+            Assert.AreEqual(18, levelsBlue[17].Level);
+            Assert.AreEqual(new TimeSpan(0, 15, 58), levelsBlue[17].Time);
+
+            Assert.AreEqual(1, levelsRed[0].Level);
+            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsRed[0].Time);
+
+            Assert.AreEqual(10, levelsRed[9].Level);
+            Assert.AreEqual(new TimeSpan(0, 6, 9), levelsRed[9].Time);
+
+            Assert.AreEqual(20, levelsRed[19].Level);
+            Assert.AreEqual(new TimeSpan(0, 16, 33), levelsRed[19].Time);
+        }
     }
 }

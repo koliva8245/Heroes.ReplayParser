@@ -16,16 +16,15 @@ namespace Heroes.ReplayParser.MpqFiles
 
             uint gameLoop = 0;
 
+            TrackerEvent trackerEvent;
+
             while (BitReader.Index < source.Length)
             {
                 gameLoop += new VersionedDecoder(source).ChoiceData!.GetValueAsUInt32();
 
-                TrackerEvent trackerEvent = new TrackerEvent
-                {
-                    TimeSpan = TimeSpan.FromSeconds(gameLoop / 16),
-                    TrackerEventType = (TrackerEventType)new VersionedDecoder(source).GetValueAsUInt32(),
-                    VersionedDecoder = new VersionedDecoder(source),
-                };
+                trackerEvent.TimeSpan = TimeSpan.FromSeconds(gameLoop / 16);
+                trackerEvent.TrackerEventType = (TrackerEventType)new VersionedDecoder(source).GetValueAsUInt32();
+                trackerEvent.VersionedDecoder = new VersionedDecoder(source);
 
                 replay.TrackerEventsInternal.Add(trackerEvent);
             }
