@@ -142,10 +142,16 @@ namespace Heroes.ReplayParser.Tests
         public void GetTeamLevelsTest()
         {
             List<TeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
+            List<TeamLevel> levelsBlue2 = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
             List<TeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
+            List<TeamLevel> levelsRed2 = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
+            List<TeamLevel> levelsOther = _stormReplay.GetTeamLevels(StormTeam.Observer).ToList();
 
             Assert.AreEqual(19, levelsBlue.Count);
+            Assert.AreEqual(19, levelsBlue2.Count);
             Assert.AreEqual(21, levelsRed.Count);
+            Assert.AreEqual(21, levelsRed2.Count);
+            Assert.AreEqual(0, levelsOther.Count);
 
             Assert.AreEqual(1, levelsBlue[0].Level);
             Assert.AreEqual(new TimeSpan(0, 0, 3), levelsBlue[0].Time);
@@ -164,6 +170,88 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(20, levelsRed[19].Level);
             Assert.AreEqual(new TimeSpan(0, 16, 33), levelsRed[19].Time);
+        }
+
+        [TestMethod]
+        public void GetTeamsFinalLevelTest()
+        {
+            Assert.AreEqual(19, _stormReplay.GetTeamFinalLevel(StormTeam.Blue));
+            Assert.AreEqual(21, _stormReplay.GetTeamFinalLevel(StormTeam.Red));
+            Assert.AreEqual(0, _stormReplay.GetTeamFinalLevel(StormTeam.Observer));
+        }
+
+        [TestMethod]
+        public void GetTeamXpBreakdownTest()
+        {
+            List<TeamXPBreakdown> xpBlue = _stormReplay.GetTeamXPBreakdown(StormTeam.Blue).ToList();
+            List<TeamXPBreakdown> xpRed = _stormReplay.GetTeamXPBreakdown(StormTeam.Red).ToList();
+            List<TeamXPBreakdown> xpOther = _stormReplay.GetTeamXPBreakdown(StormTeam.Observer).ToList();
+
+            Assert.AreEqual(18, xpBlue.Count);
+            Assert.AreEqual(18, xpRed.Count);
+            Assert.AreEqual(0, xpOther.Count);
+
+            TeamXPBreakdown blue = xpBlue[0];
+
+            Assert.AreEqual(0, blue.HeroXP);
+            Assert.AreEqual(1, blue.Level);
+            Assert.AreEqual(0, blue.MercenaryXP);
+            Assert.AreEqual(1200, blue.MinionXP);
+            Assert.AreEqual(575, blue.PassiveXP);
+            Assert.AreEqual(0, blue.StructureXP);
+            Assert.AreEqual(new TimeSpan(0, 1, 38), blue.Time);
+            Assert.AreEqual(1775, blue.TotalXP);
+
+            blue = xpBlue[13];
+            Assert.AreEqual(5470, blue.HeroXP);
+            Assert.AreEqual(16, blue.Level);
+            Assert.AreEqual(3773, blue.MercenaryXP);
+            Assert.AreEqual(25754, blue.MinionXP);
+            Assert.AreEqual(18515, blue.PassiveXP);
+            Assert.AreEqual(375, blue.StructureXP);
+            Assert.AreEqual(new TimeSpan(0, 14, 38), blue.Time);
+            Assert.AreEqual(53887, blue.TotalXP);
+
+            blue = xpBlue[17];
+            Assert.AreEqual(10164, blue.HeroXP);
+            Assert.AreEqual(19, blue.Level);
+            Assert.AreEqual(4121, blue.MercenaryXP);
+            Assert.AreEqual(32032, blue.MinionXP);
+            Assert.AreEqual(23621, blue.PassiveXP);
+            Assert.AreEqual(375, blue.StructureXP);
+            Assert.AreEqual(new TimeSpan(0, 18, 27), blue.Time);
+            Assert.AreEqual(70313, blue.TotalXP);
+
+            TeamXPBreakdown red = xpRed[0];
+
+            Assert.AreEqual(592, red.HeroXP);
+            Assert.AreEqual(2, red.Level);
+            Assert.AreEqual(0, red.MercenaryXP);
+            Assert.AreEqual(1360, red.MinionXP);
+            Assert.AreEqual(575, red.PassiveXP);
+            Assert.AreEqual(0, red.StructureXP);
+            Assert.AreEqual(new TimeSpan(0, 1, 38), red.Time);
+            Assert.AreEqual(2527, red.TotalXP);
+
+            red = xpRed[13];
+            Assert.AreEqual(6596, red.HeroXP);
+            Assert.AreEqual(18, red.Level);
+            Assert.AreEqual(3661, red.MercenaryXP);
+            Assert.AreEqual(31496, red.MinionXP);
+            Assert.AreEqual(21288, red.PassiveXP);
+            Assert.AreEqual(1425, red.StructureXP);
+            Assert.AreEqual(new TimeSpan(0, 14, 38), red.Time);
+            Assert.AreEqual(64466, red.TotalXP);
+
+            red = xpRed[17];
+            Assert.AreEqual(11379, red.HeroXP);
+            Assert.AreEqual(21, red.Level);
+            Assert.AreEqual(3661, red.MercenaryXP);
+            Assert.AreEqual(35918, red.MinionXP);
+            Assert.AreEqual(29392, red.PassiveXP);
+            Assert.AreEqual(2350, red.StructureXP);
+            Assert.AreEqual(new TimeSpan(0, 18, 27), red.Time);
+            Assert.AreEqual(82700, red.TotalXP);
         }
     }
 }

@@ -156,16 +156,14 @@ namespace Heroes.ReplayParser.Decoders
         {
             uint value = (uint)BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value, out int size);
             if (size > 4)
-                throw new ArithmeticException("Incorrect conversion. Use Int64 method instead.");
+                throw new ArithmeticException($"Incorrect conversion for VInt (has byte size of {size}. Use Int64 method instead.");
 
             return value;
         }
 
         private long Get64IntFromVInt()
         {
-            long value = BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value, out int size);
-            if (size < 5)
-                throw new ArithmeticException("Incorrect conversion. Use Int32 method instead.");
+            long value = BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value, out int _);
 
             return value;
         }
