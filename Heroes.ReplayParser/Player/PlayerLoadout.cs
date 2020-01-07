@@ -1,5 +1,8 @@
 ﻿namespace Heroes.ReplayParser.Player
 {
+    /// <summary>
+    /// Contains a player's loadout.
+    /// </summary>
     public class PlayerLoadout
     {
         /// <summary>

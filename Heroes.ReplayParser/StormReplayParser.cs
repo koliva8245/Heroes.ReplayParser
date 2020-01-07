@@ -91,6 +91,8 @@ namespace Heroes.ReplayParser
             ReplayTrackerEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayTrackerEvents.FileName));
 
             ValidateResult();
+
+            _stormReplay.SetStormPlayerData();
         }
 
         private void ValidateResult()

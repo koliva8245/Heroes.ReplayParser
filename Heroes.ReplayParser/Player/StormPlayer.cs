@@ -1,4 +1,5 @@
 ﻿using Heroes.ReplayParser.Replay;
+using System;
 using System.Collections.Generic;
 
 namespace Heroes.ReplayParser.Player
@@ -8,6 +9,9 @@ namespace Heroes.ReplayParser.Player
     /// </summary>
     public class StormPlayer
     {
+        private Func<int, ScoreResult>? _scoreResult;
+        private int? _player;
+
         /// <summary>
         /// Gets or sets the player's name.
         /// </summary>
@@ -16,7 +20,7 @@ namespace Heroes.ReplayParser.Player
         /// <summary>
         /// Gets or sets the player's toon handle.
         /// </summary>
-        public ToonHandle ToonHandle { get; private set; } = new ToonHandle();
+        public ToonHandle ToonHandle { get; set; } = new ToonHandle();
 
         /// <summary>
         /// Gets or sets the player's control type.
@@ -83,12 +87,28 @@ namespace Heroes.ReplayParser.Player
         /// </summary>
         public PlayerDifficulty PlayerDifficulty { get; set; } = PlayerDifficulty.Unknown;
 
+        /// <summary>
+        /// Gets the player's score result.
+        /// </summary>
+        public ScoreResult ScoreResult => _scoreResult!.Invoke(_player!.Value);
+
+        /// <summary>
+        /// Gets the match awards earned.
+        /// </summary>
+        public IEnumerable<MatchAwardType> MatchAwards => ScoreResult.MatchAwards;
+
         internal int WorkingSetSlotId { get; set; }
 
         /// <inheritdoc/>
         public override string? ToString()
         {
             return $"{Name}-{PlayerType.ToString()}-{ToonHandle}";
+        }
+
+        internal void SetScoreResult(int player, Func<int, ScoreResult> scoreResult)
+        {
+            _player = player;
+            _scoreResult = scoreResult;
         }
     }
 }

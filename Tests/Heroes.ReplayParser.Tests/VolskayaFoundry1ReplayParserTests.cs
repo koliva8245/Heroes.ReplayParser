@@ -195,7 +195,7 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(0, blue.HeroXP);
             Assert.AreEqual(1, blue.Level);
-            Assert.AreEqual(0, blue.MercenaryXP);
+            Assert.AreEqual(0, blue.CreepXP);
             Assert.AreEqual(1200, blue.MinionXP);
             Assert.AreEqual(575, blue.PassiveXP);
             Assert.AreEqual(0, blue.StructureXP);
@@ -205,7 +205,7 @@ namespace Heroes.ReplayParser.Tests
             blue = xpBlue[13];
             Assert.AreEqual(5470, blue.HeroXP);
             Assert.AreEqual(16, blue.Level);
-            Assert.AreEqual(3773, blue.MercenaryXP);
+            Assert.AreEqual(3773, blue.CreepXP);
             Assert.AreEqual(25754, blue.MinionXP);
             Assert.AreEqual(18515, blue.PassiveXP);
             Assert.AreEqual(375, blue.StructureXP);
@@ -215,7 +215,7 @@ namespace Heroes.ReplayParser.Tests
             blue = xpBlue[17];
             Assert.AreEqual(10164, blue.HeroXP);
             Assert.AreEqual(19, blue.Level);
-            Assert.AreEqual(4121, blue.MercenaryXP);
+            Assert.AreEqual(4121, blue.CreepXP);
             Assert.AreEqual(32032, blue.MinionXP);
             Assert.AreEqual(23621, blue.PassiveXP);
             Assert.AreEqual(375, blue.StructureXP);
@@ -226,7 +226,7 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(592, red.HeroXP);
             Assert.AreEqual(2, red.Level);
-            Assert.AreEqual(0, red.MercenaryXP);
+            Assert.AreEqual(0, red.CreepXP);
             Assert.AreEqual(1360, red.MinionXP);
             Assert.AreEqual(575, red.PassiveXP);
             Assert.AreEqual(0, red.StructureXP);
@@ -236,7 +236,7 @@ namespace Heroes.ReplayParser.Tests
             red = xpRed[13];
             Assert.AreEqual(6596, red.HeroXP);
             Assert.AreEqual(18, red.Level);
-            Assert.AreEqual(3661, red.MercenaryXP);
+            Assert.AreEqual(3661, red.CreepXP);
             Assert.AreEqual(31496, red.MinionXP);
             Assert.AreEqual(21288, red.PassiveXP);
             Assert.AreEqual(1425, red.StructureXP);
@@ -246,12 +246,70 @@ namespace Heroes.ReplayParser.Tests
             red = xpRed[17];
             Assert.AreEqual(11379, red.HeroXP);
             Assert.AreEqual(21, red.Level);
-            Assert.AreEqual(3661, red.MercenaryXP);
+            Assert.AreEqual(3661, red.CreepXP);
             Assert.AreEqual(35918, red.MinionXP);
             Assert.AreEqual(29392, red.PassiveXP);
             Assert.AreEqual(2350, red.StructureXP);
             Assert.AreEqual(new TimeSpan(0, 18, 27), red.Time);
             Assert.AreEqual(82700, red.TotalXP);
+        }
+
+        [TestMethod]
+        public void GetPlayersScoreResultTest()
+        {
+            ScoreResult scoreResult = _stormReplay.StormPlayers.ToList()[0].ScoreResult;
+
+            Assert.AreEqual(3, scoreResult.Assists);
+            Assert.AreEqual(0, scoreResult.ClutchHealsPerformed);
+            Assert.AreEqual(33369, scoreResult.CreepDamage);
+            Assert.AreEqual(28369, scoreResult.DamageSoaked);
+            Assert.AreEqual(43030, scoreResult.DamageTaken);
+            Assert.AreEqual(5, scoreResult.Deaths);
+            Assert.AreEqual(0, scoreResult.EscapesPerformed);
+            Assert.AreEqual(8968, scoreResult.ExperienceContribution);
+            Assert.AreEqual(0, scoreResult.Healing);
+            Assert.AreEqual(47875, scoreResult.HeroDamage);
+            Assert.AreEqual(5, scoreResult.HighestKillStreak);
+            Assert.AreEqual(19, scoreResult.Level);
+            Assert.AreEqual(7, scoreResult.MercCampCaptures);
+            Assert.AreEqual(70313, scoreResult.MetaExperience);
+            Assert.AreEqual(50333, scoreResult.MinionDamage);
+            Assert.AreEqual(0, scoreResult.Multikill);
+            Assert.AreEqual(2, scoreResult.OutnumberedDeaths);
+            Assert.AreEqual(101982, scoreResult.PhysicalDamage);
+            Assert.AreEqual(0, scoreResult.ProtectionGivenToAllies);
+            Assert.AreEqual(0, scoreResult.SelfHealing);
+            Assert.AreEqual(61382, scoreResult.SiegeDamage);
+            Assert.AreEqual(3, scoreResult.SoloKills);
+            Assert.AreEqual(49618, scoreResult.SpellDamage);
+            Assert.AreEqual(5864, scoreResult.StructureDamage);
+            Assert.AreEqual(2986, scoreResult.SummonDamage);
+            Assert.AreEqual(6, scoreResult.Takedowns);
+            Assert.AreEqual(34692, scoreResult.TeamfightDamageTaken);
+            Assert.AreEqual(0, scoreResult.TeamfightEscapesPerformed);
+            Assert.AreEqual(2531, scoreResult.TeamfightHealingDone);
+            Assert.AreEqual(35818, scoreResult.TeamfightHeroDamage);
+            Assert.AreEqual(new TimeSpan(0, 0, 0), scoreResult.TimeCCdEnemyHeroes);
+            Assert.AreEqual(0, scoreResult.TimeRootingEnemyHeroes);
+            Assert.AreEqual(0, scoreResult.TimeSilencingEnemyHeroes);
+            Assert.AreEqual(new TimeSpan(0, 2, 27), scoreResult.TimeSpentDead);
+            Assert.AreEqual(0, scoreResult.TimeStunningEnemyHeroes);
+            Assert.AreEqual(0, scoreResult.TownKills);
+            Assert.AreEqual(2, scoreResult.VengeancesPerformed);
+            Assert.AreEqual(0, scoreResult.WatchTowerCaptures);
+        }
+
+        [TestMethod]
+        public void GetPlayersMatchAwards()
+        {
+            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[0].MatchAwards.ToList();
+
+            Assert.AreEqual(1, matchAwards.Count);
+            Assert.AreEqual(MatchAwardType.MostMercCampsCaptured, matchAwards[0]);
+
+            matchAwards = _stormReplay.StormPlayers.ToList()[9].MatchAwards.ToList();
+
+            Assert.AreEqual(0, matchAwards.Count);
         }
     }
 }

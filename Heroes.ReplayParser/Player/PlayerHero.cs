@@ -1,5 +1,8 @@
 ﻿namespace Heroes.ReplayParser.Player
 {
+    /// <summary>
+    /// Contains the information for a player's hero.
+    /// </summary>
     public class PlayerHero
     {
         /// <summary>
@@ -22,6 +25,7 @@
         /// </summary>
         public int HeroLevel { get; set; } = 0;
 
+        /// <inheritdoc/>
         public override string? ToString()
         {
             return $"{HeroId}-{HeroName}";

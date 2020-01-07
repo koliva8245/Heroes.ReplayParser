@@ -23,9 +23,9 @@ namespace Heroes.ReplayParser.Replay
         public int MinionXP { get; set; }
 
         /// <summary>
-        /// Gets or sets the current experience earned from mercenaries.
+        /// Gets or sets the current experience earned from defending mercenaries.
         /// </summary>
-        public int MercenaryXP { get; set; }
+        public int CreepXP { get; set; }
 
         /// <summary>
         /// Gets or sets the current experience earned from structures.
@@ -45,7 +45,7 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets the total experience earned.
         /// </summary>
-        public long TotalXP => MinionXP + MercenaryXP + StructureXP + HeroXP + PassiveXP;
+        public long TotalXP => MinionXP + CreepXP + StructureXP + HeroXP + PassiveXP;
 
         /// <inheritdoc/>
         public override string ToString()
