@@ -1,3 +1,4 @@
+using Heroes.ReplayParser.MessageEvent;
 using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -123,7 +124,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetDraftOrderTest()
+        public void DraftOrderTest()
         {
             var draft = _stormReplay.GetDraftOrder().ToList();
 
@@ -139,7 +140,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetTeamLevelsTest()
+        public void TeamLevelsTest()
         {
             List<TeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
             List<TeamLevel> levelsBlue2 = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
@@ -173,7 +174,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetTeamsFinalLevelTest()
+        public void TeamsFinalLevelTest()
         {
             Assert.AreEqual(19, _stormReplay.GetTeamFinalLevel(StormTeam.Blue));
             Assert.AreEqual(21, _stormReplay.GetTeamFinalLevel(StormTeam.Red));
@@ -181,7 +182,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetTeamXpBreakdownTest()
+        public void TeamXpBreakdownTest()
         {
             List<TeamXPBreakdown> xpBlue = _stormReplay.GetTeamXPBreakdown(StormTeam.Blue).ToList();
             List<TeamXPBreakdown> xpRed = _stormReplay.GetTeamXPBreakdown(StormTeam.Red).ToList();
@@ -255,7 +256,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetPlayersScoreResultTest()
+        public void PlayersScoreResultTest()
         {
             ScoreResult scoreResult = _stormReplay.StormPlayers.ToList()[0].ScoreResult;
 
@@ -300,7 +301,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetPlayersMatchAwards()
+        public void PlayersMatchAwardsTest()
         {
             List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[0].MatchAwards.ToList();
 
@@ -310,6 +311,49 @@ namespace Heroes.ReplayParser.Tests
             matchAwards = _stormReplay.StormPlayers.ToList()[9].MatchAwards.ToList();
 
             Assert.AreEqual(0, matchAwards.Count);
+        }
+
+        [TestMethod]
+        public void MessagesTest()
+        {
+            List<StormMessage> messages = _stormReplay.Messages.ToList();
+
+            StormMessage stormMessage = messages.Last();
+
+            Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
+            Assert.AreEqual("Rehgar", stormMessage.MessageSender!.PlayerHero.HeroName);
+            Assert.AreEqual(9, stormMessage.PlayerIndex);
+            Assert.AreEqual(StormMessageTarget.Allies, stormMessage.ChatMessage!.MessageTarget);
+            Assert.IsTrue(stormMessage.ChatMessage!.Message!.StartsWith("https:"));
+            Assert.IsTrue(stormMessage.ChatMessage!.Message!.EndsWith("nzs"));
+            Assert.AreEqual(new TimeSpan(0, 18, 26), stormMessage.Timestamp);
+
+            stormMessage = messages.First();
+
+            Assert.AreEqual(StormMessageEventType.SLoadingProgressMessage, stormMessage.MessageEventType);
+            Assert.AreEqual("Rehgar", stormMessage.MessageSender!.PlayerHero.HeroName);
+            Assert.AreEqual(9, stormMessage.PlayerIndex);
+            Assert.AreEqual(12, stormMessage.LoadingProgressMessage!.LoadingProgress);
+            Assert.AreEqual(new TimeSpan(0, 0, 0), stormMessage.Timestamp);
+
+            stormMessage = messages[97];
+
+            Assert.AreEqual(StormMessageEventType.SPingMessage, stormMessage.MessageEventType);
+            Assert.AreEqual("Arthas", stormMessage.MessageSender!.PlayerHero.HeroName);
+            Assert.AreEqual(7, stormMessage.PlayerIndex);
+            Assert.AreEqual(StormMessageTarget.Allies, stormMessage.PingMessage!.MessageTarget);
+            Assert.AreEqual(146.725830078125, stormMessage.PingMessage!.Point!.Value.X);
+            Assert.AreEqual(73.9296875, stormMessage.PingMessage!.Point!.Value.Y);
+            Assert.AreEqual(new TimeSpan(0, 1, 49), stormMessage.Timestamp);
+        }
+
+        [TestMethod]
+        public void ChatMessagesTest()
+        {
+            List<StormMessage> messages = _stormReplay.ChatMessages.ToList();
+
+            Assert.AreEqual(15, messages.Count);
+            Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
         }
     }
 }

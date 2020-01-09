@@ -10,12 +10,12 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the level of the team.
         /// </summary>
-        public int Level { get; set; }
+        public int Level { get; internal set; }
 
         /// <summary>
         /// Gets or sets the time that the team leveled up.
         /// </summary>
-        public TimeSpan Time { get; set; }
+        public TimeSpan Time { get; internal set; }
 
         /// <inheritdoc/>
         public override string ToString()

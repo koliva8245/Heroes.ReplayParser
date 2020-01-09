@@ -108,7 +108,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetDraftOrderTest()
+        public void DraftOrderTest()
         {
             var draft = _stormReplay.GetDraftOrder().ToList();
 

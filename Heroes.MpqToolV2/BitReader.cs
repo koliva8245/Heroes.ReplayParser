@@ -149,6 +149,16 @@ namespace Heroes.MpqToolV2
         }
 
         /// <summary>
+        /// Reads 2 unaligned bytes from the read-only span as a short.
+        /// </summary>
+        /// <param name="source">The read-only span of bytes to read.</param>
+        /// <returns></returns>
+        public static short ReadInt16Unaligned(this ReadOnlySpan<byte> source)
+        {
+            return (short)source.ReadBits(16);
+        }
+
+        /// <summary>
         /// Reads 4 aligned bytes from the read-only span as an uint.
         /// </summary>
         /// <param name="source">The read-only span of bytes to read.</param>
@@ -309,7 +319,7 @@ namespace Heroes.MpqToolV2
         /// <returns></returns>
         public static ReadOnlySpan<byte> ReadBytes(this ReadOnlySpan<byte> source, int count)
         {
-            ByteAlign();
+            AlignToByte();
 
             ReadOnlySpan<byte> value = source.Slice(Index, count);
             Index += count;
@@ -393,7 +403,10 @@ namespace Heroes.MpqToolV2
             return value;
         }
 
-        private static void ByteAlign()
+        /// <summary>
+        /// If in the middle of a byte, moves to the start of the next byte.
+        /// </summary>
+        public static void AlignToByte()
         {
             if ((_bitIndex & 7) > 0)
             {

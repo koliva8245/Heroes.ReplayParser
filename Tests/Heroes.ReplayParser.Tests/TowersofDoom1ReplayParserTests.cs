@@ -1,3 +1,4 @@
+using Heroes.ReplayParser.MessageEvent;
 using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -64,11 +65,28 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetDraftOrderTest()
+        public void DraftOrderTest()
         {
             var draft = _stormReplay.GetDraftOrder().ToList();
 
             Assert.AreEqual(0, draft.Count);
+        }
+
+        [TestMethod]
+        public void MessagesTest()
+        {
+            List<StormMessage> messages = _stormReplay.Messages.ToList();
+
+            Assert.AreEqual(262, messages.Count);
+        }
+
+        [TestMethod]
+        public void ChatMessagesTest()
+        {
+            List<StormMessage> messages = _stormReplay.ChatMessages.ToList();
+
+            Assert.AreEqual(26, messages.Count);
+            Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Heroes.ReplayParser.Player;
+﻿using Heroes.ReplayParser.MessageEvent;
+using Heroes.ReplayParser.Player;
 using Heroes.ReplayParser.Replay;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -95,7 +96,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetDraftOrderTest()
+        public void DraftOrderTest()
         {
             var draft = _stormReplay.GetDraftOrder().ToList();
 
@@ -103,7 +104,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetTeamLevelsTest()
+        public void TeamLevelsTest()
         {
             List<TeamLevel> levelsBlue = _stormReplay.GetTeamLevels(StormTeam.Blue).ToList();
             List<TeamLevel> levelsRed = _stormReplay.GetTeamLevels(StormTeam.Red).ToList();
@@ -125,7 +126,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetTeamsFinalLevelTest()
+        public void TeamsFinalLevelTest()
         {
             Assert.AreEqual(15, _stormReplay.GetTeamFinalLevel(StormTeam.Blue));
             Assert.AreEqual(15, _stormReplay.GetTeamFinalLevel(StormTeam.Red));
@@ -133,7 +134,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetTeamXpBreakdownTest()
+        public void TeamXpBreakdownTest()
         {
             List<TeamXPBreakdown> xpBlue = _stormReplay.GetTeamXPBreakdown(StormTeam.Blue).ToList();
             List<TeamXPBreakdown> xpRed = _stormReplay.GetTeamXPBreakdown(StormTeam.Red).ToList();
@@ -187,7 +188,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetPlayersScoreResultTest()
+        public void PlayersScoreResultTest()
         {
             StormPlayer player = _stormReplay.StormPlayers.ToList()[3];
 
@@ -211,7 +212,7 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
-        public void GetPlayersMatchAwards()
+        public void PlayersMatchAwardsTest()
         {
             List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[3].MatchAwards.ToList();
 
@@ -220,6 +221,23 @@ namespace Heroes.ReplayParser.Tests
             matchAwards = _stormReplay.StormPlayers.ToList()[1].MatchAwards.ToList();
             Assert.AreEqual(1, matchAwards.Count);
             Assert.AreEqual(MatchAwardType.MostDragonShrinesCaptured, matchAwards[0]);
+        }
+
+        [TestMethod]
+        public void MessagesTest()
+        {
+            List<StormMessage> messages = _stormReplay.Messages.ToList();
+
+            Assert.AreEqual(10, messages.Count);
+        }
+
+        [TestMethod]
+        public void ChatMessagesTest()
+        {
+            List<StormMessage> messages = _stormReplay.ChatMessages.ToList();
+
+            Assert.AreEqual(0, messages.Count);
+            Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
         }
     }
 }

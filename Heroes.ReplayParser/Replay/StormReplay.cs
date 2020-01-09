@@ -1,4 +1,5 @@
-﻿using Heroes.ReplayParser.Player;
+﻿using Heroes.ReplayParser.MessageEvent;
+using Heroes.ReplayParser.Player;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the version of the replay.
         /// </summary>
-        public ReplayVersion ReplayVersion { get; set; } = new ReplayVersion();
+        public ReplayVersion ReplayVersion { get; internal set; } = new ReplayVersion();
 
         /// <summary>
         /// Gets the build number of the replay.
@@ -41,7 +42,7 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the total number of elapsed game loops / frames.
         /// </summary>
-        public int ElapsedGamesLoops { get; set; }
+        public int ElapsedGamesLoops { get; internal set; }
 
         /// <summary>
         /// Gets the length of the replay.
@@ -51,32 +52,32 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the map info.
         /// </summary>
-        public MapInfo MapInfo { get; set; } = new MapInfo();
+        public MapInfo MapInfo { get; internal set; } = new MapInfo();
 
         /// <summary>
         /// Gets or sets the date and time of the when the replay was created.
         /// </summary>
-        public DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; internal set; }
 
         /// <summary>
         /// Gets or sets the random value.
         /// </summary>
-        public long RandomValue { get; set; }
+        public long RandomValue { get; internal set; }
 
         /// <summary>
         /// Gets or sets the game mode.
         /// </summary>
-        public GameMode GameMode { get; set; } = GameMode.TryMe;
+        public GameMode GameMode { get; internal set; } = GameMode.TryMe;
 
         /// <summary>
         /// Gets or sets the team size of the selected game type.
         /// </summary>
-        public string TeamSize { get; set; } = string.Empty;
+        public string TeamSize { get; internal set; } = string.Empty;
 
         /// <summary>
         /// Gets the speed the game was played at.
         /// </summary>
-        public GameSpeed GameSpeed { get; set; } = GameSpeed.Unknown;
+        public GameSpeed GameSpeed { get; internal set; } = GameSpeed.Unknown;
 
         /// <summary>
         /// Gets a collection of playing players (no observers, has AI).
@@ -114,6 +115,16 @@ namespace Heroes.ReplayParser.Replay
         public IEnumerable<TrackerEvent> TrackerEvents => TrackerEventsInternal;
 
         /// <summary>
+        /// Gets a collection of all messages.
+        /// </summary>
+        public IEnumerable<StormMessage> Messages => MessagesInternal;
+
+        /// <summary>
+        /// Gets a collection of only chat messages.
+        /// </summary>
+        public IEnumerable<StormMessage> ChatMessages => MessagesInternal.Where(x => x.MessageEventType.HasValue && x.MessageEventType.Value == StormMessageEventType.SChatMessage);
+
+        /// <summary>
         /// Gets or sets the list of all players (no observers).
         /// </summary>
         /// <remarks>Contains AI.</remarks>
@@ -137,9 +148,11 @@ namespace Heroes.ReplayParser.Replay
         /// <remarks>Contains AI. No observers.</remarks>
         internal StormPlayer[] PlayersWithOpenSlots { get; private set; } = new StormPlayer[10];
 
-        internal string?[][] TeamHeroAttributeIdBans { get; set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
+        internal string?[][] TeamHeroAttributeIdBans { get; private set; } = new string?[2][] { new string?[3] { null, null, null }, new string?[3] { null, null, null } };
 
-        internal List<TrackerEvent> TrackerEventsInternal { get; set; } = new List<TrackerEvent>();
+        internal List<TrackerEvent> TrackerEventsInternal { get; private set; } = new List<TrackerEvent>();
+
+        internal List<StormMessage> MessagesInternal { get; private set; } = new List<StormMessage>();
 
         /// <summary>
         /// Gets a collection of a team's bans.

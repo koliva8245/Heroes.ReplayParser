@@ -3,17 +3,28 @@
     /// <summary>
     /// Contains the properties for point coordinates.
     /// </summary>
-    public class Point
+    public struct Point
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Point"/> struct.
+        /// </summary>
+        /// <param name="x">The X-coordinate.</param>
+        /// <param name="y">The Y-coordinate.</param>
+        public Point(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+
         /// <summary>
         /// Gets or sets the X coordinate.
         /// </summary>
-        public int X { get; set; }
+        public double X { get; }
 
         /// <summary>
         /// Gets or sets the Y coordinate.
         /// </summary>
-        public int Y { get; set; }
+        public double Y { get; }
 
         /// <inheritdoc/>
         public override string ToString()
