@@ -92,9 +92,9 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("SprayStaticComicSweetChromie", player0.PlayerLoadout.Spray);
             Assert.AreEqual("DeckardA", player0.PlayerLoadout.AnnouncerPack);
             Assert.AreEqual("GreymaneBase_VoiceLine04", player0.PlayerLoadout.VoiceLine);
-            Assert.AreEqual(24, player0.HeroMasteryTiers.Count);
-            Assert.AreEqual("Auri", player0.HeroMasteryTiers[2].HeroAttributeId);
-            Assert.AreEqual(1, player0.HeroMasteryTiers[2].TierLevel);
+            Assert.AreEqual(24, player0.HeroMasteryTiersCount);
+            Assert.AreEqual("Auri", player0.HeroMasteryTiers.ToList()[2].HeroAttributeId);
+            Assert.AreEqual(1, player0.HeroMasteryTiers.ToList()[2].TierLevel);
         }
 
         [TestMethod]
@@ -305,7 +305,7 @@ namespace Heroes.ReplayParser.Tests
         {
             List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[0].MatchAwards.ToList();
 
-            Assert.AreEqual(1, matchAwards.Count);
+            Assert.AreEqual(1, _stormReplay.StormPlayers.ToList()[0].MatchAwardsCount);
             Assert.AreEqual(MatchAwardType.MostMercCampsCaptured, matchAwards[0]);
 
             matchAwards = _stormReplay.StormPlayers.ToList()[9].MatchAwards.ToList();

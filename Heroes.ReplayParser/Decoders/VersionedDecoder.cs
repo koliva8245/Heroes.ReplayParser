@@ -7,11 +7,18 @@ using System.Text;
 
 namespace Heroes.ReplayParser.Decoders
 {
-    internal class VersionedDecoder
+    /// <summary>
+    /// Contains the information for the version decoder.
+    /// </summary>
+    public class VersionedDecoder
     {
         private readonly byte _dataType;
         private readonly byte[]? _value = null;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VersionedDecoder"/> class.
+        /// </summary>
+        /// <param name="source">The read-only span of bytes to read.</param>
         public VersionedDecoder(ReadOnlySpan<byte> source)
         {
             _dataType = source.ReadByte();
@@ -64,9 +71,24 @@ namespace Heroes.ReplayParser.Decoders
             }
         }
 
+        /// <summary>
+        /// Gets the dictionary containing another version decoder.
+        /// </summary>
         public Dictionary<int, VersionedDecoder>? StructureByIndex { get; private set; } = null;
+
+        /// <summary>
+        /// Gets the optional data.
+        /// </summary>
         public VersionedDecoder? OptionalData { get; private set; } = null;
+
+        /// <summary>
+        /// Gets the choice data.
+        /// </summary>
         public VersionedDecoder? ChoiceData { get; private set; } = null;
+
+        /// <summary>
+        /// Gets the array data.
+        /// </summary>
         public VersionedDecoder[]? ArrayData { get; private set; } = null;
 
         /// <summary>
@@ -134,6 +156,7 @@ namespace Heroes.ReplayParser.Decoders
         /// <returns></returns>
         public string GetValueAsString() => _value != null ? Encoding.UTF8.GetString(_value) : string.Empty;
 
+        /// <inheritdoc/>
         public override string? ToString()
         {
             return _dataType switch

@@ -58,7 +58,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(string.Empty, player0.PlayerLoadout.Spray);
             Assert.AreEqual(string.Empty, player0.PlayerLoadout.AnnouncerPack);
             Assert.AreEqual(string.Empty, player0.PlayerLoadout.VoiceLine);
-            Assert.AreEqual(0, player0.HeroMasteryTiers.Count);
+            Assert.AreEqual(0, player0.HeroMasteryTiersCount);
 
             Assert.IsFalse(_stormReplay.HasObservers);
             Assert.IsFalse(_stormReplay.HasAI);

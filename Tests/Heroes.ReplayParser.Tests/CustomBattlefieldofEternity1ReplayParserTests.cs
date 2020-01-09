@@ -88,9 +88,9 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("SprayStaticHGC2017EUDignitas", player0.PlayerLoadout.Spray);
             Assert.AreEqual("JainaA", player0.PlayerLoadout.AnnouncerPack);
             Assert.AreEqual("GreymaneBase_VoiceLine01", player0.PlayerLoadout.VoiceLine);
-            Assert.AreEqual(15, player0.HeroMasteryTiers.Count);
-            Assert.AreEqual("Barb", player0.HeroMasteryTiers[2].HeroAttributeId);
-            Assert.AreEqual(1, player0.HeroMasteryTiers[2].TierLevel);
+            Assert.AreEqual(15, player0.HeroMasteryTiersCount);
+            Assert.AreEqual("Barb", player0.HeroMasteryTiers.ToList()[2].HeroAttributeId);
+            Assert.AreEqual(1, player0.HeroMasteryTiers.ToList()[2].TierLevel);
             Assert.AreEqual(PlayerType.Human, player0.PlayerType);
 
             List<StormPlayer> playersWithObs = _stormReplay.StormPlayersWithObservers.ToList();

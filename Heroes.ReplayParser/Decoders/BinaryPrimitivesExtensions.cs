@@ -31,7 +31,7 @@ namespace Heroes.ReplayParser.Decoders
         /// Reads a signed integer of variable length of a read-only span of bytes, as little endian.
         /// </summary>
         /// <param name="source">The read-only span of bytes to read.</param>
-        /// <param name="size">The number of bytes read</param>
+        /// <param name="size">The number of bytes read.</param>
         /// <returns>The little endian value.</returns>
         public static long ReadVIntLittleEndian(ReadOnlySpan<byte> source, out int size)
         {

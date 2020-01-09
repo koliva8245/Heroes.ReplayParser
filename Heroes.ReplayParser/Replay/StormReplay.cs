@@ -32,7 +32,7 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the version of the replay.
         /// </summary>
-        public ReplayVersion ReplayVersion { get; internal set; } = new ReplayVersion();
+        public ReplayVersion ReplayVersion { get; set; } = new ReplayVersion();
 
         /// <summary>
         /// Gets the build number of the replay.
@@ -42,7 +42,7 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the total number of elapsed game loops / frames.
         /// </summary>
-        public int ElapsedGamesLoops { get; internal set; }
+        public int ElapsedGamesLoops { get; set; }
 
         /// <summary>
         /// Gets the length of the replay.
@@ -52,32 +52,32 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets or sets the map info.
         /// </summary>
-        public MapInfo MapInfo { get; internal set; } = new MapInfo();
+        public MapInfo MapInfo { get; set; } = new MapInfo();
 
         /// <summary>
         /// Gets or sets the date and time of the when the replay was created.
         /// </summary>
-        public DateTime Timestamp { get; internal set; }
+        public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Gets or sets the random value.
         /// </summary>
-        public long RandomValue { get; internal set; }
+        public long RandomValue { get; set; }
 
         /// <summary>
         /// Gets or sets the game mode.
         /// </summary>
-        public GameMode GameMode { get; internal set; } = GameMode.TryMe;
+        public GameMode GameMode { get; set; } = GameMode.TryMe;
 
         /// <summary>
         /// Gets or sets the team size of the selected game type.
         /// </summary>
-        public string TeamSize { get; internal set; } = string.Empty;
+        public string TeamSize { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets the speed the game was played at.
         /// </summary>
-        public GameSpeed GameSpeed { get; internal set; } = GameSpeed.Unknown;
+        public GameSpeed GameSpeed { get; set; } = GameSpeed.Unknown;
 
         /// <summary>
         /// Gets a collection of playing players (no observers, has AI).

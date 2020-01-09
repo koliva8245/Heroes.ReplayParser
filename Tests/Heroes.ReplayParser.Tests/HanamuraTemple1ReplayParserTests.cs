@@ -76,9 +76,9 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("SprayStaticWinterRewardReigndeer", player0.PlayerLoadout.Spray);
             Assert.AreEqual("MurkyA", player0.PlayerLoadout.AnnouncerPack);
             Assert.AreEqual("BrightwingMonkey_VoiceLine01", player0.PlayerLoadout.VoiceLine);
-            Assert.AreEqual(22, player0.HeroMasteryTiers.Count);
-            Assert.AreEqual("Arts", player0.HeroMasteryTiers[2].HeroAttributeId);
-            Assert.AreEqual(3, player0.HeroMasteryTiers[2].TierLevel);
+            Assert.AreEqual(22, player0.HeroMasteryTiersCount);
+            Assert.AreEqual("Arts", player0.HeroMasteryTiers.ToList()[2].HeroAttributeId);
+            Assert.AreEqual(3, player0.HeroMasteryTiers.ToList()[2].TierLevel);
         }
 
         [TestMethod]

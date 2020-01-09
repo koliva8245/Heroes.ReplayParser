@@ -125,11 +125,8 @@ namespace Heroes.ReplayParser.MpqFiles
             else
                 source.ReadBits(4);
 
-            replay.MapInfo.MapSize = new Point
-            {
-                X = (int)source.ReadBits(8), // m_mapSizeX
-                Y = (int)source.ReadBits(8), // m_mapSizeY
-            };
+            // m_mapSizeX and m_mapSizeY
+            replay.MapInfo.MapSize = new Point(source.ReadBits(8), source.ReadBits(8));
 
             source.ReadBits(32); // m_mapFileSyncChecksum
             source.ReadBlobAsString(11); // m_mapFileName
@@ -306,7 +303,7 @@ namespace Heroes.ReplayParser.MpqFiles
 
                             if (userId.HasValue)
                             {
-                                replay.ClientListByUserID[userId.Value].HeroMasteryTiers.Add(new HeroMasteryTier()
+                                replay.ClientListByUserID[userId.Value].HeroMasteryTiersInternal.Add(new HeroMasteryTier()
                                 {
                                     HeroAttributeId = heroAttributeName,
                                     TierLevel = tier,

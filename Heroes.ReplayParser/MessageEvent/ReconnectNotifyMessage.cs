@@ -8,6 +8,6 @@
         /// <summary>
         /// Gets or sets the value of the status.
         /// </summary>
-        public int Status { get; internal set; }
+        public int Status { get; set; }
     }
 }

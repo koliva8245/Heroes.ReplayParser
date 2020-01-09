@@ -56,22 +56,22 @@ namespace Heroes.ReplayParser.MessageEvent
         /// <summary>
         /// Gets or set the message sender player.
         /// </summary>
-        public StormPlayer? MessageSender { get; internal set; } = null;
+        public StormPlayer? MessageSender { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the player index of the sender.
         /// </summary>
-        public int PlayerIndex { get; internal set; }
+        public int PlayerIndex { get; set; }
 
         /// <summary>
         /// Gets or sets the time stamp of the message.
         /// </summary>
-        public TimeSpan Timestamp { get; internal set; }
+        public TimeSpan Timestamp { get; set; }
 
         /// <summary>
         /// Gets or sets the type of message event.
         /// </summary>
-        public StormMessageEventType? MessageEventType { get; internal set; } = null;
+        public StormMessageEventType? MessageEventType { get; set; } = null;
 
         /// <summary>
         /// Gets the chat message.

@@ -17,12 +17,12 @@
         }
 
         /// <summary>
-        /// Gets or sets the X coordinate.
+        /// Gets the X coordinate.
         /// </summary>
         public double X { get; }
 
         /// <summary>
-        /// Gets or sets the Y coordinate.
+        /// Gets the Y coordinate.
         /// </summary>
         public double Y { get; }
 

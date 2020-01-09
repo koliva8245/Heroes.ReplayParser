@@ -9,16 +9,44 @@ namespace Heroes.ReplayParser
     public struct TrackerEvent
     {
         /// <summary>
-        /// Gets or sets the type of the tracker event.
+        /// Initializes a new instance of the <see cref="TrackerEvent"/> struct.
         /// </summary>
-        public TrackerEventType TrackerEventType;
+        /// <param name="trackerEventType">The event type of the tracker.</param>
+        /// <param name="timeSpan">The time the event took place.</param>
+        /// <param name="versionedDecoder">Data associated with the event.</param>
+        public TrackerEvent(TrackerEventType trackerEventType, TimeSpan timeSpan, VersionedDecoder versionedDecoder)
+        {
+            TrackerEventType = trackerEventType;
+            TimeSpan = timeSpan;
+            VersionedDecoder = versionedDecoder;
+        }
 
         /// <summary>
-        /// Gets or sets the time that the event took place.
+        /// Initializes a new instance of the <see cref="TrackerEvent"/> struct.
         /// </summary>
-        public TimeSpan TimeSpan;
+        /// <param name="trackerEventType">The event type of the tracker.</param>
+        /// <param name="timeSpan">The time the event took place.</param>
+        public TrackerEvent(TrackerEventType trackerEventType, TimeSpan timeSpan)
+        {
+            TrackerEventType = trackerEventType;
+            TimeSpan = timeSpan;
+            VersionedDecoder = null;
+        }
 
-        internal VersionedDecoder? VersionedDecoder;
+        /// <summary>
+        /// Gets the type of the tracker event.
+        /// </summary>
+        public TrackerEventType TrackerEventType { get; }
+
+        /// <summary>
+        /// Gets the time that the event took place.
+        /// </summary>
+        public TimeSpan TimeSpan { get; }
+
+        /// <summary>
+        /// Gets the version decoder to obtain the data.
+        /// </summary>
+        public VersionedDecoder? VersionedDecoder { get; }
 
         /// <inheritdoc/>
         public override string? ToString()

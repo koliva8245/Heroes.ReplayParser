@@ -38,9 +38,14 @@ namespace Heroes.ReplayParser.Player
         public PlayerLoadout PlayerLoadout { get; set; } = new PlayerLoadout();
 
         /// <summary>
-        /// Gets or sets the player's hero's mastery tier levels.
+        /// Gets the player's hero's mastery tier levels.
         /// </summary>
-        public IList<HeroMasteryTier> HeroMasteryTiers { get; set; } = new List<HeroMasteryTier>();
+        public IEnumerable<HeroMasteryTier> HeroMasteryTiers => HeroMasteryTiersInternal;
+
+        /// <summary>
+        /// Gets the amount of hero mastery tiers.
+        /// </summary>
+        public int HeroMasteryTiersCount => HeroMasteryTiersInternal.Count;
 
         /// <summary>
         /// Gets or sets the player's team id.
@@ -96,6 +101,13 @@ namespace Heroes.ReplayParser.Player
         /// Gets the match awards earned.
         /// </summary>
         public IEnumerable<MatchAwardType> MatchAwards => ScoreResult.MatchAwards;
+
+        /// <summary>
+        /// Get the amount of match awards.
+        /// </summary>
+        public int MatchAwardsCount => ScoreResult.MatchAwards.Count;
+
+        internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = new List<HeroMasteryTier>();
 
         internal int WorkingSetSlotId { get; set; }
 

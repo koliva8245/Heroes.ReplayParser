@@ -2,9 +2,9 @@
 {
     internal struct ReplayAttribute
     {
-        public ReplayAttributeEventType AttributeType;
-        public int PlayerId;
-        public string Value;
+        public ReplayAttributeEventType AttributeType { get; set; }
+        public int PlayerId { get; set; }
+        public string Value { get; set; }
 
         public override string? ToString()
         {

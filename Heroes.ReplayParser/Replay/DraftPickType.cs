@@ -1,7 +1,7 @@
 ﻿namespace Heroes.ReplayParser.Replay
 {
     /// <summary>
-    /// Specifices the type of draft pick.
+    /// Specifies the type of draft pick.
     /// </summary>
     public enum DraftPickType
     {

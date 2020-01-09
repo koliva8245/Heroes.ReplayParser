@@ -8,12 +8,12 @@
         /// <summary>
         /// Gets or sets the target of the message.
         /// </summary>
-        public StormMessageTarget MessageTarget { get; internal set; }
+        public StormMessageTarget MessageTarget { get; set; }
 
         /// <summary>
         /// Gets or sets the message sent.
         /// </summary>
-        public string? Message { get; internal set; } = null;
+        public string? Message { get; set; } = null;
 
         /// <inheritdoc/>
         public override string ToString()

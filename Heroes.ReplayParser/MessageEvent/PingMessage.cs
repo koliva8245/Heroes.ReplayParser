@@ -13,11 +13,11 @@
         /// <summary>
         /// Gets or sets the target of the message.
         /// </summary>
-        public StormMessageTarget MessageTarget { get; internal set; }
+        public StormMessageTarget MessageTarget { get; set; }
 
         /// <summary>
         /// Gets or sets the coordinates of where the ping message was targeted at.
         /// </summary>
-        public Point? Point { get; internal set; } = null;
+        public Point? Point { get; set; } = null;
     }
 }
