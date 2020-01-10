@@ -155,22 +155,22 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(0, levelsOther.Count);
 
             Assert.AreEqual(1, levelsBlue[0].Level);
-            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsBlue[0].Time);
+            Assert.AreEqual(new TimeSpan(32500000), levelsBlue[0].Time);
 
             Assert.AreEqual(8, levelsBlue[7].Level);
-            Assert.AreEqual(new TimeSpan(0, 5, 28), levelsBlue[7].Time);
+            Assert.AreEqual(new TimeSpan(3283125000), levelsBlue[7].Time);
 
             Assert.AreEqual(18, levelsBlue[17].Level);
-            Assert.AreEqual(new TimeSpan(0, 15, 58), levelsBlue[17].Time);
+            Assert.AreEqual(new TimeSpan(9587500000), levelsBlue[17].Time);
 
             Assert.AreEqual(1, levelsRed[0].Level);
-            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsRed[0].Time);
+            Assert.AreEqual(new TimeSpan(32500000), levelsRed[0].Time);
 
             Assert.AreEqual(10, levelsRed[9].Level);
-            Assert.AreEqual(new TimeSpan(0, 6, 9), levelsRed[9].Time);
+            Assert.AreEqual(new TimeSpan(3693750000), levelsRed[9].Time);
 
             Assert.AreEqual(20, levelsRed[19].Level);
-            Assert.AreEqual(new TimeSpan(0, 16, 33), levelsRed[19].Time);
+            Assert.AreEqual(new TimeSpan(9930625000), levelsRed[19].Time);
         }
 
         [TestMethod]
@@ -200,7 +200,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(1200, blue.MinionXP);
             Assert.AreEqual(575, blue.PassiveXP);
             Assert.AreEqual(0, blue.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 1, 38), blue.Time);
+            Assert.AreEqual(new TimeSpan(981250000), blue.Time);
             Assert.AreEqual(1775, blue.TotalXP);
 
             blue = xpBlue[13];
@@ -210,7 +210,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(25754, blue.MinionXP);
             Assert.AreEqual(18515, blue.PassiveXP);
             Assert.AreEqual(375, blue.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 14, 38), blue.Time);
+            Assert.AreEqual(new TimeSpan(8781250000), blue.Time);
             Assert.AreEqual(53887, blue.TotalXP);
 
             blue = xpBlue[17];
@@ -220,7 +220,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(32032, blue.MinionXP);
             Assert.AreEqual(23621, blue.PassiveXP);
             Assert.AreEqual(375, blue.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 18, 27), blue.Time);
+            Assert.AreEqual(new TimeSpan(11078750000), blue.Time);
             Assert.AreEqual(70313, blue.TotalXP);
 
             TeamXPBreakdown red = xpRed[0];
@@ -231,7 +231,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(1360, red.MinionXP);
             Assert.AreEqual(575, red.PassiveXP);
             Assert.AreEqual(0, red.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 1, 38), red.Time);
+            Assert.AreEqual(new TimeSpan(981250000), red.Time);
             Assert.AreEqual(2527, red.TotalXP);
 
             red = xpRed[13];
@@ -241,7 +241,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(31496, red.MinionXP);
             Assert.AreEqual(21288, red.PassiveXP);
             Assert.AreEqual(1425, red.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 14, 38), red.Time);
+            Assert.AreEqual(new TimeSpan(8781250000), red.Time);
             Assert.AreEqual(64466, red.TotalXP);
 
             red = xpRed[17];
@@ -251,7 +251,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(35918, red.MinionXP);
             Assert.AreEqual(29392, red.PassiveXP);
             Assert.AreEqual(2350, red.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 18, 27), red.Time);
+            Assert.AreEqual(new TimeSpan(11078750000), red.Time);
             Assert.AreEqual(82700, red.TotalXP);
         }
 
@@ -328,7 +328,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(StormMessageTarget.Allies, stormMessage.ChatMessage!.MessageTarget);
             Assert.IsTrue(stormMessage.ChatMessage!.Message!.StartsWith("https:"));
             Assert.IsTrue(stormMessage.ChatMessage!.Message!.EndsWith("nzs"));
-            Assert.AreEqual(new TimeSpan(0, 18, 26), stormMessage.Timestamp);
+            Assert.AreEqual(new TimeSpan(11055625000), stormMessage.Timestamp);
 
             stormMessage = messages.First();
 
@@ -336,7 +336,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual("Rehgar", stormMessage.MessageSender!.PlayerHero.HeroName);
             Assert.AreEqual(9, stormMessage.PlayerIndex);
             Assert.AreEqual(12, stormMessage.LoadingProgressMessage!.LoadingProgress);
-            Assert.AreEqual(new TimeSpan(0, 0, 0), stormMessage.Timestamp);
+            Assert.AreEqual(new TimeSpan(0), stormMessage.Timestamp);
 
             stormMessage = messages[97];
 
@@ -346,7 +346,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(StormMessageTarget.Allies, stormMessage.PingMessage!.MessageTarget);
             Assert.AreEqual(146.725830078125, stormMessage.PingMessage!.Point!.Value.X);
             Assert.AreEqual(73.9296875, stormMessage.PingMessage!.Point!.Value.Y);
-            Assert.AreEqual(new TimeSpan(0, 1, 49), stormMessage.Timestamp);
+            Assert.AreEqual(new TimeSpan(1091250000), stormMessage.Timestamp);
         }
 
         [TestMethod]

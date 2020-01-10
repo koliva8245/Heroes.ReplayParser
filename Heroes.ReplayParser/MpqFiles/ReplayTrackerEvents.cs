@@ -20,7 +20,7 @@ namespace Heroes.ReplayParser.MpqFiles
             {
                 gameLoop += new VersionedDecoder(source).ChoiceData!.GetValueAsUInt32();
 
-                TimeSpan timeSpan = TimeSpan.FromSeconds(gameLoop / 16);
+                TimeSpan timeSpan = TimeSpan.FromSeconds(gameLoop / 16.0);
                 TrackerEventType type = (TrackerEventType)new VersionedDecoder(source).GetValueAsUInt32();
                 VersionedDecoder decoder = new VersionedDecoder(source);
 

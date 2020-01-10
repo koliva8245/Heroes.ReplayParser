@@ -113,16 +113,16 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(15, levelsRed.Count);
 
             Assert.AreEqual(1, levelsBlue[0].Level);
-            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsBlue[0].Time);
+            Assert.AreEqual(new TimeSpan(32500000), levelsBlue[0].Time);
 
             Assert.AreEqual(8, levelsBlue[7].Level);
-            Assert.AreEqual(new TimeSpan(0, 5, 39), levelsBlue[7].Time);
+            Assert.AreEqual(new TimeSpan(3390625000), levelsBlue[7].Time);
 
             Assert.AreEqual(1, levelsRed[0].Level);
-            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsRed[0].Time);
+            Assert.AreEqual(new TimeSpan(32500000), levelsRed[0].Time);
 
             Assert.AreEqual(10, levelsRed[9].Level);
-            Assert.AreEqual(new TimeSpan(0, 7, 15), levelsRed[9].Time);
+            Assert.AreEqual(new TimeSpan(4350625000), levelsRed[9].Time);
         }
 
         [TestMethod]
@@ -152,7 +152,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(7724, blue.MinionXP);
             Assert.AreEqual(4715, blue.PassiveXP);
             Assert.AreEqual(250, blue.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 4, 38), blue.Time);
+            Assert.AreEqual(new TimeSpan(2781250000), blue.Time);
             Assert.AreEqual(12689, blue.TotalXP);
 
             blue = xpBlue[12];
@@ -162,7 +162,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(22001, blue.MinionXP);
             Assert.AreEqual(18514, blue.PassiveXP);
             Assert.AreEqual(1300, blue.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 13, 35), blue.Time);
+            Assert.AreEqual(new TimeSpan(8157500000), blue.Time);
             Assert.AreEqual(48823, blue.TotalXP);
 
             TeamXPBreakdown red = xpRed[3];
@@ -173,7 +173,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(6657, red.MinionXP);
             Assert.AreEqual(4715, red.PassiveXP);
             Assert.AreEqual(0, red.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 4, 38), red.Time);
+            Assert.AreEqual(new TimeSpan(2781250000), red.Time);
             Assert.AreEqual(13532, red.TotalXP);
 
             red = xpRed[12];
@@ -183,7 +183,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(24203, red.MinionXP);
             Assert.AreEqual(17153, red.PassiveXP);
             Assert.AreEqual(500, red.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 13, 35), red.Time);
+            Assert.AreEqual(new TimeSpan(8157500000), red.Time);
             Assert.AreEqual(46070, red.TotalXP);
         }
 

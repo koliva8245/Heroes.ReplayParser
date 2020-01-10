@@ -15,13 +15,14 @@ namespace Heroes.ReplayParser.MpqFiles
                 return;
 
             BitReader.ResetIndex();
+            BitReader.EndianType = EndianType.LittleEndian;
 
             uint ticksElapsed = 0;
 
             while (BitReader.Index < source.Length)
             {
                 ticksElapsed += source.ReadBits(6 + ((int)source.ReadBits(2) << 3));
-                TimeSpan timeStamp = TimeSpan.FromSeconds((int)Math.Round((double)ticksElapsed / 16));
+                TimeSpan timeStamp = TimeSpan.FromSeconds(ticksElapsed / 16.0);
 
                 int playerIndex = (int)source.ReadBits(5);
                 StormMessageEventType messageEventType = (StormMessageEventType)source.ReadBits(4);

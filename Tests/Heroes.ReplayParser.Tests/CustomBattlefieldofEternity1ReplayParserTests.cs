@@ -152,22 +152,22 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(20, levelsRed.Count);
 
             Assert.AreEqual(1, levelsBlue[0].Level);
-            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsBlue[0].Time);
+            Assert.AreEqual(new TimeSpan(32500000), levelsBlue[0].Time);
 
             Assert.AreEqual(8, levelsBlue[7].Level);
-            Assert.AreEqual(new TimeSpan(0, 6, 10), levelsBlue[7].Time);
+            Assert.AreEqual(new TimeSpan(3701875000), levelsBlue[7].Time);
 
             Assert.AreEqual(18, levelsBlue[17].Level);
-            Assert.AreEqual(new TimeSpan(0, 18, 54), levelsBlue[17].Time);
+            Assert.AreEqual(new TimeSpan(11347500000), levelsBlue[17].Time);
 
             Assert.AreEqual(1, levelsRed[0].Level);
-            Assert.AreEqual(new TimeSpan(0, 0, 3), levelsRed[0].Time);
+            Assert.AreEqual(new TimeSpan(32500000), levelsRed[0].Time);
 
             Assert.AreEqual(10, levelsRed[9].Level);
-            Assert.AreEqual(new TimeSpan(0, 8, 32), levelsRed[9].Time);
+            Assert.AreEqual(new TimeSpan(5124375000), levelsRed[9].Time);
 
             Assert.AreEqual(20, levelsRed[19].Level);
-            Assert.AreEqual(new TimeSpan(0, 19, 45), levelsRed[19].Time);
+            Assert.AreEqual(new TimeSpan(11850625000), levelsRed[19].Time);
         }
 
         [TestMethod]
@@ -197,7 +197,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(4868, blue.MinionXP);
             Assert.AreEqual(4100, blue.PassiveXP);
             Assert.AreEqual(0, blue.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 4, 38), blue.Time);
+            Assert.AreEqual(new TimeSpan(2781250000), blue.Time);
             Assert.AreEqual(10600, blue.TotalXP);
 
             blue = xpBlue[19];
@@ -207,7 +207,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(21883, blue.MinionXP);
             Assert.AreEqual(22520, blue.PassiveXP);
             Assert.AreEqual(7250, blue.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 20, 06), blue.Time);
+            Assert.AreEqual(new TimeSpan(12065000000), blue.Time);
             Assert.AreEqual(62358, blue.TotalXP);
 
             TeamXPBreakdown red = xpRed[3];
@@ -218,7 +218,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(5082, red.MinionXP);
             Assert.AreEqual(4100, red.PassiveXP);
             Assert.AreEqual(0, red.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 4, 38), red.Time);
+            Assert.AreEqual(new TimeSpan(2781250000), red.Time);
             Assert.AreEqual(9407, red.TotalXP);
 
             red = xpRed[19];
@@ -228,7 +228,7 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(23551, red.MinionXP);
             Assert.AreEqual(22520, red.PassiveXP);
             Assert.AreEqual(8850, red.StructureXP);
-            Assert.AreEqual(new TimeSpan(0, 20, 06), red.Time);
+            Assert.AreEqual(new TimeSpan(12065000000), red.Time);
             Assert.AreEqual(73733, red.TotalXP);
         }
 
@@ -302,14 +302,14 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(0, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.AbilityIndex);
             Assert.AreEqual(423, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.AbilityLink);
             Assert.AreEqual(954, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.ButtonLink);
-            Assert.AreEqual(new TimeSpan(0, 11, 51), stormMessage.Timestamp);
+            Assert.AreEqual(new TimeSpan(7110000000), stormMessage.Timestamp);
 
             stormMessage = messages.Last();
 
             Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Li-Ming", stormMessage.MessageSender!.PlayerHero.HeroName);
             Assert.AreEqual(10, stormMessage.PlayerIndex);
-            Assert.AreEqual(new TimeSpan(0, 20, 3), stormMessage.Timestamp);
+            Assert.AreEqual(new TimeSpan(12031875000), stormMessage.Timestamp);
             Assert.AreEqual(StormMessageTarget.All, stormMessage.ChatMessage!.MessageTarget);
         }
 
