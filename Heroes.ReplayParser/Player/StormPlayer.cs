@@ -95,7 +95,7 @@ namespace Heroes.ReplayParser.Player
         /// <summary>
         /// Gets the player's score result.
         /// </summary>
-        public ScoreResult ScoreResult => _scoreResult!.Invoke(_player!.Value);
+        public ScoreResult ScoreResult => _scoreResult?.Invoke(_player!.Value) ?? new ScoreResult();
 
         /// <summary>
         /// Gets the match awards earned.

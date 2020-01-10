@@ -202,13 +202,15 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(10462, scoreResult.DamageSoaked);
             Assert.AreEqual(18385, scoreResult.DamageTaken);
             Assert.AreEqual(new TimeSpan(0, 0, 30), scoreResult.TimeCCdEnemyHeroes);
-            Assert.AreEqual(0, scoreResult.TimeRootingEnemyHeroes);
-            Assert.AreEqual(0, scoreResult.TimeSilencingEnemyHeroes);
+            Assert.AreEqual(new TimeSpan(0, 0, 0), scoreResult.TimeRootingEnemyHeroes);
+            Assert.AreEqual(new TimeSpan(0, 0, 0), scoreResult.TimeSilencingEnemyHeroes);
             Assert.AreEqual(new TimeSpan(0, 1, 23), scoreResult.TimeSpentDead);
-            Assert.AreEqual(12, scoreResult.TimeStunningEnemyHeroes);
+            Assert.AreEqual(new TimeSpan(0, 0, 12), scoreResult.TimeStunningEnemyHeroes);
             Assert.AreEqual(2, scoreResult.TownKills);
             Assert.AreEqual(1, scoreResult.VengeancesPerformed);
             Assert.AreEqual(0, scoreResult.WatchTowerCaptures);
+            Assert.AreEqual(39, scoreResult.MinionKills);
+            Assert.AreEqual(15, scoreResult.RegenGlobes);
         }
 
         [TestMethod]

@@ -1,5 +1,4 @@
-﻿using Heroes.MpqToolV2;
-using Heroes.ReplayParser.Replay;
+﻿using Heroes.ReplayParser.Replay;
 using System;
 
 namespace Heroes.ReplayParser.MpqFiles

@@ -166,7 +166,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString()} , Data: {ChoiceData}",
                 0x04 => OptionalData?.ToString(),
                 0x05 => StructureByIndex != null ? $"{{{string.Join(", ", StructureByIndex.Values.Select(i => i?.ToString()))}}}" : null,
-                0x06 => _value != null ? _value[0].ToString() : null,
+                0x06 => _value?[0].ToString(),
                 0x07 => BinaryPrimitives.ReadUInt32LittleEndian(_value).ToString(),
                 0x08 => BinaryPrimitives.ReadUInt64LittleEndian(_value).ToString(),
                 0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString(),

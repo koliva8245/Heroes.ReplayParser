@@ -140,6 +140,21 @@ namespace Heroes.ReplayParser.Player
         public int? SpellDamage { get; set; } = null;
 
         /// <summary>
+        /// Gets or sets the amount of time the player was on fire.
+        /// </summary>
+        public TimeSpan? OnFireTimeonFire { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the amount of minion kills.
+        /// </summary>
+        public int MinionKills { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the amount of regenerationi globes collected.
+        /// </summary>
+        public int RegenGlobes { get; set; } = 0;
+
+        /// <summary>
         ///
         /// </summary>
         public int HighestKillStreak { get; set; } = 0;
@@ -152,17 +167,17 @@ namespace Heroes.ReplayParser.Player
         /// <summary>
         ///
         /// </summary>
-        public int TimeSilencingEnemyHeroes { get; set; } = 0;
+        public TimeSpan TimeSilencingEnemyHeroes { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         ///
         /// </summary>
-        public int TimeRootingEnemyHeroes { get; set; } = 0;
+        public TimeSpan TimeRootingEnemyHeroes { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         ///
         /// </summary>
-        public int TimeStunningEnemyHeroes { get; set; } = 0;
+        public TimeSpan TimeStunningEnemyHeroes { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         ///
@@ -208,11 +223,6 @@ namespace Heroes.ReplayParser.Player
         ///
         /// </summary>
         public int Multikill { get; set; } = 0;
-
-        /// <summary>
-        /// Gets or set the amount of time the player was on fire.
-        /// </summary>
-        public TimeSpan? OnFireTimeonFire { get; set; } = null;
 
         internal HashSet<MatchAwardType> MatchAwards { get; set; } = new HashSet<MatchAwardType>();
     }

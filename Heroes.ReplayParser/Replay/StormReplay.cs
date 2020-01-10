@@ -455,13 +455,13 @@ namespace Heroes.ReplayParser.Replay
                             scoreResult.ProtectionGivenToAllies = value.Value;
                             break;
                         case "TimeSilencingEnemyHeroes":
-                            scoreResult.TimeSilencingEnemyHeroes = value.Value;
+                            scoreResult.TimeSilencingEnemyHeroes = TimeSpan.FromSeconds(value.Value);
                             break;
                         case "TimeRootingEnemyHeroes":
-                            scoreResult.TimeRootingEnemyHeroes = value.Value;
+                            scoreResult.TimeRootingEnemyHeroes = TimeSpan.FromSeconds(value.Value);
                             break;
                         case "TimeStunningEnemyHeroes":
-                            scoreResult.TimeStunningEnemyHeroes = value.Value;
+                            scoreResult.TimeStunningEnemyHeroes = TimeSpan.FromSeconds(value.Value);
                             break;
                         case "ClutchHealsPerformed":
                             scoreResult.ClutchHealsPerformed = value.Value;
@@ -495,6 +495,15 @@ namespace Heroes.ReplayParser.Replay
                             break;
                         case "SpellDamage":
                             scoreResult.SpellDamage = value.Value;
+                            break;
+                        case "OnFireTimeOnFire":
+                            scoreResult.OnFireTimeonFire = TimeSpan.FromSeconds(value.Value);
+                            break;
+                        case "MinionKills":
+                            scoreResult.MinionKills = value.Value;
+                            break;
+                        case "RegenGlobes":
+                            scoreResult.RegenGlobes = value.Value;
                             break;
                         case "EndOfMatchAwardMVPBoolean":
                             if (value.Value == 1)
@@ -656,10 +665,6 @@ namespace Heroes.ReplayParser.Replay
                                 scoreResult.MatchAwards.Add(MatchAwardType.MostVengeancesPerformed);
                             break;
 
-                        case "OnFireTimeOnFire":
-                            scoreResult.OnFireTimeonFire = TimeSpan.FromSeconds(value.Value);
-                            break;
-
                         case "GameScore":
                         case "TeamLevel":
                         case "TeamTakedowns":
@@ -670,8 +675,6 @@ namespace Heroes.ReplayParser.Replay
                         case "HeroRingMasteryUpgrade":
                         case "LessThan4Deaths":
                         case "LessThan3TownStructuresLost":
-                        case "MinionKills":
-                        case "RegenGlobes":
 
                         // Map Objectives
                         case "DamageDoneToZerg":

@@ -73,6 +73,30 @@ namespace Heroes.ReplayParser.Tests
         }
 
         [TestMethod]
+        public void PlayersScoreResultTest()
+        {
+            StormPlayer player = _stormReplay.StormPlayers.ToList()[3];
+            ScoreResult scoreResult = player.ScoreResult;
+
+            Assert.AreEqual(0, scoreResult.Assists);
+            Assert.AreEqual(0, scoreResult.ClutchHealsPerformed);
+            Assert.AreEqual(0, scoreResult.CreepDamage);
+            Assert.AreEqual(0, scoreResult.TownKills);
+            Assert.AreEqual(0, scoreResult.VengeancesPerformed);
+            Assert.AreEqual(0, scoreResult.WatchTowerCaptures);
+            Assert.AreEqual(0, scoreResult.MinionKills);
+            Assert.AreEqual(0, scoreResult.RegenGlobes);
+        }
+
+        [TestMethod]
+        public void PlayersMatchAwardsTest()
+        {
+            List<MatchAwardType> matchAwards = _stormReplay.StormPlayers.ToList()[3].MatchAwards.ToList();
+
+            Assert.AreEqual(0, matchAwards.Count);
+        }
+
+        [TestMethod]
         public void MessagesTest()
         {
             List<StormMessage> messages = _stormReplay.Messages.ToList();

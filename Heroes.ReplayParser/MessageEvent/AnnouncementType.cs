@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies the announcemnt type.
     /// </summary>
-    /// <remarks>m_announcement</remarks>
+    /// <remarks>m_announcement.</remarks>
     public enum AnnouncementType
     {
         /// <summary>

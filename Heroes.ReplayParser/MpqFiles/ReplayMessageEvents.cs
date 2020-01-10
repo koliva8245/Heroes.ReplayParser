@@ -43,8 +43,8 @@ namespace Heroes.ReplayParser.MpqFiles
                     case StormMessageEventType.SPingMessage:
                         PingMessage pingMessage = new PingMessage()
                         {
-                             MessageTarget = (StormMessageTarget)source.ReadBits(3), // m_recipient (the target)
-                             Point = new Point((double)(source.ReadInt32Unaligned() - (-2147483648)) / 4096, ((double)source.ReadInt32Unaligned() - (-2147483648)) / 4096), // m_point x and m_point y
+                            MessageTarget = (StormMessageTarget)source.ReadBits(3), // m_recipient (the target)
+                            Point = new Point((double)(source.ReadInt32Unaligned() - (-2147483648)) / 4096, ((double)source.ReadInt32Unaligned() - (-2147483648)) / 4096), // m_point x and m_point y
                         };
 
                         message = new StormMessage(pingMessage);

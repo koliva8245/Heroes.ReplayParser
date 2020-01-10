@@ -260,29 +260,29 @@ namespace Heroes.ReplayParser.MpqFiles
                     case ReplayAttributeEventType.DraftTeam2Ban1:
                     case ReplayAttributeEventType.DraftTeam2Ban2:
                     case ReplayAttributeEventType.DraftTeam2Ban3:
-                            switch (attribute.AttributeType)
-                            {
-                                case ReplayAttributeEventType.DraftTeam1Ban1:
-                                    replay.TeamHeroAttributeIdBans[0][0] = attribute.Value;
-                                    break;
-                                case ReplayAttributeEventType.DraftTeam1Ban2:
-                                    replay.TeamHeroAttributeIdBans[0][1] = attribute.Value;
-                                    break;
-                                case ReplayAttributeEventType.DraftTeam1Ban3:
-                                    replay.TeamHeroAttributeIdBans[0][2] = attribute.Value;
-                                    break;
-                                case ReplayAttributeEventType.DraftTeam2Ban1:
-                                    replay.TeamHeroAttributeIdBans[1][0] = attribute.Value;
-                                    break;
-                                case ReplayAttributeEventType.DraftTeam2Ban2:
-                                    replay.TeamHeroAttributeIdBans[1][1] = attribute.Value;
-                                    break;
-                                case ReplayAttributeEventType.DraftTeam2Ban3:
-                                    replay.TeamHeroAttributeIdBans[1][2] = attribute.Value;
-                                    break;
-                            }
+                        switch (attribute.AttributeType)
+                        {
+                            case ReplayAttributeEventType.DraftTeam1Ban1:
+                                replay.TeamHeroAttributeIdBans[0][0] = attribute.Value;
+                                break;
+                            case ReplayAttributeEventType.DraftTeam1Ban2:
+                                replay.TeamHeroAttributeIdBans[0][1] = attribute.Value;
+                                break;
+                            case ReplayAttributeEventType.DraftTeam1Ban3:
+                                replay.TeamHeroAttributeIdBans[0][2] = attribute.Value;
+                                break;
+                            case ReplayAttributeEventType.DraftTeam2Ban1:
+                                replay.TeamHeroAttributeIdBans[1][0] = attribute.Value;
+                                break;
+                            case ReplayAttributeEventType.DraftTeam2Ban2:
+                                replay.TeamHeroAttributeIdBans[1][1] = attribute.Value;
+                                break;
+                            case ReplayAttributeEventType.DraftTeam2Ban3:
+                                replay.TeamHeroAttributeIdBans[1][2] = attribute.Value;
+                                break;
+                        }
 
-                            break;
+                        break;
                 }
             }
         }
