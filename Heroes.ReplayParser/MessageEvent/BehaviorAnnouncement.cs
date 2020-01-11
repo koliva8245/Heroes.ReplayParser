@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains the information for a behavior announcment.
     /// </summary>
-    public struct BehaviorAnnouncment
+    public struct BehaviorAnnouncement
     {
     }
 }

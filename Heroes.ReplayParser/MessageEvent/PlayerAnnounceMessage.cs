@@ -18,7 +18,7 @@
         /// <summary>
         /// Gets the behavior announcment.
         /// </summary>
-        public BehaviorAnnouncment? BehaviorAnnouncement { get; internal set; } = null;
+        public BehaviorAnnouncement? BehaviorAnnouncement { get; internal set; } = null;
 
         /// <summary>
         /// Gets the vital announcement.

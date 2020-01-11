@@ -298,7 +298,6 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(StormMessageEventType.SPlayerAnnounceMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Li Li", stormMessage.MessageSender!.PlayerHero.HeroName);
-            Assert.AreEqual(2, stormMessage.PlayerIndex);
             Assert.AreEqual(0, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.AbilityIndex);
             Assert.AreEqual(423, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.AbilityLink);
             Assert.AreEqual(954, stormMessage.PlayerAnnounceMessage!.AbilityAnnouncement!.Value.ButtonLink);
@@ -308,7 +307,6 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Li-Ming", stormMessage.MessageSender!.PlayerHero.HeroName);
-            Assert.AreEqual(10, stormMessage.PlayerIndex);
             Assert.AreEqual(new TimeSpan(12031875000), stormMessage.Timestamp);
             Assert.AreEqual(StormMessageTarget.All, stormMessage.ChatMessage!.MessageTarget);
         }

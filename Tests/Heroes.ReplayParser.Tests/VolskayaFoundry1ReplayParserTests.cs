@@ -324,7 +324,6 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(StormMessageEventType.SChatMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Rehgar", stormMessage.MessageSender!.PlayerHero.HeroName);
-            Assert.AreEqual(9, stormMessage.PlayerIndex);
             Assert.AreEqual(StormMessageTarget.Allies, stormMessage.ChatMessage!.MessageTarget);
             Assert.IsTrue(stormMessage.ChatMessage!.Message!.StartsWith("https:"));
             Assert.IsTrue(stormMessage.ChatMessage!.Message!.EndsWith("nzs"));
@@ -334,7 +333,6 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(StormMessageEventType.SLoadingProgressMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Rehgar", stormMessage.MessageSender!.PlayerHero.HeroName);
-            Assert.AreEqual(9, stormMessage.PlayerIndex);
             Assert.AreEqual(12, stormMessage.LoadingProgressMessage!.LoadingProgress);
             Assert.AreEqual(new TimeSpan(0), stormMessage.Timestamp);
 
@@ -342,7 +340,6 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(StormMessageEventType.SPingMessage, stormMessage.MessageEventType);
             Assert.AreEqual("Arthas", stormMessage.MessageSender!.PlayerHero.HeroName);
-            Assert.AreEqual(7, stormMessage.PlayerIndex);
             Assert.AreEqual(StormMessageTarget.Allies, stormMessage.PingMessage!.MessageTarget);
             Assert.AreEqual(146.725830078125, stormMessage.PingMessage!.Point!.Value.X);
             Assert.AreEqual(73.9296875, stormMessage.PingMessage!.Point!.Value.Y);

@@ -112,13 +112,11 @@ namespace Heroes.ReplayParser.MpqFiles
                 if (message != null)
                 {
                     message.MessageEventType = messageEventType;
-                    message.PlayerIndex = playerIndex;
                     message.Timestamp = timeStamp;
 
                     if (playerIndex != 16)
                     {
                         message.MessageSender = replay.ClientListByUserID[playerIndex];
-                        message.PlayerIndex = playerIndex;
                     }
 
                     replay.MessagesInternal.Add(message);

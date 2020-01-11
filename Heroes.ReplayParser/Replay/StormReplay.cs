@@ -283,7 +283,7 @@ namespace Heroes.ReplayParser.Replay
         }
 
         /// <summary>
-        /// Gets a collection of a team's experience breakdown.
+        /// Gets a collection of a team's experience breakdown that occurs during periodic intervals.
         /// </summary>
         /// <param name="team"></param>
         /// <returns></returns>

@@ -59,11 +59,6 @@ namespace Heroes.ReplayParser.MessageEvent
         public StormPlayer? MessageSender { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the player index of the sender.
-        /// </summary>
-        public int PlayerIndex { get; set; }
-
-        /// <summary>
         /// Gets or sets the time stamp of the message.
         /// </summary>
         public TimeSpan Timestamp { get; set; }
