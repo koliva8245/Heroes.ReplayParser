@@ -505,6 +505,34 @@ namespace Heroes.ReplayParser.Replay
                         case "RegenGlobes":
                             scoreResult.RegenGlobes = value.Value;
                             break;
+                        case "Tier1Talent":
+                            if (value.Value > 0)
+                                scoreResult.Tier1Talent = value.Value;
+                            break;
+                        case "Tier2Talent":
+                            if (value.Value > 0)
+                                scoreResult.Tier4Talent = value.Value;
+                            break;
+                        case "Tier3Talent":
+                            if (value.Value > 0)
+                                scoreResult.Tier7Talent = value.Value;
+                            break;
+                        case "Tier4Talent":
+                            if (value.Value > 0)
+                                scoreResult.Tier10Talent = value.Value;
+                            break;
+                        case "Tier5Talent":
+                            if (value.Value > 0)
+                                scoreResult.Tier13Talent = value.Value;
+                            break;
+                        case "Tier6Talent":
+                            if (value.Value > 0)
+                                scoreResult.Tier16Talent = value.Value;
+                            break;
+                        case "Tier7Talent":
+                            if (value.Value > 0)
+                                scoreResult.Tier20Talent = value.Value;
+                            break;
                         case "EndOfMatchAwardMVPBoolean":
                             if (value.Value == 1)
                                 scoreResult.MatchAwards.Add(MatchAwardType.MVP);
@@ -706,15 +734,6 @@ namespace Heroes.ReplayParser.Replay
                         case "StarcraftDailyEventCompleted":
                         case "StarcraftPiecesCollected":
                         case "PachimariMania":
-
-                        // Talent Selections
-                        case "Tier1Talent":
-                        case "Tier2Talent":
-                        case "Tier3Talent":
-                        case "Tier4Talent":
-                        case "Tier5Talent":
-                        case "Tier6Talent":
-                        case "Tier7Talent":
 
                         // Franchise Booleans
                         case "TeamWinsDiablo":

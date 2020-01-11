@@ -86,6 +86,15 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(0, scoreResult.WatchTowerCaptures);
             Assert.AreEqual(0, scoreResult.MinionKills);
             Assert.AreEqual(0, scoreResult.RegenGlobes);
+            Assert.AreEqual(null, scoreResult.PhysicalDamage);
+            Assert.AreEqual(null, scoreResult.SpellDamage);
+            Assert.AreEqual(null, scoreResult.Tier1Talent);
+            Assert.AreEqual(null, scoreResult.Tier4Talent);
+            Assert.AreEqual(null, scoreResult.Tier7Talent);
+            Assert.AreEqual(null, scoreResult.Tier10Talent);
+            Assert.AreEqual(null, scoreResult.Tier13Talent);
+            Assert.AreEqual(null, scoreResult.Tier16Talent);
+            Assert.AreEqual(null, scoreResult.Tier20Talent);
         }
 
         [TestMethod]

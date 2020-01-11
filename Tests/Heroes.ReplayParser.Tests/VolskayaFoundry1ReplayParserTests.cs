@@ -300,6 +300,13 @@ namespace Heroes.ReplayParser.Tests
             Assert.AreEqual(0, scoreResult.WatchTowerCaptures);
             Assert.AreEqual(56, scoreResult.MinionKills);
             Assert.AreEqual(33, scoreResult.RegenGlobes);
+            Assert.AreEqual(3, scoreResult.Tier1Talent);
+            Assert.AreEqual(2, scoreResult.Tier4Talent);
+            Assert.AreEqual(3, scoreResult.Tier7Talent);
+            Assert.AreEqual(1, scoreResult.Tier10Talent);
+            Assert.AreEqual(1, scoreResult.Tier13Talent);
+            Assert.AreEqual(3, scoreResult.Tier16Talent);
+            Assert.AreEqual(null, scoreResult.Tier20Talent);
         }
 
         [TestMethod]

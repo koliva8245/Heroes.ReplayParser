@@ -150,9 +150,44 @@ namespace Heroes.ReplayParser.Player
         public int MinionKills { get; set; } = 0;
 
         /// <summary>
-        /// Gets or sets the amount of regenerationi globes collected.
+        /// Gets or sets the amount of regeneration globes collected.
         /// </summary>
         public int RegenGlobes { get; set; } = 0;
+
+        /// <summary>
+        /// Gets the sets the tier 1 selected talent sort value.
+        /// </summary>
+        public int? Tier1Talent { get; set; } = null;
+
+        /// <summary>
+        /// Gets the sets the tier 4 selected talent sort value.
+        /// </summary>
+        public int? Tier4Talent { get; set; } = null;
+
+        /// <summary>
+        /// Gets the sets the tier 7 selected talent sort value.
+        /// </summary>
+        public int? Tier7Talent { get; set; } = null;
+
+        /// <summary>
+        /// Gets the sets the tier 10 selected talent sort value.
+        /// </summary>
+        public int? Tier10Talent { get; set; } = null;
+
+        /// <summary>
+        /// Gets the sets the tier 13 selected talent sort value.
+        /// </summary>
+        public int? Tier13Talent { get; set; } = null;
+
+        /// <summary>
+        /// Gets the sets the tier 16 selected talent sort value.
+        /// </summary>
+        public int? Tier16Talent { get; set; } = null;
+
+        /// <summary>
+        /// Gets the sets the tier 20 selected talent sort value.
+        /// </summary>
+        public int? Tier20Talent { get; set; } = null;
 
         /// <summary>
         ///
