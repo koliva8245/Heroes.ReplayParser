@@ -14,6 +14,7 @@ namespace Heroes.ReplayParser.MpqFiles
             /* m_userInitialData section */
 
             BitReader.ResetIndex();
+            BitReader.EndianType = EndianType.BigEndian;
 
             // all slots (16)
             uint playerListLength = source.ReadBits(5);
@@ -295,9 +296,9 @@ namespace Heroes.ReplayParser.MpqFiles
                         uint heroMasteryTiersLength = source.ReadBits(10);
                         for (int j = 0; j < heroMasteryTiersLength; j++)
                         {
-                            BitReader.EndianType = EndianType.BigEndian;
-                            string heroAttributeName = source.ReadStringFromBits(32);
                             BitReader.EndianType = EndianType.LittleEndian;
+                            string heroAttributeName = source.ReadStringFromBits(32);
+                            BitReader.EndianType = EndianType.BigEndian;
 
                             int tier = (int)source.ReadBits(8); // m_tier
 

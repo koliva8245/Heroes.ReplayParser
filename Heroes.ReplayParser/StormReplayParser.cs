@@ -49,7 +49,7 @@ namespace Heroes.ReplayParser
             StormReplayParser stormReplayParser = new StormReplayParser(fileName, allowPTRRegion, parseBattleLobby);
 
             BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.LittleEndian;
+            BitReader.EndianType = EndianType.BigEndian;
 
             stormReplayParser.Parse();
 
@@ -90,6 +90,8 @@ namespace Heroes.ReplayParser
             ReplayAttributeEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayAttributeEvents.FileName));
             ReplayTrackerEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayTrackerEvents.FileName));
             ReplayMessageEvents.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayMessageEvents.FileName));
+
+           // ReplayServerBattlelobby.Parse(_stormReplay, _stormMpqArchive.OpenFile(ReplayServerBattlelobby.FileName));
 
             ValidateResult();
 

@@ -54,7 +54,7 @@ namespace Heroes.ReplayParser.MessageEvent
         }
 
         /// <summary>
-        /// Gets or set the message sender player.
+        /// Gets or sets the message sender player.
         /// </summary>
         public StormPlayer? MessageSender { get; set; } = null;
 

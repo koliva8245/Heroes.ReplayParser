@@ -36,6 +36,8 @@ namespace Heroes.MpqToolV2
             stream.Read(headerBuffer);
 
             BitReader.ResetIndex();
+            BitReader.EndianType = EndianType.LittleEndian;
+
             _mpqHeader = new MpqHeader(headerBuffer);
 
             if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)

@@ -22,7 +22,7 @@ namespace Heroes.MpqToolV2
         /// <summary>
         /// Gets or sets the <see cref="EndianType"/>.
         /// </summary>
-        public static EndianType EndianType { get; set; } = EndianType.LittleEndian;
+        public static EndianType EndianType { get; set; } = EndianType.BigEndian;
 
         /// <summary>
         /// Resets the index, bitIndex, and currentByte to 0.
@@ -48,7 +48,7 @@ namespace Heroes.MpqToolV2
             if (numberOfBits < 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
-            return EndianType == EndianType.LittleEndian ? GetValueFromBits(source, numberOfBits) : BinaryPrimitives.ReverseEndianness(GetValueFromBits(source, numberOfBits));
+            return EndianType == EndianType.BigEndian ? GetValueFromBits(source, numberOfBits) : BinaryPrimitives.ReverseEndianness(GetValueFromBits(source, numberOfBits));
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Heroes.MpqToolV2
             if (numberOfBits < 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
-            return EndianType == EndianType.LittleEndian ? GetULongValueFromBits(source, numberOfBits) : BinaryPrimitives.ReverseEndianness(GetULongValueFromBits(source, numberOfBits));
+            return EndianType == EndianType.BigEndian ? GetULongValueFromBits(source, numberOfBits) : BinaryPrimitives.ReverseEndianness(GetULongValueFromBits(source, numberOfBits));
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Heroes.MpqToolV2
             if (numberOfBits < 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
-            return EndianType == EndianType.LittleEndian ? GetLongValueFromBits(source, numberOfBits) : BinaryPrimitives.ReverseEndianness(GetLongValueFromBits(source, numberOfBits));
+            return EndianType == EndianType.BigEndian ? GetLongValueFromBits(source, numberOfBits) : BinaryPrimitives.ReverseEndianness(GetLongValueFromBits(source, numberOfBits));
         }
 
         /// <summary>
@@ -129,7 +129,13 @@ namespace Heroes.MpqToolV2
         /// <returns></returns>
         public static ushort ReadUInt16Aligned(this ReadOnlySpan<byte> source)
         {
-            ushort value = BinaryPrimitives.ReadUInt16LittleEndian(source.Slice(Index, 2));
+            ushort value;
+
+            if (EndianType == EndianType.LittleEndian)
+                value = BinaryPrimitives.ReadUInt16LittleEndian(source.Slice(Index, 2));
+            else
+                value = BinaryPrimitives.ReadUInt16BigEndian(source.Slice(Index, 2));
+
             Index += 2;
 
             return value;
@@ -142,7 +148,13 @@ namespace Heroes.MpqToolV2
         /// <returns></returns>
         public static short ReadInt16Aligned(this ReadOnlySpan<byte> source)
         {
-            short value = BinaryPrimitives.ReadInt16LittleEndian(source.Slice(Index, 2));
+            short value;
+
+            if (EndianType == EndianType.LittleEndian)
+                value = BinaryPrimitives.ReadInt16LittleEndian(source.Slice(Index, 2));
+            else
+                value = BinaryPrimitives.ReadInt16BigEndian(source.Slice(Index, 2));
+
             Index += 2;
 
             return value;
@@ -165,7 +177,13 @@ namespace Heroes.MpqToolV2
         /// <returns></returns>
         public static uint ReadUInt32Aligned(this ReadOnlySpan<byte> source)
         {
-            uint value = BinaryPrimitives.ReadUInt32LittleEndian(source.Slice(Index, 4));
+            uint value;
+
+            if (EndianType == EndianType.LittleEndian)
+                value = BinaryPrimitives.ReadUInt32LittleEndian(source.Slice(Index, 4));
+            else
+                value = BinaryPrimitives.ReadUInt32BigEndian(source.Slice(Index, 4));
+
             Index += 4;
 
             return value;
@@ -178,7 +196,13 @@ namespace Heroes.MpqToolV2
         /// <returns></returns>
         public static int ReadInt32Aligned(this ReadOnlySpan<byte> source)
         {
-            int value = BinaryPrimitives.ReadInt32LittleEndian(source.Slice(Index, 4));
+            int value;
+
+            if (EndianType == EndianType.LittleEndian)
+                value = BinaryPrimitives.ReadInt32LittleEndian(source.Slice(Index, 4));
+            else
+                value = BinaryPrimitives.ReadInt32BigEndian(source.Slice(Index, 4));
+
             Index += 4;
 
             return value;
@@ -211,7 +235,13 @@ namespace Heroes.MpqToolV2
         /// <returns></returns>
         public static ulong ReadUInt64Aligned(this ReadOnlySpan<byte> source)
         {
-            ulong value = BinaryPrimitives.ReadUInt64LittleEndian(source.Slice(Index, 8));
+            ulong value;
+
+            if (EndianType == EndianType.LittleEndian)
+                value = BinaryPrimitives.ReadUInt64LittleEndian(source.Slice(Index, 8));
+            else
+                value = BinaryPrimitives.ReadUInt64BigEndian(source.Slice(Index, 8));
+
             Index += 8;
 
             return value;
@@ -224,7 +254,13 @@ namespace Heroes.MpqToolV2
         /// <returns></returns>
         public static long ReadInt64Aligned(this ReadOnlySpan<byte> source)
         {
-            long value = BinaryPrimitives.ReadInt64LittleEndian(source.Slice(Index, 8));
+            long value;
+
+            if (EndianType == EndianType.LittleEndian)
+                value = BinaryPrimitives.ReadInt64LittleEndian(source.Slice(Index, 8));
+            else
+                value = BinaryPrimitives.ReadInt64BigEndian(source.Slice(Index, 8));
+
             Index += 8;
 
             return value;

@@ -15,7 +15,7 @@ namespace Heroes.ReplayParser.MpqFiles
                 return;
 
             BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.LittleEndian;
+            BitReader.EndianType = EndianType.BigEndian;
 
             uint ticksElapsed = 0;
 

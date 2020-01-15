@@ -13,7 +13,7 @@ namespace Heroes.ReplayParser.MpqFiles
         public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
             BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.BigEndian;
+            BitReader.EndianType = EndianType.LittleEndian;
 
             source.ReadByte();
             source.ReadUInt32Aligned();
@@ -26,13 +26,8 @@ namespace Heroes.ReplayParser.MpqFiles
                 source.ReadUInt32Aligned(); // namespace
 
                 attributes[i].AttributeType = (ReplayAttributeEventType)source.ReadUInt32Aligned(); // attrid
-
-                BitReader.EndianType = EndianType.LittleEndian;
-
                 attributes[i].PlayerId = source.ReadByte();
                 attributes[i].Value = source.ReadStringFromBytes(4);
-
-                BitReader.EndianType = EndianType.BigEndian;
             }
 
             // The 'PlayerID' in attributes does not seem to match any existing player array
