@@ -82,12 +82,12 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets a collection of playing players (no observers, has AI).
         /// </summary>
-        public IEnumerable<StormPlayer> StormPlayers => Players;
+        public IEnumerable<StormPlayer> StormPlayers => Players.Where(x => x != null);
 
         /// <summary>
         /// Gets a collection of players (contains observers, no AI).
         /// </summary>
-        public IEnumerable<StormPlayer> StormPlayersWithObservers => ClientListByUserID;
+        public IEnumerable<StormPlayer> StormPlayersWithObservers => ClientListByUserID.Where(x => x != null);
 
         /// <summary>
         /// Gets a collection of observer players.
@@ -97,12 +97,12 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets the total number of playing players (includes AI). Use <see cref="PlayersWithObserversCount"/> instead to include observers.
         /// </summary>
-        public int PlayersCount => Players.Length;
+        public int PlayersCount => Players.Count(x => x != null);
 
         /// <summary>
-        /// Gets the total number of players, including observers, in the game. Does not include AI.
+        /// Gets the total number of playing players, including observers, in the game. Does not include AI.
         /// </summary>
-        public int PlayersWithObserversCount => ClientListByUserID.Length;
+        public int PlayersWithObserversCount => ClientListByUserID.Count(x => x != null);
 
         /// <summary>
         /// Gets the total number of observers in the game.

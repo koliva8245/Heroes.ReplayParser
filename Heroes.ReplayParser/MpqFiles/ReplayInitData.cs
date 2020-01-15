@@ -171,11 +171,11 @@ namespace Heroes.ReplayParser.MpqFiles
             uint maxUsers = source.ReadBits(5); // m_maxUsers
             uint maxObservers = source.ReadBits(5); // m_maxObservers
 
-            if (maxUsers + maxObservers != replay.PlayersWithObserversCount)
+            if (maxUsers + maxObservers != playerListLength)
             {
                 throw new StormParseException($"Max users and max observers do not equal the total players count. Max Users: {maxUsers}. " +
                     $"Max Observers: {maxObservers}. " +
-                    $"Players Count: {replay.PlayersWithObserversCount}");
+                    $"Players Count: {playerListLength}");
             }
 
             // m_slots
