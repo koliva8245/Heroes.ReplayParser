@@ -12,11 +12,11 @@ namespace Heroes.ReplayParser.MpqFiles
             BitReader.ResetIndex();
             BitReader.EndianType = EndianType.BigEndian;
 
-            source.ReadBytes(3);
-            source.ReadByte();
-            source.ReadBytes(4); // Data Max Size
-            source.ReadBytes(4); // Header Offset
-            source.ReadBytes(4); // User Data Header Size
+            source.ReadAlignedBytes(3);
+            source.ReadAlignedByte();
+            source.ReadAlignedBytes(4); // Data Max Size
+            source.ReadAlignedBytes(4); // Header Offset
+            source.ReadAlignedBytes(4); // User Data Header Size
 
             VersionedDecoder versionedDecoder = new VersionedDecoder(source);
 

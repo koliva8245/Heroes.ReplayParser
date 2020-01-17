@@ -45,8 +45,8 @@ namespace Heroes.MpqToolV2
         {
             if (numberOfBits > 32)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be less than 33");
-            if (numberOfBits < 1)
-                throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
+            if (numberOfBits < 0)
+                throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than -1");
 
             return EndianType == EndianType.BigEndian ? GetValueFromBits(source, numberOfBits) : BinaryPrimitives.ReverseEndianness(GetValueFromBits(source, numberOfBits));
         }
@@ -112,7 +112,7 @@ namespace Heroes.MpqToolV2
 
             if (bytePosition == 0)
             {
-                _currentByte = source.ReadByte();
+                _currentByte = source.ReadAlignedByte();
             }
 
             bool bit = ((_currentByte >> bytePosition) & 1) == 1;
@@ -293,14 +293,14 @@ namespace Heroes.MpqToolV2
         /// <returns></returns>
         public static long ReadVInt(this ReadOnlySpan<byte> source)
         {
-            byte dataByte = source.ReadByte();
+            byte dataByte = source.ReadAlignedByte();
             int negative = dataByte & 1;
             long result = (dataByte >> 1) & 0x3f;
             int bits = 6;
 
             while ((dataByte & 0x80) != 0)
             {
-                dataByte = source.ReadByte();
+                dataByte = source.ReadAlignedByte();
                 result |= ((long)dataByte & 0x7f) << bits;
                 bits += 7;
             }
@@ -317,21 +317,21 @@ namespace Heroes.MpqToolV2
         {
             int count = 1;
 
-            byte dataByte = source.ReadByte();
+            byte dataByte = source.ReadAlignedByte();
             long result = (dataByte >> 1) & 0x3f;
             int bits = 6;
 
             while ((dataByte & 0x80) != 0)
             {
                 count++;
-                dataByte = source.ReadByte();
+                dataByte = source.ReadAlignedByte();
                 result |= ((long)dataByte & 0x7f) << bits;
                 bits += 7;
             }
 
             Index -= count;
 
-            return source.ReadBytes(count);
+            return source.ReadAlignedBytes(count);
         }
 
         /// <summary>
@@ -339,10 +339,36 @@ namespace Heroes.MpqToolV2
         /// </summary>
         /// <param name="source">The read-only span of bytes to read.</param>
         /// <returns></returns>
-        public static byte ReadByte(this ReadOnlySpan<byte> source)
+        public static byte ReadAlignedByte(this ReadOnlySpan<byte> source)
         {
             byte value = source[Index];
             Index++;
+
+            return value;
+        }
+
+        /// <summary>
+        /// Reads one byte.
+        /// </summary>
+        /// <param name="source">The read-only span of bytes to read.</param>
+        /// <returns></returns>
+        public static byte ReadUnalignedByte(this ReadOnlySpan<byte> source)
+        {
+            return (byte)source.ReadBits(8);
+        }
+
+        /// <summary>
+        /// Reads a number of bytes.
+        /// </summary>
+        /// <param name="source">The read-only span of bytes to read.</param>
+        /// <param name="count">The number of bytes to read.</param>
+        /// <returns></returns>
+        public static ReadOnlySpan<byte> ReadAlignedBytes(this ReadOnlySpan<byte> source, int count)
+        {
+            AlignToByte();
+
+            ReadOnlySpan<byte> value = source.Slice(Index, count);
+            Index += count;
 
             return value;
         }
@@ -353,14 +379,15 @@ namespace Heroes.MpqToolV2
         /// <param name="source">The read-only span of bytes to read.</param>
         /// <param name="count">The number of bytes to read.</param>
         /// <returns></returns>
-        public static ReadOnlySpan<byte> ReadBytes(this ReadOnlySpan<byte> source, int count)
+        public static ReadOnlySpan<byte> ReadUnalignedBytes(this ReadOnlySpan<byte> source, int count)
         {
-            AlignToByte();
+            Span<byte> bytes = new byte[count];
+            for (int i = 0; i < count; i++)
+            {
+                bytes[i] = source.ReadUnalignedByte();
+            }
 
-            ReadOnlySpan<byte> value = source.Slice(Index, count);
-            Index += count;
-
-            return value;
+            return bytes;
         }
 
         /// <summary>
@@ -405,7 +432,7 @@ namespace Heroes.MpqToolV2
             if (numberOfBytes < 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBytes), "Number of bytes must be greater than 0");
 
-            ReadOnlySpan<byte> bytes = source.ReadBytes(numberOfBytes);
+            ReadOnlySpan<byte> bytes = source.ReadAlignedBytes(numberOfBytes);
             bytes = bytes.Trim((byte)0);
 
             if (bytes.Length == 0)
@@ -461,7 +488,7 @@ namespace Heroes.MpqToolV2
 
                 if (bytePosition == 0)
                 {
-                    _currentByte = source.ReadByte();
+                    _currentByte = source.ReadAlignedByte();
                 }
 
                 int bitsToRead = (bitsLeftInByte > numberOfBits) ? numberOfBits : bitsLeftInByte;
@@ -486,11 +513,6 @@ namespace Heroes.MpqToolV2
                 return ReadAlignedBytes(source, (int)ReadULongBits(source, numberOfBits));
         }
 
-        private static ReadOnlySpan<byte> ReadAlignedBytes(ReadOnlySpan<byte> source, int numberOfBytes)
-        {
-            return ReadBytes(source, numberOfBytes);
-        }
-
         private static ulong GetULongValueFromBits(ReadOnlySpan<byte> source, int numberOfBits)
         {
             ulong value = 0;
@@ -502,7 +524,7 @@ namespace Heroes.MpqToolV2
 
                 if (bytePosition == 0)
                 {
-                    _currentByte = source.ReadByte();
+                    _currentByte = source.ReadAlignedByte();
                 }
 
                 int bitsToRead = (bitsLeftInByte > numberOfBits) ? numberOfBits : bitsLeftInByte;
@@ -526,7 +548,7 @@ namespace Heroes.MpqToolV2
 
                 if (bytePosition == 0)
                 {
-                    _currentByte = source.ReadByte();
+                    _currentByte = source.ReadAlignedByte();
                 }
 
                 int bitsToRead = (bitsLeftInByte > numberOfBits) ? numberOfBits : bitsLeftInByte;

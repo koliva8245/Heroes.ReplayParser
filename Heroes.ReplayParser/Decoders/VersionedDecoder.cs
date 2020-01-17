@@ -21,7 +21,7 @@ namespace Heroes.ReplayParser.Decoders
         /// <param name="source">The read-only span of bytes to read.</param>
         public VersionedDecoder(ReadOnlySpan<byte> source)
         {
-            _dataType = source.ReadByte();
+            _dataType = source.ReadAlignedByte();
 
             switch (_dataType)
             {
@@ -33,7 +33,7 @@ namespace Heroes.ReplayParser.Decoders
                 case 0x01: // bitblob
                     throw new NotImplementedException();
                 case 0x02: // blob
-                    _value = source.ReadBytes((int)source.ReadVInt()).ToArray();
+                    _value = source.ReadAlignedBytes((int)source.ReadVInt()).ToArray();
 
                     break;
                 case 0x03: // choice
@@ -41,7 +41,7 @@ namespace Heroes.ReplayParser.Decoders
                     ChoiceData = new VersionedDecoder(source);
                     break;
                 case 0x04: // optional
-                    if (source.ReadByte() != 0)
+                    if (source.ReadAlignedByte() != 0)
                         OptionalData = new VersionedDecoder(source);
                     break;
                 case 0x05: // struct
@@ -55,13 +55,13 @@ namespace Heroes.ReplayParser.Decoders
 
                     break;
                 case 0x06: // u8
-                    _value = new byte[] { source.ReadByte() };
+                    _value = new byte[] { source.ReadAlignedByte() };
                     break;
                 case 0x07: // u32
-                    _value = source.ReadBytes(4).ToArray();
+                    _value = source.ReadAlignedBytes(4).ToArray();
                     break;
                 case 0x08: // u64
-                    _value = source.ReadBytes(8).ToArray();
+                    _value = source.ReadAlignedBytes(8).ToArray();
                     break;
                 case 0x09: // vint
                     _value = source.ReadBytesForVInt().ToArray();

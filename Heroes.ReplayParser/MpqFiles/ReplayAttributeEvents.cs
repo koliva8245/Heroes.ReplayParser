@@ -15,7 +15,7 @@ namespace Heroes.ReplayParser.MpqFiles
             BitReader.ResetIndex();
             BitReader.EndianType = EndianType.LittleEndian;
 
-            source.ReadByte();
+            source.ReadAlignedByte();
             source.ReadUInt32Aligned();
             int count = source.ReadInt32Aligned();
 
@@ -26,7 +26,7 @@ namespace Heroes.ReplayParser.MpqFiles
                 source.ReadUInt32Aligned(); // namespace
 
                 attributes[i].AttributeType = (ReplayAttributeEventType)source.ReadUInt32Aligned(); // attrid
-                attributes[i].PlayerId = source.ReadByte();
+                attributes[i].PlayerId = source.ReadAlignedByte();
                 attributes[i].Value = source.ReadStringFromBytes(4);
             }
 

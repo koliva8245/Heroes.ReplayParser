@@ -158,7 +158,7 @@ namespace Heroes.ReplayParser.MpqFiles
             // m_cacheHandles
             uint cacheHandlesLength = source.ReadBits(6);
             for (int i = 0; i < cacheHandlesLength; i++)
-                source.ReadBytes(40);
+                source.ReadAlignedBytes(40);
 
             source.ReadBoolean(); // m_hasExtensionMod
             source.ReadBoolean(); // m_isBlizzardMap
