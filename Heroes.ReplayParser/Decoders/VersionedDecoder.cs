@@ -117,15 +117,6 @@ namespace Heroes.ReplayParser.Decoders
         }
 
         /// <summary>
-        /// Gets the value in the current structure as a unsigned 64-bit integer.
-        /// </summary>
-        /// <returns></returns>
-        public ulong GetValueAsUInt64()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Gets the value in the current structure as a signed 64-bit integer.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>

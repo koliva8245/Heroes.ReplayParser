@@ -16,6 +16,7 @@ namespace Heroes.MpqToolV2
         private readonly MpqHash[] _mpqHashes;
         private readonly MpqArchiveEntry[] _mpqArchiveEntries;
 
+        private int _blockSize;
         private bool _isDisposed = false;
 
         static MpqArchive()
@@ -42,6 +43,8 @@ namespace Heroes.MpqToolV2
 
             if (_mpqHeader.HashTableOffsetHigh != 0 || _mpqHeader.ExtendedBlockTableOffset != 0 || _mpqHeader.BlockTableOffsetHigh != 0)
                 throw new MpqToolException("MPQ format version 1 features are not supported");
+
+            _blockSize = 0x200 << _mpqHeader.BlockSize;
 
             // LoadHashTable
             Span<byte> hashBuffer = stackalloc byte[(int)(_mpqHeader.HashTableSize * MpqHash.Size)]; // get the hash table buffer
@@ -338,23 +341,129 @@ namespace Heroes.MpqToolV2
         {
             byte[] fileData = new byte[(int)mpqArchiveEntry.FileSize];
 
-            _archiveStream.Position = mpqArchiveEntry.FilePosition;
-
-            int read = _archiveStream.Read(fileData, 0, (int)mpqArchiveEntry.CompressedSize);
-
-            if (read != mpqArchiveEntry.CompressedSize)
-                throw new MpqToolException("Insufficient data or invalid data length");
-
-            if (mpqArchiveEntry.CompressedSize == mpqArchiveEntry.FileSize)
+            if (mpqArchiveEntry.IsCompressed && !mpqArchiveEntry.IsSingleUnit)
             {
-                return fileData;
+                int blockPositionCount = (int)((mpqArchiveEntry.FileSize + _blockSize - 1) / _blockSize) + 1;
+
+                // Files with metadata have an extra block containing block checksums
+                if ((mpqArchiveEntry.Flags & MpqFileFlags.FileHasMetadata) != 0)
+                    blockPositionCount++;
+
+                Span<uint> blockPositions = stackalloc uint[blockPositionCount];
+                Span<byte> blockPositionSpan = stackalloc byte[4 * blockPositionCount];
+
+                _archiveStream.Seek(mpqArchiveEntry.FilePosition, SeekOrigin.Begin);
+                _archiveStream.Read(blockPositionSpan);
+
+                BitReader.ResetIndex();
+                SetBlockPositions(blockPositionSpan, blockPositions, blockPositionCount);
+
+                if (mpqArchiveEntry.IsEncrypted)
+                {
+                    throw new MpqToolException("Its encrypted...");
+                }
+
+                int toRead = (int)mpqArchiveEntry.FileSize;
+                int offset = 0;
+                int position = 0;
+
+                while (toRead > 0)
+                {
+                    byte[] uncompressedBlockData = LoadBlockPositions(mpqArchiveEntry, blockPositions, position);
+
+                    if (uncompressedBlockData.Length == 0)
+                        break;
+
+                    Array.Copy(uncompressedBlockData, 0, fileData, offset, uncompressedBlockData.Length);
+                    offset += uncompressedBlockData.Length;
+
+                    position = offset / _blockSize;
+
+                    toRead -= uncompressedBlockData.Length;
+                }
             }
             else
             {
-                DecompressByteData(fileData, (int)mpqArchiveEntry.CompressedSize);
+                _archiveStream.Position = mpqArchiveEntry.FilePosition;
+
+                int read = _archiveStream.Read(fileData, 0, (int)mpqArchiveEntry.CompressedSize);
+
+                if (read != mpqArchiveEntry.CompressedSize)
+                    throw new MpqToolException("Insufficient data or invalid data length");
+
+                if (mpqArchiveEntry.CompressedSize == mpqArchiveEntry.FileSize)
+                {
+                    return fileData;
+                }
+                else
+                {
+                    DecompressByteData(fileData, (int)mpqArchiveEntry.CompressedSize);
+                }
             }
 
             return fileData;
+        }
+
+        private byte[] LoadBlockPositions(MpqArchiveEntry mpqArchiveEntry, ReadOnlySpan<uint> blockPositions, int position)
+        {
+            int expectedlength = (int)Math.Min(mpqArchiveEntry.FileSize - (position * _blockSize), _blockSize);
+
+            return LoadBlock(mpqArchiveEntry, blockPositions, position, expectedlength);
+        }
+
+        private void SetBlockPositions(ReadOnlySpan<byte> source, Span<uint> blockPositions, int blockPositionCount)
+        {
+            for (int i = 0; i < blockPositionCount; i++)
+            {
+                blockPositions[i] = source.ReadUInt32Aligned();
+            }
+        }
+
+        private byte[] LoadBlock(MpqArchiveEntry mpqArchiveEntry, ReadOnlySpan<uint> blockPositions, int blockIndex, int expectedLength)
+        {
+            uint offset;
+            int toRead;
+            uint encryptionSeed;
+
+            if (mpqArchiveEntry.IsCompressed)
+            {
+                offset = blockPositions[blockIndex];
+                toRead = (int)(blockPositions[blockIndex + 1] - offset);
+            }
+            else
+            {
+                offset = (uint)(blockIndex * _blockSize);
+                toRead = expectedLength;
+            }
+
+            offset += mpqArchiveEntry.FilePosition;
+
+            byte[] data = new byte[expectedLength];
+
+            _archiveStream.Seek(offset, SeekOrigin.Begin);
+            int read = _archiveStream.Read(data, 0, toRead);
+
+            if (read != toRead)
+                throw new MpqToolException("Insufficient data or invalid data length");
+
+            if (mpqArchiveEntry.IsEncrypted && mpqArchiveEntry.FileSize > 3)
+            {
+                if (mpqArchiveEntry.EncryptionSeed == 0)
+                    throw new MpqToolException("Unable to determine encryption key");
+
+                encryptionSeed = (uint)(blockIndex + mpqArchiveEntry.EncryptionSeed);
+                DecryptBlock(data, encryptionSeed);
+            }
+
+            if (mpqArchiveEntry.IsCompressed && (toRead != expectedLength))
+            {
+                if ((mpqArchiveEntry.Flags & MpqFileFlags.CompressedMulti) != 0)
+                    DecompressByteData(data, toRead);
+                else
+                    throw new MpqToolException("Non-single unit must be decompresssed using pk");
+            }
+
+            return data;
         }
 
         private bool TryGetHashEntry(ReadOnlySpan<char> filename, out MpqHash hash)
