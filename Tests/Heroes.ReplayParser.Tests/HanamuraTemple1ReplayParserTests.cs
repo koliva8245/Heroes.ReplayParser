@@ -15,7 +15,8 @@ namespace Heroes.ReplayParser.Tests
 
         public HanamuraTemple1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "HanamuraTemple1_75132.StormR"), out StormReplayParseResult _);
+            StormReplayResult result = StormReplayParser.Parse(Path.Combine(_replaysFolder, "HanamuraTemple1_75132.StormR"));
+            _stormReplay = result.Replay;
         }
 
         [TestMethod]
@@ -113,6 +114,17 @@ namespace Heroes.ReplayParser.Tests
             var draft = _stormReplay.GetDraftOrder().ToList();
 
             Assert.AreEqual(0, draft.Count);
+        }
+
+        [TestMethod]
+        public void BattleLobbyDataTest()
+        {
+            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+            Assert.AreEqual(2319, players[1].AccountLevel);
+            Assert.AreEqual(null, players[1].PartyValue);
+            Assert.AreEqual(654, players[9].AccountLevel);
+            Assert.AreEqual(null, players[9].PartyValue);
         }
     }
 }

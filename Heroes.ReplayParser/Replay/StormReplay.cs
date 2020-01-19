@@ -358,7 +358,7 @@ namespace Heroes.ReplayParser.Replay
             if (trackerEvent.VersionedDecoder != null)
             {
                 Dictionary<string, int?[]> scoreResultsByScoreName = trackerEvent.VersionedDecoder.StructureByIndex![0].ArrayData
-                    .ToDictionary(x => x.StructureByIndex![0].GetValueAsString(), x => x.StructureByIndex![1].ArrayData.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].StructureByIndex![0].GetValueAsUInt32() : (int?)null).ToArray());
+                    .ToDictionary(x => x.StructureByIndex![0].GetValueAsString(), x => x.StructureByIndex![1].ArrayData.Select(i => i.ArrayData?.Length == 1 ? (int)i.ArrayData![0].StructureByIndex![0].GetValueAsInt64() : (int?)null).ToArray());
 
                 for (int i = 0; i < ClientListByWorkingSetSlotID.Length; i++)
                 {
@@ -375,7 +375,7 @@ namespace Heroes.ReplayParser.Replay
             {
                 int? value = scoreResultsByScoreName[scoreResultEventKey][player];
 
-                if (value != null)
+                if (value != null && value >= 0)
                 {
                     switch (scoreResultEventKey)
                     {

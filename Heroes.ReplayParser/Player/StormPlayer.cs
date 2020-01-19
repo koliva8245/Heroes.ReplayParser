@@ -88,6 +88,26 @@ namespace Heroes.ReplayParser.Player
         public bool HasActiveBoost { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets the player's battletag which serves as the players display name.
+        /// </summary>
+        public string BattleTag { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the player's TID that serves as a unique identifier that is associated with the <see cref="BattleTag"/>.
+        /// </summary>
+        public string BattleTID { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the player's account level.
+        /// </summary>
+        public int? AccountLevel { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets the player's party value. Those in the same party have the same value.
+        /// </summary>
+        public long? PartyValue { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the computer player difficulty.
         /// </summary>
         public PlayerDifficulty PlayerDifficulty { get; set; } = PlayerDifficulty.Unknown;
@@ -109,7 +129,7 @@ namespace Heroes.ReplayParser.Player
 
         internal List<HeroMasteryTier> HeroMasteryTiersInternal { get; set; } = new List<HeroMasteryTier>();
 
-        internal int WorkingSetSlotId { get; set; }
+        internal int? WorkingSetSlotId { get; set; }
 
         /// <inheritdoc/>
         public override string? ToString()

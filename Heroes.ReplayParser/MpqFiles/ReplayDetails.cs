@@ -54,11 +54,15 @@ namespace Heroes.ReplayParser.MpqFiles
                 // x.StructureByIndex[7] // m_observe
 
                 stormPlayer.IsWinner = versionDecoders[i].StructureByIndex?[8].GetValueAsUInt32() == 1; // m_result
-                stormPlayer.WorkingSetSlotId = (int)(versionDecoders[i].StructureByIndex?[9].OptionalData?.GetValueAsUInt32()!); // m_workingSetSlotId
+                stormPlayer.WorkingSetSlotId = (int?)versionDecoders[i].StructureByIndex?[9].OptionalData?.GetValueAsUInt32(); // m_workingSetSlotId
                 stormPlayer.PlayerHero.HeroName = versionDecoders[i].StructureByIndex![10].GetValueAsString(); // m_hero (name)
 
                 replay.Players[i] = stormPlayer;
-                replay.ClientListByWorkingSetSlotID[stormPlayer.WorkingSetSlotId] = stormPlayer;
+
+                if (stormPlayer.WorkingSetSlotId.HasValue)
+                    replay.ClientListByWorkingSetSlotID[stormPlayer.WorkingSetSlotId.Value] = stormPlayer;
+                else
+                    replay.ClientListByWorkingSetSlotID[i] = stormPlayer;
             }
 
             replay.MapInfo.MapName = versionedDecoder.StructureByIndex?[1].GetValueAsString() ?? string.Empty;

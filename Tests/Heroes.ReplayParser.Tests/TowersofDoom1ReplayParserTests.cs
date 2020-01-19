@@ -13,17 +13,19 @@ namespace Heroes.ReplayParser.Tests
     {
         private readonly string _replaysFolder = "Replays";
         private readonly StormReplay _stormReplay;
-        private readonly StormReplayParseResult _result;
+        private readonly StormReplayParseStatus _result;
 
         public TowersofDoom1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "TowersofDoom1_39445.StormR"), out _result);
+            StormReplayResult result = StormReplayParser.Parse(Path.Combine(_replaysFolder, "TowersofDoom1_39445.StormR"));
+            _stormReplay = result.Replay;
+            _result = result.Status;
         }
 
         [TestMethod]
         public void ParseResultTest()
         {
-            Assert.AreEqual(StormReplayParseResult.Success, _result);
+            Assert.AreEqual(StormReplayParseStatus.Success, _result);
         }
 
         [TestMethod]

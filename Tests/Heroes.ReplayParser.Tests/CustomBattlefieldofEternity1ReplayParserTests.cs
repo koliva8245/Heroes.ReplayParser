@@ -17,7 +17,7 @@ namespace Heroes.ReplayParser.Tests
 
         public CustomBattlefieldofEternity1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "CustomBattlefieldofEternity1_65006.StormR"), out StormReplayParseResult _);
+            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "CustomBattlefieldofEternity1_65006.StormR")).Replay;
         }
 
         [TestMethod]
@@ -339,6 +339,17 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(4, messages.Count);
             Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
+        }
+
+        [TestMethod]
+        public void BattleLobbyDataTest()
+        {
+            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+            Assert.AreEqual(0, players[1].AccountLevel);
+            Assert.AreEqual(null, players[1].PartyValue);
+            Assert.AreEqual(0, players[9].AccountLevel);
+            Assert.AreEqual(null, players[9].PartyValue);
         }
     }
 }

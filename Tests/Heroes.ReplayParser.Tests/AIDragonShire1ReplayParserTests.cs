@@ -10,15 +10,17 @@ using System.Linq;
 namespace Heroes.ReplayParser.Tests
 {
     [TestClass]
-    public class AIDragonShireReplay1ParserTests
+    public class AIDragonShire1ReplayParserTests
     {
         private readonly string _replaysFolder = "Replays";
         private readonly StormReplay _stormReplay;
-        private readonly StormReplayParseResult _result;
+        private readonly StormReplayParseStatus _result;
 
-        public AIDragonShireReplay1ParserTests()
+        public AIDragonShire1ReplayParserTests()
         {
-            _stormReplay = StormReplayParser.Parse(Path.Combine(_replaysFolder, "AIDragonShire1_75589.StormR"), out _result);
+            StormReplayResult result = StormReplayParser.Parse(Path.Combine(_replaysFolder, "AIDragonShire1_75589.StormR"));
+            _stormReplay = result.Replay;
+            _result = result.Status;
         }
 
         [TestMethod]
@@ -38,7 +40,7 @@ namespace Heroes.ReplayParser.Tests
         [TestMethod]
         public void ParseResult()
         {
-            Assert.AreEqual(StormReplayParseResult.Success, _result);
+            Assert.AreEqual(StormReplayParseStatus.Success, _result);
         }
 
         [TestMethod]
@@ -261,6 +263,15 @@ namespace Heroes.ReplayParser.Tests
 
             Assert.AreEqual(0, messages.Count);
             Assert.IsTrue(messages.All(x => x.ChatMessage != null && !string.IsNullOrEmpty(x.ChatMessage.Message)));
+        }
+
+        [TestMethod]
+        public void BattleLobbyDataTest()
+        {
+            List<StormPlayer> players = _stormReplay.StormPlayers.ToList();
+
+            Assert.AreEqual(2319, players[0].AccountLevel);
+            Assert.AreEqual(null, players[0].PartyValue);
         }
     }
 }
