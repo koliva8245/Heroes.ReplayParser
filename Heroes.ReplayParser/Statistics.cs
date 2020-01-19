@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Heroes.ReplayParser.MPQFiles;
 
 namespace Heroes.ReplayParser
 {
@@ -31,9 +32,9 @@ namespace Heroes.ReplayParser
 
                 replay.TeamObjectives[(ownerChangeEvent != null ? ownerChangeEvent.PlayerNewOwner : vehicleUnit.PlayerControlledBy).Team].Add(new TeamObjective {
                     Player = ownerChangeEvent != null ? ownerChangeEvent.PlayerNewOwner : vehicleUnit.PlayerControlledBy,
-                    TimeSpan = ownerChangeEvent != null ? ownerChangeEvent.TimeSpanOwnerChanged : vehicleUnit.TimeSpanAcquired.Value,
+                    TimeSpan = ownerChangeEvent?.TimeSpanOwnerChanged ?? vehicleUnit.TimeSpanAcquired.Value,
                     TeamObjectiveType = vehicleUnit.Name == "VehiclePlantHorror" ? TeamObjectiveType.GardenOfTerrorGardenTerrorActivatedWithGardenTerrorDurationSeconds : TeamObjectiveType.DragonShireDragonKnightActivatedWithDragonDurationSeconds,
-                    Value = (int) ((vehicleUnit.TimeSpanDied ?? replay.ReplayLength) - (ownerChangeEvent != null ? ownerChangeEvent.TimeSpanOwnerChanged : vehicleUnit.TimeSpanAcquired.Value)).TotalSeconds });
+                    Value = (int) ((vehicleUnit.TimeSpanDied ?? replay.ReplayLength) - (ownerChangeEvent?.TimeSpanOwnerChanged ?? vehicleUnit.TimeSpanAcquired.Value)).TotalSeconds });
             }
 
             // Braxis Holdout Zerg Strength
@@ -69,7 +70,7 @@ namespace Heroes.ReplayParser
                                 teamZergUnitCount[zergUnits[i].Team.Value]++;
 
                                 // Check to see if the objective was not completed before the game ended
-                                if (!teamZergUnitCount.Any(j => j == zergSpawnNumberToStrength.Count - 1))
+                                if (teamZergUnitCount.All(j => j != zergSpawnNumberToStrength.Count - 1))
                                     break;
                             }
 
@@ -316,7 +317,9 @@ namespace Heroes.ReplayParser
                             case "PlayerSpawned": break;            // {StatGameEvent: {"PlayerSpawned", [{{"Hero"}, "HeroLeoric"}], [{{"PlayerID"}, 1}], }}
                             case "GatesOpen": break;                // {StatGameEvent: {"GatesOpen", , , }}
                             case "PlayerDeath": break;              // {StatGameEvent: {"PlayerDeath", , [{{"PlayerID"}, 8}, {{"KillingPlayer"}, 1}, {{"KillingPlayer"}, 2}, {{"KillingPlayer"}, 3}, {{"KillingPlayer"}, 4}, {{"KillingPlayer"}, 5}], [{{"PositionX"}, 130}, {{"PositionY"}, 80}]}}
-                            case "RegenGlobePickedUp": break;       // {StatGameEvent: {"RegenGlobePickedUp", , [{{"PlayerID"}, 1}], }}
+                            case "RegenGlobePickedUp":              // {StatGameEvent: {"RegenGlobePickedUp", , [{{"PlayerID"}, 1}], }}
+                                playerIDDictionary[(int)trackerEvent.Data.dictionary[2].optionalData.array[0].dictionary[1].vInt.Value].ScoreResult.RegenGlobes++;
+                                break;
                             case "ChoGall Cho Spawn Error": break;  // {StatGameEvent: {"ChoGall Cho Spawn Error", , [{{"PlayerID"}, 6}], }}
                             case "ChoGall Gall Spawn Error": break; // {StatGameEvent: {"ChoGall Gall Spawn Error", , [{{"PlayerID"}, 6}], }}
 							case "LootSprayUsed": break;            // {StatGameEvent: {"LootSprayUsed", [{{"MapID"}, "CursedHollow"}, {{"PlayerHandle"}, "98-Hero-1-640036"}, {{"SprayID"}, "SprayStaticFluidDefault"}, {{"HeroID"}, "HeroWizard"}], [{{"PlayerID"}, 9}, {{"IsWheel"}, 0}], [{{"XLoc"}, 193}, {{"YLoc"}, 114}]}}
@@ -397,7 +400,7 @@ namespace Heroes.ReplayParser
                                 if (trackerEvent.Data.dictionary[2].optionalData.array[2].dictionary[1].vInt.Value == 0) // Not sure why, but sometimes 'TeamID' = 0.  I've seen it 3 times in about ~60 Sky Temple games
                                     break;
 
-                                var recentSkyTempleShotsFiredTeamObjective = replay.TeamObjectives[trackerEvent.Data.dictionary[2].optionalData.array[2].dictionary[1].vInt.Value - 1].Where(i => i.TeamObjectiveType == TeamObjectiveType.SkyTempleShotsFiredWithSkyTempleShotsDamage && i.TimeSpan > trackerEvent.TimeSpan.Add(TimeSpan.FromSeconds(-130))).SingleOrDefault();
+                                var recentSkyTempleShotsFiredTeamObjective = replay.TeamObjectives[trackerEvent.Data.dictionary[2].optionalData.array[2].dictionary[1].vInt.Value - 1].SingleOrDefault(i => i.TeamObjectiveType == TeamObjectiveType.SkyTempleShotsFiredWithSkyTempleShotsDamage && i.TimeSpan > trackerEvent.TimeSpan.Add(TimeSpan.FromSeconds(-130)));
 
                                 if (recentSkyTempleShotsFiredTeamObjective != null)
                                     recentSkyTempleShotsFiredTeamObjective.Value += (int) trackerEvent.Data.dictionary[3].optionalData.array[0].dictionary[1].vInt.Value;
@@ -911,8 +914,12 @@ namespace Heroes.ReplayParser
                                 case "TeamTakedowns":
                                 case "Role":
                                 case "EndOfMatchAwardGivenToNonwinner":
-								case "OnFireTimeOnFire":
-								case "TouchByBlightPlague":
+                                case "OnFireTimeOnFire":
+                                    for (var i = 0; i < scoreResultEventValueArray.Length; i++)
+                                        if (scoreResultEventValueArray[i].HasValue)
+                                            replay.ClientListByWorkingSetSlotID[i].ScoreResult.OnFireTimeonFire = TimeSpan.FromSeconds(scoreResultEventValueArray[i].Value);
+                                    break;
+                                case "TouchByBlightPlague":
 								case "Difficulty": // First seen in 'Escape From Braxis' PvE Brawl
 
                                 // Map Objectives
