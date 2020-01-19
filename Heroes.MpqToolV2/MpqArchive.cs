@@ -1,4 +1,5 @@
 ﻿using Ionic.BZip2;
+using Ionic.Zlib;
 using System;
 using System.Buffers.Binary;
 using System.IO;
@@ -56,6 +57,8 @@ namespace Heroes.MpqToolV2
             _mpqHashes = new MpqHash[_mpqHeader.HashTableSize];
 
             BitReader.ResetIndex();
+            BitReader.EndianType = EndianType.LittleEndian;
+
             for (int i = 0; i < _mpqHeader.HashTableSize; i++)
                 _mpqHashes[i] = new MpqHash(hashBuffer);
 
@@ -69,6 +72,8 @@ namespace Heroes.MpqToolV2
             _mpqArchiveEntries = new MpqArchiveEntry[_mpqHeader.BlockTableSize];
 
             BitReader.ResetIndex();
+            BitReader.EndianType = EndianType.LittleEndian;
+
             for (int i = 0; i < _mpqHeader.BlockTableSize; i++)
                 _mpqArchiveEntries[i] = new MpqArchiveEntry(entryBuffer, (uint)_mpqHeader.HeaderOffset);
         }
@@ -296,7 +301,8 @@ namespace Heroes.MpqToolV2
                 case 1: // Huffman
                     throw new MpqToolException("Huffman not yet supported");
                 case 2: // ZLib/Deflate
-                    throw new MpqToolException("ZLib/Deflate not yet supported");
+                    ZlibDecompress(buffer, compressedSize);
+                    break;
                 case 8: // PKLib/Impode
                     throw new MpqToolException("PKLib/Impode not yet supported");
                 case 0x10:
@@ -307,15 +313,13 @@ namespace Heroes.MpqToolV2
                 case 0x40: // IMA ADPCM Mono
                     throw new MpqToolException("IMA ADPCM Mono not yet supported");
                 case 0x12:
-                    throw new MpqToolException("LZMA not yet supported");
+                    throw new MpqToolException("LZMA compression not yet supported");
 
                 // Combos
                 case 0x22:
-                    // TODO: sparse then zlib
-                    throw new MpqToolException("Not yet supported");
+                    throw new MpqToolException("Sparse compression + Deflate compression not yet supported");
                 case 0x30:
-                    // TODO: sparse then bzip2
-                    throw new MpqToolException("Not yet supported");
+                    throw new MpqToolException("Sparse compression + BZip2 compression not yet supported");
                 case 0x41:
                     throw new MpqToolException("Not yet supported");
                 case 0x48:
@@ -333,6 +337,14 @@ namespace Heroes.MpqToolV2
         {
             using MemoryStream memoryStream = new MemoryStream(buffer.Slice(1, compressedSize).ToArray());
             using BZip2InputStream stream = new BZip2InputStream(memoryStream);
+
+            stream.Read(buffer);
+        }
+
+        private static void ZlibDecompress(Span<byte> buffer, int compressedSize)
+        {
+            using MemoryStream memoryStream = new MemoryStream(buffer.Slice(1, compressedSize).ToArray());
+            using ZlibStream stream = new ZlibStream(memoryStream, CompressionMode.Decompress);
 
             stream.Read(buffer);
         }
@@ -356,6 +368,8 @@ namespace Heroes.MpqToolV2
                 _archiveStream.Read(blockPositionSpan);
 
                 BitReader.ResetIndex();
+                BitReader.EndianType = EndianType.LittleEndian;
+
                 SetBlockPositions(blockPositionSpan, blockPositions, blockPositionCount);
 
                 if (mpqArchiveEntry.IsEncrypted)
