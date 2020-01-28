@@ -93,7 +93,7 @@ namespace Heroes.ReplayParser.Player
         public string BattleTag { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the player's TID that serves as a unique identifier that is associated with the <see cref="BattleTag"/>.
+        /// Gets or sets the player's TID that serves as a unique identifier that is associated with the <see cref="BattleTag"/>. May not always start with T:.
         /// </summary>
         public string BattleTID { get; set; } = string.Empty;
 

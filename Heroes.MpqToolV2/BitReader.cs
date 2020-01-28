@@ -417,7 +417,20 @@ namespace Heroes.MpqToolV2
             if (numberOfBits < 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfBits), "Number of bits must be greater than 0");
 
-            return Encoding.UTF8.GetString(BitConverter.GetBytes(source.ReadBits(numberOfBits)));
+            if (numberOfBits < 33)
+            {
+                if (EndianType == EndianType.LittleEndian)
+                    return Encoding.UTF8.GetString(BitConverter.GetBytes(source.ReadBits(numberOfBits)));
+                else
+                    return Encoding.UTF8.GetString(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(source.ReadBits(numberOfBits))));
+            }
+            else
+            {
+                if (EndianType == EndianType.LittleEndian)
+                    return Encoding.UTF8.GetString(BitConverter.GetBytes(source.ReadLongBits(numberOfBits)));
+                else
+                    return Encoding.UTF8.GetString(BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(source.ReadLongBits(numberOfBits))));
+            }
         }
 
         /// <summary>

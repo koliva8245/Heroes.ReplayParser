@@ -2,6 +2,8 @@
 using Heroes.ReplayParser.Decoders;
 using Heroes.ReplayParser.Replay;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Heroes.ReplayParser.MpqFiles
 {
@@ -32,11 +34,139 @@ namespace Heroes.ReplayParser.MpqFiles
                 source.ReadAlignedBytes(36);
             }
 
+            //source.ReadAlignedBytes(94);
+            //if (source.ReadStringFromBytes(4) != "Clsd")
+            //    throw new StormParseException($"{ExceptionHeader}: Clsd");
+
             // we're just going to skip all the way down to the s2mh
 
             BitReader.AlignToByte();
 
-            for (; ;)
+            //for (; ;)
+            //{
+            //    if (source.ReadStringFromBytes(4) == "s2mh")
+            //    {
+            //        BitReader.Index -= 4;
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        BitReader.Index -= 3;
+            //    }
+            //}
+
+            /////////
+            //for (; ; )
+            //{
+            //    if (source.ReadStringFromBytes(4) == "s2mv")
+            //    {
+            //        BitReader.Index -= 4;
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        BitReader.Index -= 3;
+            //    }
+            //}
+
+            //// first hit
+            //BitReader.Index -= 1;
+
+            //uint s2mvCacheHandlesLength = source.ReadBits(8);
+
+            //for (int i = 0; i < s2mvCacheHandlesLength; i++)
+            //{
+            //    if (source.ReadStringFromBytes(4) != "s2mv")
+            //        throw new StormParseException($"{ExceptionHeader}: s2mv cache");
+
+            //    source.ReadAlignedBytes(36);
+            //}
+
+            //uint localeCount = source.ReadBits(5);
+
+            //for (int i = 0; i < localeCount; i++)
+            //{
+            //    source.ReadStringFromBits(32); // locale
+
+            //    uint s2mlCacheHandlesLength = source.ReadBits(6);
+
+            //    for (int j = 0; j < s2mlCacheHandlesLength; j++)
+            //    {
+            //        if (source.ReadStringFromBytes(4) != "s2ml")
+            //            throw new StormParseException($"{ExceptionHeader}: s2ml cache");
+
+            //        source.ReadAlignedBytes(36);
+            //    }
+            //}
+
+            //source.ReadAlignedBytes(16);
+            //uint sm2vCacheBlizzLength = source.ReadBits(8);
+
+            //for (int i = 0; i < sm2vCacheBlizzLength; i++)
+            //{
+
+            //}
+
+            //// second s2mv hit
+            //for (; ; )
+            //{
+            //    if (source.ReadStringFromBytes(4) == "s2mv")
+            //    {
+            //        BitReader.Index -= 4;
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        BitReader.Index -= 3;
+            //    }
+            //}
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    if (source.ReadStringFromBytes(4) != "s2mv")
+            //        throw new StormParseException($"{ExceptionHeader}: s2mv cache");
+
+            //    source.ReadAlignedBytes(36);
+            //}
+
+            //source.ReadBits(1);
+
+            //uint region = source.ReadBits(8); // m_region
+            //if (source.ReadStringFromBits(32) != "Hero") // m_programId
+            //    throw new StormParseException($"{ExceptionHeader}: Not Hero");
+            //source.ReadBits(32); // m_realm
+
+            //int blizzIdLength = (int)source.ReadBits(7);
+
+            //if (region >= 90)
+            //{
+            //    if (source.ReadStringFromBytes(2) != "T:")
+            //        throw new StormParseException($"{ExceptionHeader}: Not blizz T:");
+            //    source.ReadStringFromBytes(blizzIdLength);
+            //}
+            //else
+            //{
+            //    source.ReadStringFromBytes(blizzIdLength);
+            //    source.ReadStringFromBytes(2);
+            //}
+
+            //source.ReadBits(8); // m_region
+            //if (source.ReadStringFromBits(32) != "Hero") // m_programId
+            //    throw new StormParseException($"{ExceptionHeader}: Not Hero");
+            //source.ReadBits(32); // m_realm
+            //source.ReadLongBits(64); // m_id
+
+
+            //int klj = (int)source.ReadBits(12);
+
+            //int sdfad = (int)source.ReadBits(12);
+
+
+            //source.ReadBits(1); //temp
+
+            //////////////
+
+
+            for (; ; )
             {
                 if (source.ReadStringFromBytes(4) == "s2mh")
                 {
@@ -48,6 +178,7 @@ namespace Heroes.ReplayParser.MpqFiles
                     BitReader.Index -= 3;
                 }
             }
+
 
             // source.ReadBits(???); // this depends on previous data (not byte aligned)
 
@@ -62,9 +193,9 @@ namespace Heroes.ReplayParser.MpqFiles
                 source.ReadAlignedBytes(36);
             }
 
-            uint collectionSize;
-
             // player collections
+
+            uint collectionSize;
 
             // strings gone starting with build (ptr) 55929
             if (replay.ReplayBuild >= 48027)
@@ -100,13 +231,13 @@ namespace Heroes.ReplayParser.MpqFiles
 
             // Player info
 
-            //if (replay.ReplayBuild <= 43259 || replay.ReplayBuild == 47801)
-            //{
-            //    // Builds that are not yet supported for detailed parsing
-            //    // build 47801 is a ptr build that had new data in the battletag section, the data was changed in 47944 (patch for 47801)
-            //    //GetBattleTags(replay, bitReader);
-            //    return;
-            //}
+            if (replay.ReplayBuild <= 47479 || replay.ReplayBuild == 47801 || replay.ReplayBuild == 47903)
+            {
+                // Builds that are not yet supported for detailed parsing
+                // build 47801 is a ptr build that had new data in the battletag section, the data was changed in 47944 (patch for 47801)
+                // GetBattleTags(replay, source);
+               // return;
+            }
 
             replay.RandomValue = source.ReadBits(32); // m_randomSeed
 
@@ -119,66 +250,69 @@ namespace Heroes.ReplayParser.MpqFiles
 
             for (uint i = 0; i < playerListLength; i++)
             {
-                source.ReadBits(3);
-                source.ReadUnalignedBytes(24);
-                source.ReadBits(24);
-                source.ReadBits(16);
-                source.ReadBits(10);
+                source.ReadBits(32);
 
-                int idLength = (int)source.ReadBits(7);
-                if (source.ReadStringFromBytes(2) != "T:")
-                    throw new StormParseException($"{ExceptionHeader}: Not T:");
+                source.ReadBits(5); // player index
 
+                // toon
+                source.ReadBits(8); // m_region
+                if (source.ReadStringFromBits(32) != "Hero") // m_programId
+                    throw new StormParseException($"{ExceptionHeader}: Not Hero");
+                source.ReadBits(32); // m_realm
+                source.ReadLongBits(64); // m_id
+
+                // internal toon
+                source.ReadBits(8); // m_region
+                if (source.ReadStringFromBits(32) != "Hero") // m_programId
+                    throw new StormParseException($"{ExceptionHeader}: Not Hero");
+                source.ReadBits(32); // m_realm
+
+                int idLength = (int)source.ReadBits(7) + 2;
                 replay.ClientListByUserID[i].BattleTID = source.ReadStringFromBytes(idLength);
 
-                source.ReadAlignedBytes(4); // same for all players (most of the time)
+                source.ReadBits(6);
 
-                if (replay.ReplayVersion.Build <= 47479)
+                if (replay.ReplayBuild <= 47479)
                 {
-                    source.ReadAlignedBytes(5);
-                    source.ReadBits(5);
+                    // internal toon repeat
+                    source.ReadBits(8); // m_region
+                    if (source.ReadStringFromBits(32) != "Hero") // m_programId
+                        throw new StormParseException($"{ExceptionHeader}: Not Hero");
+                    source.ReadBits(32); // m_realm
 
-                    idLength = (int)source.ReadBits(7);
-                    if (source.ReadStringFromBytes(2) != "T:")
-                        throw new StormParseException($"{ExceptionHeader}: Not T:");
-
+                    idLength = (int)source.ReadBits(7) + 2;
                     if (replay.ClientListByUserID[i].BattleTID != source.ReadStringFromBytes(idLength))
-                        throw new StormParseException($"{ExceptionHeader}: Duplicate TID does not match");
-                }
-                else
-                {
-                    source.ReadAlignedBytes(25);
+                        throw new StormParseException($"{ExceptionHeader}: Duplicate internal id does not match");
+
+                    source.ReadBits(6);
                 }
 
-                // source.ReadAlignedBytes(8); ai games have 8 more bytes somewhere around here
+                source.ReadBits(2);
+                source.ReadUnalignedBytes(25);
+                source.ReadBits(24);
+
+                // source.ReadUnalignedBytes(8); //ai games have 8 more bytes somewhere around here
 
                 source.ReadBits(7);
 
                 if (!source.ReadBoolean())
                 {
                     // repeat of the collection section above
-                    if (replay.ReplayBuild >= 51609)
+                    if (replay.ReplayBuild > 51609 || replay.ReplayBuild == 47903 || replay.ReplayBuild == 47479)
                     {
-                        uint size = source.ReadBits(12);
-
-                        int bytesSize = (int)(size / 8);
-                        int bitsSize = (int)(size % 8);
-
-                        source.ReadUnalignedBytes(bytesSize);
-                        source.ReadBits(bitsSize);
-
-                        source.ReadBoolean();
+                        source.ReadBitArray((int)source.ReadBits(12));
                     }
-                    //else
-                    //{
-                    //    if (replay.ReplayBuild >= 48027)
-                    //        source.ReadInt16();
-                    //    else
-                    //        source.ReadInt32();
+                    else if (replay.ReplayBuild > 47219)
+                    {
+                        // each byte has a max value of 0x7F (127)
+                        source.ReadUnalignedBytes((int)source.ReadBits(15) * 2);
+                    }
+                    else
+                    {
+                        source.ReadBitArray((int)source.ReadBits(9));
+                    }
 
-                    //    // each byte has a max value of 0x7F (127)
-                    //    source.stream.Position = source.stream.Position + (collectionSize * 2);
-                    //}
+                    source.ReadBoolean();
                 }
 
                 source.ReadBoolean(); // m_hasSilencePenalty
@@ -195,24 +329,17 @@ namespace Heroes.ReplayParser.MpqFiles
                 if (source.ReadBoolean()) // is player in party
                     replay.ClientListByUserID[i].PartyValue = source.ReadLongBits(64); // players in same party will have the same exact 8 bytes of data
 
-                source.ReadBoolean(); // has battle tag?
+                source.ReadBoolean();
                 replay.ClientListByUserID[i].BattleTag = source.ReadBlobAsString(7);
 
-                if (!replay.ClientListByUserID[i].BattleTag.Contains('#'))
+                if (!string.IsNullOrEmpty(replay.ClientListByUserID[i].BattleTag) && (!replay.ClientListByUserID[i].BattleTag.Contains('#')))
                     throw new StormParseException($"{ExceptionHeader}: Invalid battletag");
 
                 if (replay.ReplayBuild >= 52860 || (replay.ReplayVersion.Major == 2 && replay.ReplayBuild >= 51978))
                     replay.ClientListByUserID[i].AccountLevel = (int)source.ReadBits(32);  // in custom games, this is a 0
 
                 if (replay.ReplayBuild >= 69947)
-                {
                     source.ReadBoolean(); // m_hasActiveBoost
-                    source.ReadBits(2);
-                }
-                else
-                {
-                    source.ReadBits(3);
-                }
             }
         }
     }

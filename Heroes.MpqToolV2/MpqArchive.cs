@@ -17,7 +17,7 @@ namespace Heroes.MpqToolV2
         private readonly MpqHash[] _mpqHashes;
         private readonly MpqArchiveEntry[] _mpqArchiveEntries;
 
-        private int _blockSize;
+        private readonly int _blockSize;
         private bool _isDisposed = false;
 
         static MpqArchive()
