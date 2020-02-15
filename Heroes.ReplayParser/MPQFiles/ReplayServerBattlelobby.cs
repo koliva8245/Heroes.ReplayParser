@@ -22,49 +22,36 @@ namespace Heroes.ReplayParser.MPQFiles
                 var bitReader = new BitReader(stream);
 
                 // 52124 and 52381 are non-tested ptr builds
-                if (replay.ReplayBuild < 38793 ||
-                    replay.ReplayBuild == 52124 || replay.ReplayBuild == 52381 ||
+                if (replay.ReplayBuild < 47479 ||
+                    replay.ReplayBuild < 47903 || replay.ReplayBuild == 52124 || replay.ReplayBuild == 52381 ||
                     replay.GameMode == GameMode.Unknown)
                 {
                     GetBattleTags(replay, bitReader);
                     return;
                 }
 
-                int s2mArrayLength = bitReader.ReadByte();
-                int stringLength = bitReader.ReadByte();
-
-                bitReader.ReadString(stringLength);
-
-                for (var i = 1; i < s2mArrayLength; i++)
+                uint dependenciesLength = bitReader.Read(6);
+                for (int i = 0; i < dependenciesLength; i++)
                 {
-                    bitReader.Read(16);
-                    bitReader.ReadString(stringLength);
+                    bitReader.ReadBlobPrecededWithLength(10);
                 }
 
-                if (bitReader.ReadByte() != s2mArrayLength)
-                    throw new Exception("s2ArrayLength not equal");
-
-                for (var i = 0; i < s2mArrayLength; i++)
+                // s2ma cache handles
+                uint s2maCacheHandlesLength = bitReader.Read(6);
+                for (int i = 0; i < s2maCacheHandlesLength; i++)
                 {
-                    bitReader.ReadString(4); // s2m
-                    bitReader.ReadBytes(2); // 0x00 0x00
-                    bitReader.ReadString(2); // Realm
-                    bitReader.ReadBytes(32);
+                    bitReader.AlignToByte();
+                    if (bitReader.ReadString(4) != "s2ma")
+                        throw new DetailedParsedException($"s2ma cache");
+
+                    bitReader.ReadBytes(36);
                 }
 
-                if (replay.ReplayBuild < 55929)
-                {
-                    bitReader.stream.Position = bitReader.stream.Position + 2632;
-
-                    if (bitReader.ReadString(8) != "HumnComp")
-                        throw new DetailedParsedException("Not HumnComp");
-                }
-
-                DetailedParse(bitReader, replay, s2mArrayLength);
+                DetailedParse(bitReader, replay, s2maCacheHandlesLength);
             }        
         }
 
-        private static void DetailedParse(BitReader bitReader, Replay replay, int s2mArrayLength)
+        private static void DetailedParse(BitReader bitReader, Replay replay, uint s2maCacheHandlesLength)
         {
             bitReader.AlignToByte();
             for (; ; )
@@ -72,19 +59,25 @@ namespace Heroes.ReplayParser.MPQFiles
                 // we're just going to skip all the way down to the s2mh 
                 if (bitReader.ReadString(4) == "s2mh")
                 {
-                    bitReader.stream.Position = bitReader.stream.Position - 4;
+                    bitReader.stream.Position -= 4;
                     break;
                 }
                 else
-                    bitReader.stream.Position = bitReader.stream.Position - 3;
+                    bitReader.stream.Position -= 3;
             }
 
-            for (var i = 0; i < s2mArrayLength; i++)
+            // bitReader.Read(???); // this depends on previous data (not byte aligned)
+
+            // s2mh cache handles
+            // uint s2mhCacheHandlesLength = bitReader.Read(6);
+            // for (int i = 0; i < s2mhCacheHandlesLength; i++)
+            for (var i = 0; i < s2maCacheHandlesLength; i++)
             {
-                bitReader.ReadString(4); // s2mh
-                bitReader.ReadBytes(2); // 0x00 0x00
-                bitReader.ReadString(2); // Realm
-                bitReader.ReadBytes(32);
+                bitReader.AlignToByte();
+                if (bitReader.ReadString(4) != "s2mh")
+                    throw new Exception($"s2mh cache");
+
+                bitReader.ReadBytes(36);
             }
 
             // Player collections - starting with HOTS 2.0 (live build 52860)
@@ -92,9 +85,7 @@ namespace Heroes.ReplayParser.MPQFiles
             // --------------------------------------------------------------
             var playerCollection = new List<string>();
 
-            var collectionSize = 0;
-
-            collectionSize = replay.ReplayBuild >= 48027 ? bitReader.ReadInt16() : bitReader.ReadInt32();
+            int collectionSize = replay.ReplayBuild >= 48027 ? bitReader.ReadInt16() : bitReader.ReadInt32();
 
             if (collectionSize > 8000)
                 throw new DetailedParsedException("collectionSize is an unusually large number");
@@ -136,13 +127,6 @@ namespace Heroes.ReplayParser.MPQFiles
 
             // Player info 
             // ------------------------
-            if (replay.ReplayBuild <= 43259 || replay.ReplayBuild == 47801)
-            {
-                // Builds that are not yet supported for detailed parsing
-                // build 47801 is a ptr build that had new data in the battletag section, the data was changed in 47944 (patch for 47801)
-                GetBattleTags(replay, bitReader);
-                return;
-            }
 
             // m_randomSeed, set it if it hasn't been set
             if (replay.RandomValue == 0)
@@ -150,68 +134,79 @@ namespace Heroes.ReplayParser.MPQFiles
             else
                 bitReader.ReadInt32();
 
-            bitReader.ReadBytes(32);
-            bitReader.ReadInt32(); // 0x19
+            bitReader.ReadBytes(4);
 
-            if (replay.ReplayBuild <= 47479 || replay.ReplayBuild == 47903)
+            uint playerListLength = bitReader.Read(5);
+
+            for (uint i = 0; i < playerListLength; i++)
             {
-                ExtendedBattleTagParsingOld(replay, bitReader);
-                return;
-            }
+                bitReader.Read(32);
 
-            for (var player = 0; player < replay.ClientListByUserID.Length; player++)
-            {
-                if (replay.ClientListByUserID[player] == null)
-                    break;
+                bitReader.Read(5); // player index
 
-                if (player == 0)
+                // toon
+                bitReader.Read(8); // m_region
+                if (bitReader.ReadStringFromBits(32, true) != "Hero") // m_programId
+                    throw new DetailedParsedException("Not Hero");
+                bitReader.Read(32); // m_realm
+                bitReader.ReadLong(64); // m_id
+
+                // internal toon
+                bitReader.Read(8); // m_region
+                if (bitReader.ReadStringFromBits(32, true) != "Hero") // m_programId
+                    throw new DetailedParsedException("Not Hero");
+                bitReader.Read(32); // m_realm
+
+                int idLength = (int)bitReader.Read(7) + 2;
+                bitReader.AlignToByte();
+                replay.ClientListByUserID[i].BattleNetTId = bitReader.ReadString(idLength);
+
+                bitReader.Read(6);
+
+                if (replay.ReplayBuild <= 47479)
                 {
-                    var offset = bitReader.ReadByte();
-                    bitReader.ReadString(2); // T:
-                    replay.ClientListByUserID[player].BattleNetTId = bitReader.ReadString(12 + offset); // TId
-                }
-                else
-                {
-                    ReadByte0x00(bitReader);
-                    ReadByte0x00(bitReader);
-                    ReadByte0x00(bitReader);
-                    bitReader.Read(6);
+                    // internal toon repeat
+                    bitReader.Read(8); // m_region
+                    if (bitReader.ReadStringFromBits(32, true) != "Hero") // m_programId
+                        throw new DetailedParsedException("Not Hero");
+                    bitReader.Read(32); // m_realm
 
-                    // get XXXXXXXX#YYY
-                    replay.ClientListByUserID[player].BattleNetTId = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8)); // TId
+                    idLength = (int)bitReader.Read(7) + 2;
+                    bitReader.AlignToByte();
+                    if (replay.ClientListByUserID[i].BattleNetTId != bitReader.ReadString(idLength))
+                        throw new DetailedParsedException("Duplicate internal id does not match");
                 }
 
-                // next 30 bytes
-                bitReader.ReadBytes(4); // same for all players
+                bitReader.Read(2);
                 bitReader.ReadBytes(25);
+                bitReader.Read(24);
+
+                // bitReader.ReadBytes(8); ai games have 8 more bytes somewhere around here
+
                 bitReader.Read(7);
+
                 if (!bitReader.ReadBoolean())
                 {
                     // repeat of the collection section above
-                    if (replay.ReplayBuild >= 51609)
+                    if (replay.ReplayBuild >= 51609 || replay.ReplayBuild == 47903 || replay.ReplayBuild == 47479)
                     {
-                        var size = (int)bitReader.Read(12); // 3 bytes
-                        if (size == collectionSize)
-                        {
-                            var bytesSize = collectionSize / 8;
-                            var bitsSize = collectionSize % 8;
+                        uint size = bitReader.Read(12);
 
-                            bitReader.ReadBytes(bytesSize);
-                            bitReader.Read(bitsSize);
+                        int bytesSize = (int)(size / 8);
+                        int bitsSize = (int)(size % 8);
 
-                            bitReader.ReadBoolean();
-                        }
-                        // else if not equal, then data isn't available, most likely an observer
+                        bitReader.ReadBytes(bytesSize);
+                        bitReader.Read(bitsSize);
+
+                        bitReader.ReadBoolean();
                     }
                     else
                     {
-                        if (replay.ReplayBuild >= 48027)
-                            bitReader.ReadInt16();
-                        else
-                            bitReader.ReadInt32();
+                        bitReader.Read(1);
+                        uint size = bitReader.Read(15);
 
                         // each byte has a max value of 0x7F (127)
-                        bitReader.stream.Position = bitReader.stream.Position + (collectionSize * 2);
+                        bitReader.ReadBytes((int)size * 2);
                     }
                 }
 
@@ -227,31 +222,25 @@ namespace Heroes.ReplayParser.MPQFiles
                     bitReader.ReadBoolean(); // m_isBlizzardStaff
 
                 if (bitReader.ReadBoolean()) // is player in party
-                    replay.ClientListByUserID[player].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32(); // players in same party will have the same exact 8 bytes of data
+                    replay.ClientListByUserID[i].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32(); // players in same party will have the same exact 8 bytes of data
 
-                bitReader.ReadBoolean();
+                bitReader.ReadBoolean(); // has battletag?
 
                 var battleTag = Encoding.UTF8.GetString(bitReader.ReadBlobPrecededWithLength(7)).Split('#'); // battleTag <name>#xxxxx
 
-                if (battleTag.Length != 2 || battleTag[0] != replay.ClientListByUserID[player].Name)
+                if (battleTag[0] != replay.ClientListByUserID[i].Name)
                     throw new DetailedParsedException("Couldn't find BattleTag");
 
-                replay.ClientListByUserID[player].BattleTag = int.Parse(battleTag[1]);
+                if (battleTag.Length == 2)
+                    replay.ClientListByUserID[i].BattleTag = int.Parse(battleTag[1]);
 
                 if (replay.ReplayBuild >= 52860 || (replay.ReplayVersionMajor == 2 && replay.ReplayBuild >= 51978))
-                    replay.ClientListByUserID[player].AccountLevel = bitReader.ReadInt32(); // player's account level, not available in custom games
+                    replay.ClientListByUserID[i].AccountLevel = (int)bitReader.Read(32);  // in custom games, this is a 0
 
                 if (replay.ReplayBuild >= 69947)
                 {
                     bitReader.ReadBoolean(); // m_hasActiveBoost
-                    bitReader.Read(7);
                 }
-                else
-                {
-                    bitReader.ReadByte(); // 0x00
-                }
-
-                bitReader.ReadBytes(26); // these similar bytes don't occur for last player
             }
 
             // some more data after this
@@ -290,7 +279,7 @@ namespace Heroes.ReplayParser.MPQFiles
                         TId_2 = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
 
                         if (TId != TId_2)
-                            throw new Exception("TID dup not equal");
+                            throw new DetailedParsedException("TID dup not equal");
                     }
                 }
                 else
@@ -315,7 +304,7 @@ namespace Heroes.ReplayParser.MPQFiles
                         TId_2 = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
 
                         if (TId != TId_2)
-                            throw new Exception("TID dup not equal");
+                            throw new DetailedParsedException("TID dup not equal");
                     }
                 }
                 replay.ClientListByUserID[i].BattleNetTId = TId;
@@ -366,7 +355,7 @@ namespace Heroes.ReplayParser.MPQFiles
                 var battleTag = Encoding.UTF8.GetString(bitReader.ReadBlobPrecededWithLength(7)).Split('#'); // battleTag <name>#xxxxx
 
                 if (battleTag.Length != 2 || battleTag[0] != replay.ClientListByUserID[i].Name)
-                    throw new Exception("Couldn't find BattleTag");
+                    throw new DetailedParsedException("Couldn't find BattleTag");
 
                 replay.ClientListByUserID[i].BattleTag = int.Parse(battleTag[1]);
 
@@ -424,7 +413,7 @@ namespace Heroes.ReplayParser.MPQFiles
             for (var playerNum = 0; playerNum < replay.Players.Length; playerNum++)
             {
                 var player = replay.Players[playerNum];
-                if (player == null)
+                if (player == null || string.IsNullOrEmpty(player.Name))
                     continue;
 
                 // Find each player's name, and then their associated BattleTag

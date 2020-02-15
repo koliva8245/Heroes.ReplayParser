@@ -1,0 +1,17 @@
+language: csharp
+mono: none
+dotnet: 2.2.108
+branches:
+  only:
+  - master
+install:
+ - git fetch --unshallow
+script:
+ - dotnet build -c Release
+ - dotnet pack -c Release
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: dotnet nuget push **/Heroes.ReplayParser.*.nupkg --no-symbols true --api-key $NuGetApiKey --source https://api.nuget.org/v3/index.json
+  on:
+    branch: master
