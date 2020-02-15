@@ -10,7 +10,7 @@ namespace Heroes.ReplayParser
         /// <summary>
         /// Latest build supported by the parser
         /// </summary>
-        public static int LatestSupportedBuild => 73016;
+        public static int LatestSupportedBuild => 78256;
 
         public bool ReplayDetailParsedSuccessfully { get; set; } = true;
 
