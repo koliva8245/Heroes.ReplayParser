@@ -63,27 +63,27 @@ namespace Heroes.ReplayParser.Player
         public bool IsWinner { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets if the player has been given the silenced penalty.
+        /// Gets or sets a value indicating whether the player has been given the silenced penalty.
         /// </summary>
         public bool IsSilenced { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets if the player has been given the voice silence penalty.
+        /// Gets or sets a value indicating whether the player has been given the voice silence penalty.
         /// </summary>
         public bool IsVoiceSilenced { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets if the player is Blizzard staff.
+        /// Gets or sets a value indicating whether the player is Blizzard staff.
         /// </summary>
         public bool IsBlizzardStaff { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets whether the player is auto select or not.
+        /// Gets or sets a value indicating whether the player is auto select or not.
         /// </summary>
         public bool IsAutoSelect { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets if the player has an active boost.
+        /// Gets or sets a value indicating whether the player has an active boost.
         /// </summary>
         public bool HasActiveBoost { get; set; } = false;
 
@@ -123,7 +123,7 @@ namespace Heroes.ReplayParser.Player
         public IEnumerable<MatchAwardType> MatchAwards => ScoreResult.MatchAwards;
 
         /// <summary>
-        /// Get the amount of match awards.
+        /// Gets the amount of match awards.
         /// </summary>
         public int MatchAwardsCount => ScoreResult.MatchAwards.Count;
 
@@ -134,7 +134,7 @@ namespace Heroes.ReplayParser.Player
         /// <inheritdoc/>
         public override string? ToString()
         {
-            return $"{Name}-{PlayerType.ToString()}-{ToonHandle}";
+            return $"{Name}-{PlayerType}-{ToonHandle}";
         }
 
         internal void SetScoreResult(int player, Func<int, ScoreResult> scoreResult)

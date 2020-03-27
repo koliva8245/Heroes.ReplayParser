@@ -8,9 +8,9 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="AbilityAnnouncement"/> struct.
         /// </summary>
-        /// <param name="abilityIndex"></param>
-        /// <param name="abilityLink"></param>
-        /// <param name="buttonLink"></param>
+        /// <param name="abilityIndex">The ability index.</param>
+        /// <param name="abilityLink">The ability link.</param>
+        /// <param name="buttonLink">The button link.</param>
         public AbilityAnnouncement(int abilityIndex, int abilityLink, int buttonLink)
         {
             AbilityIndex = abilityIndex;

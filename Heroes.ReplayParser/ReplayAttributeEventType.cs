@@ -1,5 +1,6 @@
 ﻿namespace Heroes.ReplayParser
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:Enumeration items should be documented", Justification = "No need")]
     internal enum ReplayAttributeEventType
     {
         PlayerTypeAttribute = 500,
@@ -56,7 +57,7 @@
         ReadyRequirements = 4019,
         FirstReadyingTeam = 4020,
 
-        DraftBanMode = 4021, // TODO: get custom game attributes
+        DraftBanMode = 4021,
 
         DraftTeam1BanChooserSlot = 4022,
         DraftTeam1Ban1 = 4023,

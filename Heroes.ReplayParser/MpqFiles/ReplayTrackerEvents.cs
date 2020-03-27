@@ -12,7 +12,7 @@ namespace Heroes.ReplayParser.MpqFiles
         public static void Parse(StormReplay replay, ReadOnlySpan<byte> source)
         {
             BitReader.ResetIndex();
-            BitReader.EndianType = EndianType.BigEndian; ;
+            BitReader.EndianType = EndianType.BigEndian;
 
             uint gameLoop = 0;
 

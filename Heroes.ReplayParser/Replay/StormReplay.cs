@@ -14,18 +14,18 @@ namespace Heroes.ReplayParser.Replay
         private readonly Lazy<Dictionary<int, TeamLevel>> _teamBlueLevels = new Lazy<Dictionary<int, TeamLevel>>();
         private readonly Lazy<Dictionary<int, TeamLevel>> _teamRedLevels = new Lazy<Dictionary<int, TeamLevel>>();
 
-        /// <summary>RegenGlobes
+        /// <summary>
         /// Gets the latest build that the parser was updated for.
         /// </summary>
         public static int LatestUpdatedBuild => 73016;
 
         /// <summary>
-        /// Gets the value indicating if there is at least one observer.
+        /// Gets a value indicating whether there is at least one observer.
         /// </summary>
         public bool HasObservers => ClientListByUserID.Any(x => x?.PlayerType == PlayerType.Observer);
 
         /// <summary>
-        /// Gets the value indicating if there is at least one AI.
+        /// Gets a value indicating whether there is at least one AI.
         /// </summary>
         public bool HasAI => Players.Any(x => x?.PlayerType == PlayerType.Computer);
 
@@ -75,7 +75,7 @@ namespace Heroes.ReplayParser.Replay
         public string TeamSize { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets the speed the game was played at.
+        /// Gets or sets the speed the game was played at.
         /// </summary>
         public GameSpeed GameSpeed { get; set; } = GameSpeed.Unknown;
 
@@ -143,7 +143,7 @@ namespace Heroes.ReplayParser.Replay
         internal StormPlayer[] ClientListByWorkingSetSlotID { get; private set; } = new StormPlayer[16];
 
         /// <summary>
-        /// In some places, this is used instead of the 'Player' array, in games with less than 10 players.
+        /// Gets the collection of open slot players. In some places, this is used instead of the 'Player' array, in games with less than 10 players.
         /// </summary>
         /// <remarks>Contains AI. No observers.</remarks>
         internal StormPlayer[] PlayersWithOpenSlots { get; private set; } = new StormPlayer[10];
@@ -215,8 +215,8 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets a team's final level at the end of the game.
         /// </summary>
-        /// <param name="team"></param>
-        /// <returns></returns>
+        /// <param name="team">The team value.</param>
+        /// <returns>The team's level.</returns>
         public int GetTeamFinalLevel(StormTeam team)
         {
             if (team == StormTeam.Blue)
@@ -242,8 +242,8 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets a collection of a <see cref="StormTeam"/>'s levels.
         /// </summary>
-        /// <param name="team"></param>
-        /// <returns></returns>
+        /// <param name="team">The team value.</param>
+        /// <returns>A collection of the team's levels.</returns>
         public IEnumerable<TeamLevel> GetTeamLevels(StormTeam team)
         {
             if (team == StormTeam.Blue && _teamBlueLevels.IsValueCreated)
@@ -285,8 +285,8 @@ namespace Heroes.ReplayParser.Replay
         /// <summary>
         /// Gets a collection of a team's experience breakdown that occurs during periodic intervals.
         /// </summary>
-        /// <param name="team"></param>
-        /// <returns></returns>
+        /// <param name="team">The team value.</param>
+        /// <returns>A collection fo the teams xp.</returns>
         public IEnumerable<TeamXPBreakdown> GetTeamXPBreakdown(StormTeam team)
         {
             TeamXPBreakdown teamXPBreakdown = new TeamXPBreakdown();
@@ -367,7 +367,7 @@ namespace Heroes.ReplayParser.Replay
             }
         }
 
-        private ScoreResult GetScoreResult(int player, Dictionary<string, int?[]> scoreResultsByScoreName)
+        private static ScoreResult GetScoreResult(int player, Dictionary<string, int?[]> scoreResultsByScoreName)
         {
             ScoreResult scoreResult = new ScoreResult();
 

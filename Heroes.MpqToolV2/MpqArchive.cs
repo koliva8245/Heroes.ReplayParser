@@ -9,7 +9,7 @@ namespace Heroes.MpqToolV2
 {
     public class MpqArchive : IDisposable
     {
-        private static readonly uint[] _stormBuffer;
+        private static readonly uint[] _stormBuffer = BuildStormBuffer();
 
         private readonly Stream _archiveStream;
         private readonly MpqHeader _mpqHeader;
@@ -19,11 +19,6 @@ namespace Heroes.MpqToolV2
 
         private readonly int _blockSize;
         private bool _isDisposed = false;
-
-        static MpqArchive()
-        {
-            _stormBuffer = BuildStormBuffer();
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MpqArchive"/> class.
@@ -123,7 +118,7 @@ namespace Heroes.MpqToolV2
                 {
                     Span<char> data = stackalloc char[index - startIndex];
 
-                    Encoding.UTF8.GetChars(source.Slice(startIndex, index - startIndex), data);
+                    Encoding.UTF8.GetChars(source[startIndex..index], data);
 
                     // if it's a \r, check one ahead for a \n
                     if (charByte == 13 && index < source.Length)
@@ -142,7 +137,8 @@ namespace Heroes.MpqToolV2
                 }
 
                 index++;
-            } while (index < source.Length);
+            }
+            while (index < source.Length);
         }
 
         public bool AddFileName(string fileName)
@@ -227,7 +223,7 @@ namespace Heroes.MpqToolV2
         /// <summary>
         /// Release the unmanaged and managed resources.
         /// </summary>
-        /// <param name="disposing"></param>
+        /// <param name="disposing">Value indicating if disposing.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_isDisposed && disposing)
@@ -349,6 +345,14 @@ namespace Heroes.MpqToolV2
             stream.Read(buffer);
         }
 
+        private static void SetBlockPositions(ReadOnlySpan<byte> source, Span<uint> blockPositions, int blockPositionCount)
+        {
+            for (int i = 0; i < blockPositionCount; i++)
+            {
+                blockPositions[i] = source.ReadUInt32Aligned();
+            }
+        }
+
         private ReadOnlySpan<byte> DecompressEntry(MpqArchiveEntry mpqArchiveEntry)
         {
             byte[] fileData = new byte[(int)mpqArchiveEntry.FileSize];
@@ -423,14 +427,6 @@ namespace Heroes.MpqToolV2
             int expectedlength = (int)Math.Min(mpqArchiveEntry.FileSize - (position * _blockSize), _blockSize);
 
             return LoadBlock(mpqArchiveEntry, blockPositions, position, expectedlength);
-        }
-
-        private void SetBlockPositions(ReadOnlySpan<byte> source, Span<uint> blockPositions, int blockPositionCount)
-        {
-            for (int i = 0; i < blockPositionCount; i++)
-            {
-                blockPositions[i] = source.ReadUInt32Aligned();
-            }
         }
 
         private byte[] LoadBlock(MpqArchiveEntry mpqArchiveEntry, ReadOnlySpan<uint> blockPositions, int blockIndex, int expectedLength)

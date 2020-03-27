@@ -1,7 +1,5 @@
 ﻿using Heroes.ReplayParser.Replay;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Heroes.ReplayParser
 {

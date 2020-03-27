@@ -4,6 +4,7 @@ using BenchmarkDotNet.Running;
 using Heroes.MpqToolV2;
 using Heroes.ReplayParser.MpqFiles;
 using System.IO;
+using System.Linq;
 
 namespace Heroes.ReplayParser.Benchmarks
 {
@@ -41,9 +42,22 @@ namespace Heroes.ReplayParser.Benchmarks
         {
             //Reader.Index = 0;
             //Reader.BitIndex = 0;
-            var a = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
-          //  BitReader.ResetIndex();
-           // BitReader.EndianType = EndianType.LittleEndian;
+            var a = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay");
+            var b = a.Replay.GetDraftOrder().ToList();
+            var c = a.Replay.GetTeamXPBreakdown(Replay.StormTeam.Blue).ToList();
+            var d = a.Replay.GetTeamXPBreakdown(Replay.StormTeam.Red).ToList();
+            //var b = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+            //var c = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+            //var d = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+            //var e = StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+
+            //StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+            //StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+            //StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+            //StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+            //StormReplayParser.Parse(@"F:\Battlefield of Eternity1.StormReplay", out StormReplayParseResult _);
+            //  BitReader.ResetIndex();
+            // BitReader.EndianType = EndianType.LittleEndian;
             //using MpqArchive mpqArchive = new MpqArchive(File.Open(@"F:\Battlefield of Eternity1.StormReplay", FileMode.Open, FileAccess.Read));
             //mpqArchive.AddListfileFileNames();
             //MpqMemory mpqMemory = mpqArchive.OpenFile("replay.details");

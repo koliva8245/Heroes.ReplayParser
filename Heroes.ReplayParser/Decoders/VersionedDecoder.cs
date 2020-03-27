@@ -154,7 +154,7 @@ namespace Heroes.ReplayParser.Decoders
             {
                 0x00 => ArrayData != null ? $"[{string.Join(", ", ArrayData.Select(i => i?.ToString()))}]" : null,
                 0x02 => _value != null ? @$"""{Encoding.UTF8.GetString(_value)}""" : null,
-                0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString()} , Data: {ChoiceData}",
+                0x03 => $"Choice: Flag: {BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value)} , Data: {ChoiceData}",
                 0x04 => OptionalData?.ToString(),
                 0x05 => StructureByIndex != null ? $"{{{string.Join(", ", StructureByIndex.Values.Select(i => i?.ToString()))}}}" : null,
                 0x06 => _value?[0].ToString(),
@@ -162,7 +162,7 @@ namespace Heroes.ReplayParser.Decoders
                 0x08 => BinaryPrimitives.ReadUInt64LittleEndian(_value).ToString(),
                 0x09 => BinaryPrimitivesExtensions.ReadVIntLittleEndian(_value).ToString(),
 
-                _ => throw new NotImplementedException(),
+                _ => string.Empty,
             };
         }
 
